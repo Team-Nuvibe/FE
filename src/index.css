@@ -1,1 +1,138 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Pretendard";
+  src: url('fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@theme {
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --color-black: #121212;
+  --color-white: #FAFAFA;
+  --color-gray-100: #7D7D7D;
+  --color-gray-200: #D0D3D7;
+  --color-gray-300: #E3E3E3;
+  --color-gray-400: #8F9297;
+  --color-gray-500: #75787E;
+  --color-gray-600: #64676D;
+  --color-gray-700: #474A50;
+  --color-gray-800: #36383E;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-gray-500);
+  /* 데스크탑 배경색 (어두운 회색) */
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 앱 전용 컨테이너 (#root) 설정 */
+#root {
+  width: 100%;
+  max-width: 430px;
+  /* iPhone 15 Pro Max 너비 기준 */
+  height: 100%;
+  max-height: 100dvh;
+  margin: 0 auto;
+  background-color: var(--color-black);
+  /* 앱 배경색 */
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  /* 데스크탑에서 입체감 부여 */
+
+  /* Touch & Scroll behavior */
+  touch-action: none;
+  overscroll-behavior: none;
+
+  /* iOS Safe Area 대응 */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+
+  /* 앱 스타일링 */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+button {
+  cursor: pointer;
+}
+
+@layer utilities {
+  .H0 {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .H1 {
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .H2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .H3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .H4 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .ST0 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .ST1 {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .ST2 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .B0 {
+    font-size: 18px;
+    font-weight: 400;
+  }
+
+  .B1 {
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .B2 {
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
