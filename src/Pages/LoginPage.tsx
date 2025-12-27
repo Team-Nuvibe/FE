@@ -1,6 +1,8 @@
 // import useForm from "../hooks/useForm";
 // import { validateSignin, type UserSigninInformation } from "../utils/validate";
 
+import { NavLink } from "react-router"
+
 const LoginPage = () => {
 
   // const { values, errors, touched, getInputProps } = useForm<UserSigninInformation>({
@@ -49,7 +51,7 @@ const LoginPage = () => {
             "
             />
           <div className="flex justify-between items-center mb-4 text-[12px]">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <input
                 type="checkbox"
                 className="appearance-none w-[12px] h-[12px] rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:bg-gray-800 checked:border-transparent focus:ring-0 focus:ring-offset-0"
@@ -77,7 +79,16 @@ const LoginPage = () => {
           <div className="border-gray-800 border-t p-2 mt-2 w-[339px]"/>
           <div className="text-gray-500 text-[11.64px]">간편로그인하기</div>
         </div>
-        <footer className="text-[12px] absolute top-[745px] left-[124px]">아이디가 없나요? 회원가입 하기</footer>
+        <footer className="flex gap-3 items-center text-[12px] absolute top-[745px] left-[124px]">
+          <p className="text-gray-500">아이디가 없나요?</p>
+          <NavLink
+            key='/signup'
+            to='/signup'
+            className={"text-gray-100 underline"}
+          >
+            회원가입하기
+          </NavLink>
+          </footer>
       </div>
     </>
   )

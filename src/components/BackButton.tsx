@@ -6,15 +6,15 @@ interface BackButtonProps {
 }
 
 export const BackButton = ({className}:BackButtonProps) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const handleGoBack = () => {
-  //   navigate(-1);
-  // };
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   return (
     <button
-      //onClick={handleGoBack}
+      onClick={handleGoBack}
       className={className} 
       type="button"
     >
