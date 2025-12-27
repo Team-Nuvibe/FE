@@ -12,7 +12,7 @@
   --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   --color-black : #121212;
   --color-white : #FAFAFA;
-  --color-gray-100 : #7D7D7D;
+  --color-gray-100 : #E2E2E2;
   --color-gray-200 : #D0D3D7;
   --color-gray-300 : #E3E3E3;
   --color-gray-400 : #8F9297;
@@ -20,6 +20,7 @@
   --color-gray-600 : #64676D;
   --color-gray-700 : #474A50;
   --color-gray-800 : #36383E;
+  --color-gray-900 : #212224;
 }
 
 html,body {
