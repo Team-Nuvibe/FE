@@ -33,8 +33,7 @@ const LoginPage = () => {
               w-[339px] h-[48px] 
               rounded-[5px]
               pl-[15px] pr-[8px] py-[8px]
-              border border-gray-300
-              focus:outline-none focus:border-blue-500
+              focus:border outline-none focus:border-gray-300
               bg-gray-800
             "
             />
@@ -45,8 +44,7 @@ const LoginPage = () => {
               w-[339px] h-[48px] 
               rounded-[5px]
               pl-[15px] pr-[8px] py-[8px]
-              border border-gray-300
-              focus:outline-none focus:border-blue-500
+              focus:border outline-none focus:border-gray-300
               bg-gray-800
             "
             />
