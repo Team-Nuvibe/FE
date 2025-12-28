@@ -9,16 +9,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 const schema = z.object({
     email : z.string().email({message: "이메일 형식이 올바르지 않아요."}),
     password : z
-        .string()
-        .min(8, {message: "비밀번호는 8자 이상이어야 합니다."})
-        .max(20, {message: "비밀번호는 20자 이하여야 합니다."}),
-    passwordCheck : z.string(),
+      .string()
+      .min(8, {message: "비밀번호는 8자 이상이어야 합니다."})
+      .max(20, {message: "비밀번호는 20자 이하여야 합니다."}),
+    passwordCheck : z
+      .string()
+      .min(8, {message: ""})
+      .max(20, {message: ""}),
     name: z.string().min(1, {message: "이름을 입력해주세요."}),
     nickname : z.string().min(1,{message : "닉네임을 입력해주세요"})
     })
     .refine((data) => data.password === data.passwordCheck, { 
-        message : "비밀번호가 일치하지 않아요.",
-        path : ["passwordCheck"],
+      message : "비밀번호가 일치하지 않아요.",
+      path : ["passwordCheck"],
 });
 
 type FormFields = z.infer<typeof schema>

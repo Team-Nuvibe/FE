@@ -27,7 +27,6 @@ const InputBox = ({type, placeholder, hasError, className, errorMessage, guideTe
           transition-colors
           text-white
           placeholder-gray-500
-            
           ${ /* 에러 상태 디자인*/
             hasError 
               ? "border-gray-300 bg-gray-800" 
@@ -49,7 +48,7 @@ const InputBox = ({type, placeholder, hasError, className, errorMessage, guideTe
           {/* 메인 Placeholder */}
           <span className="text-[16px] text-gray-300">{placeholder}</span>
             
-          {/* 보조 가이드 텍스트 (guideText가 있을 때만 렌더링) */}
+          {/* 보조 가이드 텍스트 */}
           {guideText && (
             <span className="text-[10px] text-gray-600 mt-[1px]">
               {guideText}
@@ -57,7 +56,7 @@ const InputBox = ({type, placeholder, hasError, className, errorMessage, guideTe
           )}
         </div>
       )}
-      {/* 에러 메시지*/}
+      {/* 에러 메시지 */}
       {hasError && (
         <span 
           className="
