@@ -1,17 +1,32 @@
-import './App.css'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import { HomeLayout } from "./layouts/HomeLayout";
+import { SplashPage } from "./pages/SplashPage";
+import { OnboardingPage } from "./pages/OnboardingPage";
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <HomeLayout />,
+      children: [
+        {
+          index: true,
+          element: <SplashPage />,
+        },
+        {
+          path: "onboarding",
+          element: <OnboardingPage />,
+        },
+      ],
+    },
+  ]);
 
   return (
     <>
-      <div className="relative flex flex-col w-full min-h-[100dvh]">
-      {/* 중앙 컨텐츠 영역 */}
-        <main className="flex items-center justify-center">
-          <h1 className="H0 text-white">Nuvibe</h1>
-        </main>
-    </div>
+      <RouterProvider router={router} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
