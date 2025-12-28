@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import BackbuttonIcon from '../assets/icons/icon_backbutton.svg?react';
+import BackbuttonIcon from '../../assets/icons/icon_backbutton.svg?react';
 
 interface BackButtonProps {
   className : string;

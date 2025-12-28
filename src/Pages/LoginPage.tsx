@@ -1,55 +1,44 @@
-// import useForm from "../hooks/useForm";
-// import { validateSignin, type UserSigninInformation } from "../utils/validate";
-
+import useForm from "../hooks/useForm";
+import { validateSignin, type UserSigninInformation } from "../utils/validate";
 import { NavLink } from "react-router"
+import InputBox from "../components/Login_Signup/InputBox"
+import Google_G_logo from '../assets/icons/Google_logo.svg?react';
+import Naver_logo from '../assets/icons/Naver_logo.svg?react';
+import KakaoTalk_logo from '../assets/icons/KakaoTalk_logo.svg?react'
 
 const LoginPage = () => {
 
-  // const { values, errors, touched, getInputProps } = useForm<UserSigninInformation>({
-  //       initialValues: {
-  //           email: "",
-  //           password: "",
-  //       },
-  //       validate: validateSignin
-  //   })
+  const { values, errors, touched, getInputProps } = useForm<UserSigninInformation>({
+        initialValues: {
+            email: "",
+            password: "",
+        },
+        validate: validateSignin
+    })
 
-  // const isDisabled = 
-  //       Object.values(errors || {}).some((error)=>error.length > 0) || // 오류 있으면 true
-  //       Object.values(values).some((value)=> value === ""); // 입력 값 비어있으면 true
+  const isDisabled = 
+        Object.values(errors || {}).some((error)=>error.length > 0) || // 오류 있으면 true
+        Object.values(values).some((value)=> value === ""); // 입력 값 비어있으면 true
   
-  // const handleLoginSubmit = () => {
-  //       // api 통신
-  //   }
+  const handleLoginSubmit = () => {
+        // api 통신
+    }
   
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-screen text-white">
+      <div className="flex flex-col justify-center items-center min-h-[100dvh] py-10 text-white">
         <div className="H0 text-white w-fit flex justify-center items-center p-9">
           Start nuvibe
         </div>
         <div className="flex flex-col gap-3">
-          <input 
+          <InputBox 
             type="email"
             placeholder="이메일"
-            className="
-              w-[339px] h-[48px] 
-              rounded-[5px]
-              pl-[15px] pr-[8px] py-[8px]
-              focus:border outline-none focus:border-gray-300
-              bg-gray-800
-            "
-            />
-          <input 
+          />
+          <InputBox 
             type="password"
             placeholder="비밀번호"
-            className="
-              w-[339px] h-[48px] 
-              rounded-[5px]
-              pl-[15px] pr-[8px] py-[8px]
-              focus:border outline-none focus:border-gray-300
-              bg-gray-800
-            "
-            />
+          />
           <div className="flex justify-between items-center mb-4 text-[12px]">
             <div className="flex items-center gap-1">
               <input
@@ -75,11 +64,20 @@ const LoginPage = () => {
             로그인하기
           </button>
         </div>
-        <div className="p-4 flex flex-col justify-center items-center">
-          <div className="border-gray-800 border-t p-2 mt-2 w-[339px]"/>
-          <div className="text-gray-500 text-[11.64px]">간편로그인하기</div>
+        <div className="border-gray-800 border-t mt-4 mb-2 w-[339px]"/>
+        <div className="text-gray-500 text-[11.64px] p-4">간편로그인하기</div>
+        <div className="flex gap-2">
+          <button>
+            <Google_G_logo />
+          </button>
+          <button>
+            <Naver_logo />
+          </button>
+          <button>
+            <KakaoTalk_logo />
+          </button>
         </div>
-        <footer className="flex gap-3 items-center text-[12px] absolute top-[745px] left-[124px]">
+        <footer className="absolute bottom-0 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
             key='/signup'
@@ -88,7 +86,7 @@ const LoginPage = () => {
           >
             회원가입하기
           </NavLink>
-          </footer>
+        </footer>
       </div>
     </>
   )
