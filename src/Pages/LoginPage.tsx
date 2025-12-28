@@ -8,7 +8,7 @@ import KakaoTalk_logo from '../assets/icons/KakaoTalk_logo.svg?react'
 
 const LoginPage = () => {
 
-  const { values, errors, touched, getInputProps } = useForm<UserSigninInformation>({
+  const { values, errors, getInputProps } = useForm<UserSigninInformation>({
         initialValues: {
             email: "",
             password: "",
@@ -21,8 +21,20 @@ const LoginPage = () => {
         Object.values(values).some((value)=> value === ""); // 입력 값 비어있으면 true
   
   const handleLoginSubmit = () => {
-        // api 통신
-    }
+    // api 통신
+  }
+  
+  const handleGoogleLogin = () => {
+
+  }
+
+  const handleNaverLogin = () => {
+
+  }
+
+  const handleKakaoLogin = () => {
+
+  }
   
   return (
     <>
@@ -31,11 +43,13 @@ const LoginPage = () => {
           Start nuvibe
         </div>
         <div className="flex flex-col gap-3">
-          <InputBox 
+          <InputBox
+            {...getInputProps("email")} 
             type="email"
             placeholder="이메일"
           />
-          <InputBox 
+          <InputBox
+            {...getInputProps("password")}  
             type="password"
             placeholder="비밀번호"
           />
@@ -48,7 +62,7 @@ const LoginPage = () => {
               <div>아이디 저장</div>
             </div>
             <div className="cursor-pointer hover:underline">
-              비밀번호를 잊어버리셨나요?
+              비밀번호를 잊어버리셨나요? 
             </div>
           </div>
           <button 
@@ -59,7 +73,10 @@ const LoginPage = () => {
               flex justify-center items-center
               bg-white text-black
               H4
+              disabled:bg-gray-800 disabled:cursor-not-allowed
             "
+            onClick={handleLoginSubmit}
+            disabled={isDisabled}
           >
             로그인하기
           </button>
@@ -67,13 +84,19 @@ const LoginPage = () => {
         <div className="border-gray-800 border-t mt-4 mb-2 w-[339px]"/>
         <div className="text-gray-500 text-[11.64px] p-4">간편로그인하기</div>
         <div className="flex gap-2">
-          <button>
+          <button
+            onClick={handleGoogleLogin}
+          >
             <Google_G_logo />
           </button>
-          <button>
+          <button
+            onClick={handleNaverLogin}
+          >
             <Naver_logo />
           </button>
-          <button>
+          <button
+            onClick={handleKakaoLogin}
+          >
             <KakaoTalk_logo />
           </button>
         </div>

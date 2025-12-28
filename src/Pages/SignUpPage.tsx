@@ -2,11 +2,42 @@ import { useNavigate } from 'react-router';
 import NuvibeLogo from '../assets/icons/nuvibe_logo.svg?react';
 import { BackButton } from '../components/Login_Signup/BackButton';
 import InputBox from '../components/Login_Signup/InputBox';
+import z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const schema = z.object({
+    email : z.string().email({message: "이메일 형식이 올바르지 않아요."}),
+    password : z
+        .string()
+        .min(8, {message: "비밀번호는 8자 이상이어야 합니다."})
+        .max(20, {message: "비밀번호는 20자 이하여야 합니다."}),
+    passwordCheck : z.string(),
+    name: z.string().min(1, {message: "이름을 입력해주세요."}),
+    nickname : z.string().min(1,{message : "닉네임을 입력해주세요"})
+    })
+    .refine((data) => data.password === data.passwordCheck, { 
+        message : "비밀번호가 일치하지 않아요.",
+        path : ["passwordCheck"],
+});
+
+type FormFields = z.infer<typeof schema>
 
 const SignUpPage = () => {
 
   const navigate = useNavigate();
 
+  const {
+        register, 
+        formState: {errors, isSubmitting, isValid} 
+    } = useForm<FormFields>({ 
+        defaultValues : {
+            email: "",
+        },
+        resolver: zodResolver(schema), 
+        mode : "onChange"
+  });
+  
   const handleSignupSubmit = () => {
     navigate('/login')
   }
@@ -17,13 +48,45 @@ const SignUpPage = () => {
         <div className="mb-12">
           <NuvibeLogo className="w-[130.3px] h-[25.4px]" />
         </div>
-        <div className="flex flex-col gap-[10px] mb-9">
-          <InputBox type="name" placeholder="이름" />
-          <InputBox type="email" placeholder="이메일" />
-          <InputBox type="password" placeholder="비밀번호" />
-          <InputBox type="password" placeholder="비밀번호 확인" />
-          <InputBox type="text" placeholder="닉네임" />
-        </div>
+        <form className="flex flex-col gap-[10px] mb-9">
+          <InputBox 
+            {...register('name')}
+            type="name" 
+            placeholder="이름" 
+            hasError = {!!errors?.name}
+            errorMessage={errors.name?.message}
+          />
+          <InputBox
+            {...register("email")}
+            type="email" 
+            placeholder="이메일"
+            hasError = {!!errors?.email}
+            errorMessage={errors.email?.message}
+          />
+          <InputBox
+            {...register("password")} 
+            type="password" 
+            placeholder="비밀번호" 
+            hasError = {!!errors?.password}
+            errorMessage={errors.password?.message}
+            guideText = '8자 이상/영문,숫자,특수문자 혼합'
+          />
+          <InputBox
+            {...register("passwordCheck")}
+            type="password" 
+            placeholder="비밀번호 확인"
+            hasError = {!!errors?.passwordCheck} 
+            errorMessage={errors.passwordCheck?.message}
+          />
+          <InputBox
+            {...register("nickname")}
+            type="text"
+            placeholder="닉네임"
+            hasError = {!!errors?.nickname}
+            errorMessage = {errors.nickname?.message}
+            guideText = "(추후 변경할 수 있어요)"
+          />
+        </form>
         <button 
             className="
               w-[339px] h-[48px]
@@ -32,7 +95,9 @@ const SignUpPage = () => {
               flex justify-center items-center
               bg-white text-black
               H4
+              disabled:bg-gray-800 disabled:cursor-not-allowed
             "
+            disabled={!isValid || isSubmitting}
             onClick={handleSignupSubmit}
           >
             회원가입

@@ -2,4 +2,7 @@
 tailwindcss
 react-router
 vite-plugin-svgr
+zod
+react-hook-form
+hookform/resolvers
 초기설정중
