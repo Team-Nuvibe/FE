@@ -39,7 +39,7 @@ export const OnboardingPage = () => {
           const isAtEnd = swiper.activeIndex === 2;
           setIsLast(isAtEnd);
           if (isAtEnd) {
-            swiper.allowSlidePrev = false;
+            swiper.allowSlidePrev = true;
           } else {
             swiper.allowSlidePrev = true;
           }
@@ -58,7 +58,7 @@ export const OnboardingPage = () => {
             <img
               src={Onboarding1_frame_1}
               alt=""
-              className="absolute scale-70 z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-[15%]"
+              className="absolute scale-75 z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-[11%]"
             />
             <img
               src={Onboarding1_bg}
@@ -90,19 +90,22 @@ export const OnboardingPage = () => {
         </SwiperSlide>
         {/* Slide 3 */}
         <SwiperSlide className="flex flex-col w-full ">
-          <div className="px-12 my-4">
+          <div className="px-12 my-4 shrink-0">
             <h1 className="H0 text-white mb-2">Your vibe, archived.</h1>
             <p className="ST2 text-gray-300">드롭한 이미지들이 보드에 쌓여</p>
             <p className="ST2 text-gray-300">나만의 톤과 흐름이 됩니다.</p>
           </div>
-          <div className="relative flex-1 flex justify-center">
-            <img src={Onboarding3_frame_1} className="absolute top-0" />
-            <h1 className="absolute top-80 scale-[1.3] text-white H1">
+          <div className="relative flex-1 flex flex-col justify-center items-center gap-6">
+            <img
+              src={Onboarding3_frame_1}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-12%]"
+            />
+            <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-1020%] z-10 scale-[1.3] text-white H1">
               Vibers
             </h1>
             <button
               onClick={() => navigate("/login")}
-              className="absolute cursor-pointer top-94 bg-white px-10 py-3 rounded-[10px] scale-120 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-1050%] z-10 cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-120 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
             >
               <img src={Onboarding3_text} />
             </button>
