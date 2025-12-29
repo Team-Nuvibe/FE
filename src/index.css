@@ -73,13 +73,22 @@ body {
   display: none;
 }
 
-input, textarea {
+input,
+textarea {
   user-select: text;
   -webkit-user-select: text;
 }
 
 button {
-  cursor : pointer;
+  cursor: pointer;
+}
+
+/* 비활성 점의 색상 */
+.swiper-pagination-bullet {
+  background-color: var(--color-white) !important;
+  border-radius: 4px !important;
+  opacity: 1;
+  margin: 0 !important;
 }
 
 .swiper-pagination-bullet {
@@ -95,50 +104,49 @@ button {
 
 @layer utilities {
   .H0 {
-    font-size : 28px;
-    font-weight : 700;
+    font-size: 28px;
+    font-weight: 700;
   }
   .H1 {
-    font-size : 24px;
-    font-weight : 500;
+    font-size: 24px;
+    font-weight: 500;
   }
   .H2 {
-    font-size : 20px;
-    font-weight : 600;
+    font-size: 20px;
+    font-weight: 600;
   }
   .H3 {
-    font-size : 18px;
-    font-weight : 600;
+    font-size: 18px;
+    font-weight: 600;
   }
   .H4 {
-    font-size : 16px;
-    font-weight : 600;
+    font-size: 16px;
+    font-weight: 600;
   }
 
   .ST0 {
-    font-size : 20px;
-    font-weight : 500;
+    font-size: 20px;
+    font-weight: 500;
   }
   .ST1 {
-    font-size : 18px;
-    font-weight : 500;
+    font-size: 18px;
+    font-weight: 500;
   }
   .ST2 {
-    font-size : 16px;
-    font-weight : 500;
+    font-size: 16px;
+    font-weight: 500;
   }
 
   .B0 {
-    font-size : 18px;
-    font-weight : 400;
+    font-size: 18px;
+    font-weight: 400;
   }
   .B1 {
-    font-size : 16px;
-    font-weight : 400;
+    font-size: 16px;
+    font-weight: 400;
   }
   .B2 {
-    font-size : 14px;
-    font-weight : 400;
+    font-size: 14px;
+    font-weight: 400;
   }
-  
 }
