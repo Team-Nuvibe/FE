@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import NuvibeLogo from '../assets/icons/nuvibe_logo.svg?react';
+import NuvibeLogo from '@/assets/logos/Nuvibe.svg?react';
 import { BackButton } from '../components/Login_Signup/BackButton';
 import InputBox from '../components/Login_Signup/InputBox';
 import z from 'zod';
@@ -41,6 +41,19 @@ const SignUpPage = () => {
         mode : "onChange"
   });
   
+  // const onSubmit:SubmitHandler<FormFields> = async (data) => {
+  //   // eslint-disable-next-line
+  //   try {
+  //     const user = {email,password,name:data.name};
+  //     const response = await postSignup(user)
+  //     console.log(response);
+
+  //     navigate("/");
+  //     } catch(error) {
+  //       console.log(error);
+  //       alert("이미 존재하는 유저입니다")
+  //     }
+  // };
   const handleSignupSubmit = () => {
     navigate('/login')
   }

@@ -2,9 +2,9 @@ import useForm from "../hooks/useForm";
 import { validateSignin, type UserSigninInformation } from "../utils/validate";
 import { NavLink } from "react-router"
 import InputBox from "../components/Login_Signup/InputBox"
-import Google_G_logo from '../assets/icons/Google_logo.svg?react';
-import Naver_logo from '../assets/icons/Naver_logo.svg?react';
-import KakaoTalk_logo from '../assets/icons/KakaoTalk_logo.svg?react'
+import Google_G_logo from '@/assets/logos/Google_logo.svg?react';
+import Naver_logo from '@/assets/logos/Naver_logo.svg?react';
+import KakaoTalk_logo from '@/assets/logos/KakaoTalk_logo.svg?react'
 
 const LoginPage = () => {
 
