@@ -6,7 +6,7 @@ import Onboarding2_frame_2 from "@/assets/images/img_onboarding2_frame_2.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import Onboarding1_frame_1 from "@/assets/images/img_onboarding1_frame_1.png";
-import Onboarding3_frame_1 from "@/assets/images/img_onboarding3_frame_1.svg";
+import Onboarding3_frame from "@/assets/images/img_onboarding3_frame.png";
 import Onboarding3_text from "@/assets/images/img_onboarding3_text.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -95,20 +95,22 @@ export const OnboardingPage = () => {
             <p className="ST2 text-gray-300">드롭한 이미지들이 보드에 쌓여</p>
             <p className="ST2 text-gray-300">나만의 톤과 흐름이 됩니다.</p>
           </div>
-          <div className="relative flex-1 flex flex-col justify-center items-center gap-6">
+          <div className="relative flex-1 flex flex-col justify-center items-center gap-10">
             <img
-              src={Onboarding3_frame_1}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-12%]"
+              src={Onboarding3_frame}
+              className="w-[75%] object-contain max-h-[50vh] -translate-y-[-10%]"
             />
-            <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-1020%] z-10 scale-[1.3] text-white H1">
-              Vibers
-            </h1>
-            <button
-              onClick={() => navigate("/login")}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[-1050%] z-10 cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-120 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
-            >
-              <img src={Onboarding3_text} />
-            </button>
+            <div className="flex flex-col items-center gap-6 z-10">
+              <h1 className="scale-[1.3] text-white H1 -translate-y-2">
+                Vibers
+              </h1>
+              <button
+                onClick={() => navigate("/login")}
+                className="cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-120 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
+              >
+                <img src={Onboarding3_text} />
+              </button>
+            </div>
           </div>
         </SwiperSlide>
       </Swiper>
