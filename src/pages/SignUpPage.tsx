@@ -10,10 +10,10 @@ const schema = z.object({
   email: z.string().email({ message: "이메일 형식이 올바르지 않아요." }),
   password: z
     .string()
-    .min(8, { message: "비밀번호는 8자 이상이어야 합니다." })
-    .max(20, { message: "비밀번호는 20자 이하여야 합니다." })
+    .min(8, { message: "비밀번호는 8자 이상 입력해 주세요." })
+    .max(20, { message: "비밀번호는 20자 이하 입력해 주세요." })
     .regex(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/, {
-      message: "영문, 숫자, 특수문자를 혼합하여 입력해주세요."
+      message: "영문, 숫자, 특수문자를 모두 포함해 주세요."
     }),
   passwordCheck: z
     .string()
