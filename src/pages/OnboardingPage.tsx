@@ -1,4 +1,4 @@
-import XbuttonIcon from "@/assets/icons/icon_xbutton.svg?react";
+import XbuttonIcon from "@/assets/icons/icon_onboarding_close.svg?react";
 import Onboarding1_bg from "@/assets/images/img_onboarding1_bg.svg";
 import Onboarding2 from "@/assets/images/img_onboarding2.svg";
 import Onboarding2_frame_1 from "@/assets/images/img_onboarding2_frame_1.svg";
