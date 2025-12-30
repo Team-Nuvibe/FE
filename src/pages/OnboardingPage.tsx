@@ -9,17 +9,21 @@ import Onboarding1_frame_1 from "@/assets/images/img_onboarding1_frame_1.png";
 import Onboarding3_frame from "@/assets/images/img_onboarding3_frame.png";
 import Onboarding3_text from "@/assets/images/img_onboarding3_text.svg";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
 
 export const OnboardingPage = () => {
   const navigate = useNavigate();
+  const [activeIndex, setActiveIndex] = useState(0);
   return (
     <main className="flex flex-col h-[100dvh] w-full overflow-hidden">
-      {/* 닫기 버튼 */}
+      {/* 닫기 버튼 - 인덱스가 2가 아닐 때만 (세번째 슬라이드가 아닐 때) 버튼 렌더링 */}
       <div className="flex justify-end w-full px-4 py-2">
         <XbuttonIcon
-          className="cursor-pointer text-gray-600"
+          /* 인덱스가 2일 때 투명도를 0으로 만들고 클릭을 막아 공간이 그대로 유지되도록 함 */
+          className={`cursor-pointer text-gray-600 transition-opacity duration-300
+          ${activeIndex === 2 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
           onClick={() => navigate("/login")}
         />
       </div>
@@ -31,6 +35,7 @@ export const OnboardingPage = () => {
           type: "bullets",
           clickable: true,
         }}
+        onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         spaceBetween={0}
         slidesPerView={1}
       >
@@ -103,9 +108,7 @@ export const OnboardingPage = () => {
           </div>
         </SwiperSlide>
       </Swiper>
-      <div
-        className={"onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"}
-      />
+      <div className={"onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"} />
     </main>
   );
 };
