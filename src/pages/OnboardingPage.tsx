@@ -23,9 +23,7 @@ export const OnboardingPage = () => {
         <XbuttonIcon
           /* 인덱스가 2일 때 투명도를 0으로 만들고 클릭을 막아 공간이 그대로 유지되도록 함 */
           className={`cursor-pointer text-gray-600 transition-opacity duration-300
-          ${
-            activeIndex === 2 ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`}
+          ${activeIndex === 2 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
           onClick={() => navigate("/login")}
         />
       </div>
@@ -110,11 +108,7 @@ export const OnboardingPage = () => {
           </div>
         </SwiperSlide>
       </Swiper>
-      <div
-        className={
-          "onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"
-        }
-      />
+      <div className={"onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"} />
     </main>
   );
 };

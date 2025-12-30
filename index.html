@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./src/assets/logos/Nuvibe.svg" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <title>Nuvibe</title>
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nuvibe"> 
-    <link rel="apple-touch-icon" href="/icon-192.png">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/src/assets/logos/Nuvibe.svg" />
 
-    <link rel="manifest" href="/manifest.json" />
-  </head>
-  <body>
-    <div id="root">
-    </div> 
-    <script type="module" src="/src/main.tsx"></script> 
-  </body>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <title>Nuvibe</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nuvibe">
+
+  <!-- 초기 로딩 시 화이트 플래시 현상을 막기 위해 반영한 스타일 -->
+  <style>
+    html,
+    body {
+      background-color: #121212;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
