@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import XbuttonIcon from '@/assets/icons/icon_xbutton.svg?react';
 import Onboarding1_bg from "@/assets/images/img_onboarding1_bg.svg";
 import Onboarding2 from "@/assets/images/img_onboarding2.svg";
 import Onboarding2_frame_1 from "@/assets/images/img_onboarding2_frame_1.svg";
@@ -8,19 +8,17 @@ import { Pagination } from "swiper/modules";
 import Onboarding1_frame_1 from "@/assets/images/img_onboarding1_frame_1.png";
 import Onboarding3_frame from "@/assets/images/img_onboarding3_frame.png";
 import Onboarding3_text from "@/assets/images/img_onboarding3_text.svg";
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/pagination";
 
 export const OnboardingPage = () => {
-  const [isLast, setIsLast] = useState(false);
   const navigate = useNavigate();
   return (
     <main className="flex flex-col h-[100dvh] w-full overflow-hidden">
       {/* 닫기 버튼 */}
-      <div className="flex justify-end w-full px-10 py-3">
-        <X
+      <div className="flex justify-end w-full px-4 py-2">
+        <XbuttonIcon
           className="cursor-pointer text-gray-600"
           onClick={() => navigate("/login")}
         />
@@ -35,15 +33,6 @@ export const OnboardingPage = () => {
         }}
         spaceBetween={0}
         slidesPerView={1}
-        onSlideChange={(swiper) => {
-          const isAtEnd = swiper.activeIndex === 2;
-          setIsLast(isAtEnd);
-          if (isAtEnd) {
-            swiper.allowSlidePrev = true;
-          } else {
-            swiper.allowSlidePrev = true;
-          }
-        }}
       >
         {/* Slide 1 */}
         <SwiperSlide className="flex flex-col w-full">
@@ -58,11 +47,11 @@ export const OnboardingPage = () => {
             <img
               src={Onboarding1_frame_1}
               alt=""
-              className="absolute scale-75 z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-[11%]"
+              className="absolute scale-80 z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-[11%]"
             />
             <img
               src={Onboarding1_bg}
-              className="absolute top-42 right-0 w-full blur-[1px] [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]"
+              className="absolute top-45 right-0 w-full blur-[1px] [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]"
             />
           </div>
         </SwiperSlide>
@@ -101,12 +90,12 @@ export const OnboardingPage = () => {
               className="w-[75%] object-contain max-h-[50vh] -translate-y-[-10%]"
             />
             <div className="flex flex-col items-center gap-6 z-10">
-              <h1 className="scale-[1.3] text-white H1 -translate-y-2">
+              <h1 className="scale-[1.2] text-white H1 -translate-y-2">
                 Vibers
               </h1>
               <button
                 onClick={() => navigate("/login")}
-                className="cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-120 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
+                className="cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-100 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
               >
                 <img src={Onboarding3_text} />
               </button>
@@ -115,9 +104,7 @@ export const OnboardingPage = () => {
         </SwiperSlide>
       </Swiper>
       <div
-        className={`onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50 ${
-          isLast ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
+        className={"onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"}
       />
     </main>
   );
