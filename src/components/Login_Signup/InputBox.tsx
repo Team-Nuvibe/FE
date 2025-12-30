@@ -1,19 +1,19 @@
-import { type ComponentProps, forwardRef } from 'react';
-
-interface InputBoxProps extends ComponentProps<"input"> {
-  hasError?: boolean;
-  errorMessage?: string;
-  guideText?: string;
+interface InputBoxProps {
+  type : string;
+  placeholder : string;
+  hasError? : boolean;
+  className? : string;
+  errorMessage? : string;
+  guideText? : string; 
 }
 
-const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({
-  type, placeholder, hasError, className, errorMessage, guideText, ...props
-}, ref) => {
+
+const InputBox = ({type, placeholder, hasError, className, errorMessage, guideText, ...props} :InputBoxProps) => {
   return (
     <div className="relative w-[339px] h-[48px]">
       <input
-        ref={ref}
         type={type}
+        {...props}
         placeholder=" "
         className={`
           peer
@@ -28,16 +28,15 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({
           text-white
           placeholder-gray-500
           ${ /* 에러 상태 디자인*/
-          hasError
-            ? "border-gray-300 bg-gray-800"
-            : "border-transparent bg-gray-800 focus:border-gray-300"
+            hasError 
+              ? "border-gray-300 bg-gray-800" 
+              : "border-transparent bg-gray-800 focus:border-gray-300"
           }
           ${className}
         `}
-        {...props}
       />
       {!hasError && (
-        <div
+        <div 
           className="
             absolute left-[15px] top-1/2 -translate-y-1/2
             pointer-events-none 
@@ -45,10 +44,10 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({
             items-center gap-2
             text-gray-500
             "
-        >
+          >
           {/* 메인 Placeholder */}
           <span className="text-[16px] text-gray-300">{placeholder}</span>
-
+            
           {/* 보조 가이드 텍스트 */}
           {guideText && (
             <span className="text-[10px] text-gray-600 mt-[1px]">
@@ -59,7 +58,7 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({
       )}
       {/* 에러 메시지 */}
       {hasError && (
-        <span
+        <span 
           className="
             absolute right-[12px] top-1/2 -translate-y-1/2
             text-white text-[10px] font-normal
@@ -71,8 +70,6 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({
       )}
     </div>
   )
-});
+}
 
-InputBox.displayName = 'InputBox';
-
-export default InputBox;
+export default InputBox
