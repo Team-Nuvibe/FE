@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router';
 import NuvibeLogo from '@/assets/logos/Nuvibe.svg?react';
-import { BackButton } from '../components/Login_Signup/BackButton';
-import InputBox from '../components/Login_Signup/InputBox';
 import z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { BackButton } from '../../components/onboarding/BackButton';
+import InputBox from '../../components/onboarding/InputBox';
 
 const schema = z.object({
   email: z.string().email({ message: "이메일 형식이 올바르지 않아요." }),
