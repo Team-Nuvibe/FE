@@ -38,7 +38,7 @@ const LoginPage = () => {
   
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-[100dvh] py-10 text-white">
+      <div className="flex flex-col justify-center items-center min-h-[100dvh] pt-10 pb-33 text-white">
         <div className="H0 text-white w-fit flex justify-center items-center p-9">
           Start nuvibe
         </div>
