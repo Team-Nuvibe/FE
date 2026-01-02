@@ -5,6 +5,7 @@ import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { motion } from "framer-motion";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -65,21 +66,36 @@ const HomePage = () => {
       </section>
       {/* Categories */}
       <section className="flex flex-col px-2 py-6">
-        <div className="flex gap-5 mx-4 mb-2 overflow-x-auto scrollbar-hide">
-          {categories.map((category, index) => (
-            <button
-              key={index}
-              onClick={() => handleCategoryClick(index)}
-              className={`relative transition-colors ${
-                activeIndex === index ? "ST2 text-white" : "ST2 text-gray-500"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+        <div className="relative mx-6">
+          <div className="absolute bottom-0 left-0 w-full h-[0.5px] bg-gray-400" />
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+            {categories.map((category, index) => (
+              <button
+                key={index}
+                onClick={() => handleCategoryClick(index)}
+                className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
+              >
+                <p
+                  className={`transition-colors duration-200 ${
+                    activeIndex === index ? "B2 text-white" : "B2 text-gray-400"
+                  }`}
+                >
+                  {"\u00A0" + category.name + "\u00A0"}
+                </p>
+                {activeIndex === index && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute bottom-0 w-full h-[1px] bg-white z-10"
+                    transition={{ stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="home-scrollbar mx-4 mb-4" />
+        <div className=""></div>
+        <div className="mx-4 mb-4"></div>
 
         <Swiper
           modules={[Scrollbar]}
@@ -102,9 +118,11 @@ const HomePage = () => {
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className="w-[175px] h-[254px] bg-gray-400 rounded-[5px]"
+                    className="w-[175px] h-[254px] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
                   >
-                    {item}
+                    <div className="flex justify-center items-center bg-gray-800 rounded-[5px] w-[80px] h-[27px] mb-4">
+                      {item}
+                    </div>
                   </div>
                 ))}
               </div>
