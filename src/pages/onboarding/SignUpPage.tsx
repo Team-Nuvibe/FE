@@ -17,8 +17,8 @@ const schema = z.object({
     }),
   passwordCheck: z
     .string()
-    .min(8, { message: "" })
-    .max(20, { message: "" }),
+    .min(8, { message: "비밀번호는 8자 이상 입력해 주세요." })
+    .max(20, { message: "비밀번호는 20자 이하 입력해 주세요." }),
   name: z.string().min(1, { message: "이름을 입력해주세요." }),
   nickname: z.string().min(1, { message: "닉네임을 입력해주세요" })
 })
@@ -41,7 +41,7 @@ const SignUpPage = () => {
       email: "",
     },
     resolver: zodResolver(schema),
-    mode: "onChange"
+    mode: "onBlur"
   });
 
   // const onSubmit:SubmitHandler<FormFields> = async (data) => {
@@ -88,7 +88,7 @@ const SignUpPage = () => {
             placeholder="비밀번호"
             hasError={!!errors?.password}
             errorMessage={errors.password?.message}
-            guideText='8자 이상/영문,숫자,특수문자 혼합'
+            guideText='8~20자/영문,숫자,특수문자 혼합'
           />
           <InputBox
             {...register("passwordCheck")}
