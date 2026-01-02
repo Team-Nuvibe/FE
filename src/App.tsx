@@ -8,6 +8,7 @@ import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
+import HomePage from "./pages/home/HomePage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -28,7 +29,7 @@ const protectedRoutes: RouteObject[] = [
   {
     path: "/home",
     // element : <HomeLayout />,
-    children: [],
+    children: [{ path: "/home", element: <HomePage /> }],
   },
   {
     path: "/archive-board",
