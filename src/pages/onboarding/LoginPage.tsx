@@ -1,4 +1,4 @@
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import Google_G_logo from '@/assets/logos/Google_logo.svg?react';
 import Naver_logo from '@/assets/logos/Naver_logo.svg?react';
 import KakaoTalk_logo from '@/assets/logos/KakaoTalk_logo.svg?react'
@@ -7,6 +7,7 @@ import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
 
   const { values, errors, getInputProps } = useForm<UserSigninInformation>({
         initialValues: {
@@ -22,6 +23,7 @@ const LoginPage = () => {
   
   const handleLoginSubmit = () => {
     // api 통신
+    navigate('/archive-board')
   }
   
   const handleGoogleLogin = () => {
