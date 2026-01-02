@@ -1,11 +1,43 @@
-import React from 'react'
+import React from "react";
+import Img_3 from "@/assets/images/Img_3.png";
+import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 
 const HomePage = () => {
   return (
-    <div>
-      
+    <div className="flex flex-col min-h-[100dvh] w-full border-1 border-white">
+      {/* 헤더 */}
+      <header className="relative flex flex-row justify-between items-end h-[55dvh] bg-cover bg-bottom bg-no-repeat">
+        <div
+          className="absolute inset-0 w-full h-full object-cover bg-bottom bg-cover bg-no-repeat"
+          style={{
+            backgroundImage: `url(${Img_3})`,
+            maskImage:
+              "linear-gradient(to bottom, black 80%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, black 80%, transparent 100%)",
+          }}
+        />
+        <div className="flex flex-col">
+          <div className="B0 text-gray-100 px-4 z-10">
+            <p className="text-[24px]">Drop</p>
+            <p className="text-[24px]">your vibe</p>
+          </div>
+          <div className="H1 mb-4 px-4 z-10">
+            <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
+              #Minimal
+            </h1>
+          </div>
+        </div>
+        <div className="z-10 mx-4 mb-7 cursor-pointer">
+          <Icon_shortcut_quickdrop />
+        </div>
+      </header>
+      {/* My Trace */}
+      <section></section>
+      {/* Categories */}
+      <section></section>
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;
