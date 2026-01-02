@@ -62,7 +62,7 @@ const SignUpPage = () => {
   }
   return (
     <>
-      <div className="relative flex flex-col justify-center items-center min-h-[100dvh] w-full text-white">
+      <div className="relative flex flex-col justify-center items-center min-h-[100dvh] w-full pb-20 text-white">
         <BackButton className="absolute top-[60.82px] left-[30.42px] z-50 p-2 " />
         <div className="mb-12">
           <NuvibeLogo className="w-[130.3px] h-[25.4px]" />
