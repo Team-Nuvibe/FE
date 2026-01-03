@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import SearchIcon from '@/assets/icons/icon_search.svg?react'
+import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 
 interface ArchiveItem {
   id: string;
@@ -7,20 +10,24 @@ interface ArchiveItem {
   thumbnail?: string;
 }
 
-interface VideoPost {
+interface ResentDrops {
   id: string;
   tag: string;
   time: string;
   thumbnail: string;
 }
 
-const ArchivePage: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+const ArchivePage  = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const videoPosts: VideoPost[] = [
-    { id: '1', tag: '#Minimal', time: '12m', thumbnail: 'https://images.unsplash.com/photo-1534294668821-28a3054f4256?w=400&h=600&fit=crop' },
-    { id: '2', tag: '#Minimal', time: '01h', thumbnail: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop' }
+  const resentDrops: ResentDrops[] = [
+    { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '2', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '3', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '4', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '5', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '6', tag: '#End', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+
   ];
 
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
@@ -31,137 +38,170 @@ const ArchivePage: React.FC = () => {
     { id: '3', title: '' },
     { id: '4', title: '' },
     { id: '5', title: '' },
-    { id: '6', title: '' }
+    { id: '6', title: '' },
+    { id: '7', title: '' },
+    { id: '8', title: '' },
+    { id: '9', title: '' },
+    { id: '10', title: '' },
+    { id: '11', title: '' },
+    { id: '12', title: '' },
+    { id: '13', title: '' },
   ];
 
   return (
-    <div className="w-full h-full bg-black text-white flex flex-col overflow-hidden">
+    <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {/* Main Content - Scrollable */}
       <div className="flex-1 overflow-y-auto pb-24 touch-auto">
         {/* Video Posts Section with Overlay */}
-        <div className="relative px-4 mb-6">
+        <div className="relative mb-37 mt-2">
           {/* Background Video Posts */}
-          <div className="flex gap-3 overflow-x-auto pb-2 touch-auto">
-            {videoPosts.map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative flex-shrink-0 w-36 h-48 rounded-2xl overflow-hidden"
+          <Swiper
+            modules={[Autoplay]}
+            spaceBetween={12} 
+            slidesPerView={'auto'} 
+            slidesOffsetBefore={16} 
+            slidesOffsetAfter={16} 
+            className="pb-2 [&>.swiper-wrapper]:!ease-linear" 
+            speed={10000} // 이동 속도 
+            resistanceRatio={0}
+            freeMode={{ 
+              enabled: true,
+              momentum: false, // 관성 
+              sticky: false,  
+            }} 
+            loop={false}
+            allowTouchMove={true} // 사용자가 손가락으로 스와이프 가능
+            autoplay={{
+              delay: 0, // 딜레이 없이 부드럽게 계속 흐르게 설정
+              disableOnInteraction: true, // 사용자가 건드려도 자동 재생이 꺼지지 않음
+              stopOnLastSlide: true,
+              waitForTransition: false,
+            }}
+          >
+            {resentDrops.map((post) => (
+              <SwiperSlide 
+                key={post.id} 
+                className="!w-[165px]"
               >
-                <img 
-                  src={post.thumbnail} 
-                  alt={post.tag}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg B2">
-                  {post.tag}
+                <div className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px]">
+                  <img 
+                    src={post.thumbnail} 
+                    alt={post.tag}
+                    className="w-full h-full object-cover "
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black pointer-events-none" />
+                  <div className="absolute top-1 left-1 px-2 py-1 rounded-lg ST1">
+                    <span
+                      className="
+                        bg-clip-text 
+                        text-transparent 
+                        bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)]
+                      "
+                    >
+                      {post.tag}
+                    </span>
+                  </div>
+                  <div className="absolute top-3 right-3 B2 text-white/80">
+                    {post.time}
+                  </div>
                 </div>
-                <div className="absolute top-3 right-3 B2 text-white/80">
-                  {post.time}
-                </div>
-              </motion.div>
+              </SwiperSlide>
             ))}
-          </div>
-          
-          {/* Foreground Profile & Title */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
-            <div className="w-16 h-16 rounded-full bg-white mb-3"></div>
-            <h1 className="H0 text-white">Vibers</h1>
+          </Swiper>
+          <div className="absolute top-[260px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
+            {/* 프로필 이미지 */}
+            <div className="w-[76.14px] h-[76.14px] rounded-full bg-black overflow-hidden border border-white/10 pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
+            <img 
+              src="../../src/assets/logos/Subtract.svg" 
+              alt="profile"
+              className="w-full h-full object-cover"
+            />
+            </div>
+            <div className="mt-5 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
+              {/* user.nickname */}
+              Vibers
+            </div>
           </div>
         </div>
 
-        {/* Vibe Tone Section */}
-        <div className="px-6 mb-4">
+        {/* Vibe Tone */}
+        <div className="px-4 mb-10">
           <div className="flex items-center justify-between mb-4">
-            <p className="B2 text-gray-400">0000's Vibe Tone</p>
-            <button className="B2 text-gray-400">more &gt;</button>
+            <p className="ST1 text-gray-200">0000's Vibe Tone</p>
+            <button className="text-[12px] font-normal text-[#828282]">more &gt;</button>
           </div>
           
           {/* Tags */}
-          <div className="flex gap-2 flex-wrap">
-            {tags.map((tag) => (
-              <motion.button
-                key={tag}
-                whileTap={{ scale: 0.95 }}
-                className="px-3 py-1.5 bg-white/10 rounded-full B2"
-              >
-                {tag}
-              </motion.button>
-            ))}
+          <div className="w-full">
+            <Swiper
+              spaceBetween={8}
+              slidesPerView={'auto'}
+              className="px-4"
+              freeMode={true} 
+            >
+              {tags.map((tag) => (
+                <SwiperSlide key={tag} className="!w-auto">
+                  <div className="px-3 py-1.5 bg-[#252525] rounded-[5px] ST2 whitespace-nowrap">
+                    <span 
+                      className="
+                        bg-clip-text 
+                        text-transparent 
+                        bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)]
+                      "
+                    >
+                      {tag}
+                    </span>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
 
-        {/* Archive Section - Header Fixed */}
+        {/* Archive Section */}
         <div className="flex-1 flex flex-col">
           {/* Fixed Header */}
-          <div className="px-6 bg-black sticky top-0 z-10 pb-4">
+          <div className="px-4 bg-black sticky top-0 z-10 pb-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="H2">Archive</h2>
+              <h2 className="text-[20.3px] font-normal">Archive</h2>
               <div className="flex gap-2">
-                <motion.button 
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-3 py-1.5 rounded-lg B2 ${viewMode === 'list' ? 'bg-white/20' : 'bg-white/10'}`}
-                  onClick={() => setViewMode('list')}
+                <button
+                  className="B2 text-gray-200"
                 >
                   선택
-                </motion.button>
-                <motion.button 
-                  whileTap={{ scale: 0.95 }}
-                  className={`p-1.5 rounded-lg ${viewMode === 'grid' ? 'bg-white/20' : 'bg-white/10'}`}
-                  onClick={() => setViewMode('grid')}
+                </button>
+                <button 
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white">
-                    <rect x="1" y="1" width="5" height="5" stroke="currentColor" strokeWidth="1.5"/>
-                    <rect x="10" y="1" width="5" height="5" stroke="currentColor" strokeWidth="1.5"/>
-                    <rect x="1" y="10" width="5" height="5" stroke="currentColor" strokeWidth="1.5"/>
-                    <rect x="10" y="10" width="5" height="5" stroke="currentColor" strokeWidth="1.5"/>
-                  </svg>
-                </motion.button>
+                  <Plusbutton className="w-[16px] h-[16px]"/>
+                </button>
               </div>
             </div>
 
             {/* Search Bar */}
             <div className="relative">
-              <svg 
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" 
-                width="18" 
-                height="18" 
-                viewBox="0 0 24 24" 
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="검색어를 입력하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 B2 placeholder:text-gray-500 focus:outline-none focus:border-white/20"
+                className="w-full h-[48px] bg-gray-900 rounded-[5px] pl-10 pr-4 py-3 placeholder:text-gray-600 placeholder:text-[18px] placeholder:font-normal focus:outline-none"
               />
             </div>
           </div>
 
           {/* Scrollable Grid */}
-          <div className="px-6">
+          <div className="px-4">
             <div className="grid grid-cols-2 gap-4 pb-6">
-              {archiveItems.map((item, index) => (
-                <motion.div 
+              {archiveItems.map((item) => (
+                <div 
                   key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="aspect-square bg-gradient-to-b from-white/20 to-white/10 rounded-2xl flex items-center justify-center cursor-pointer"
+                  className="aspect-square bg-gradient-to-b from-white/20 to-white/10 rounded-[10px] flex items-center justify-center cursor-pointer"
                 >
                   {item.title && (
                     <span className="ST2">{item.title}</span>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
