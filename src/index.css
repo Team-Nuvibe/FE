@@ -83,6 +83,12 @@ textarea {
   -webkit-user-select: text;
 }
 
+/* Edge 브라우저 기본 눈 아이콘 및 삭제 버튼 숨기기 */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
 button {
   cursor: pointer;
 }
