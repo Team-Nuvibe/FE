@@ -9,6 +9,7 @@ import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
 import HomePage from "./pages/home/HomePage";
+import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -28,8 +29,7 @@ const publicRoutes: RouteObject[] = [
 const protectedRoutes: RouteObject[] = [
   {
     path: "/home",
-    // element : <HomeLayout />,
-    children: [{ path: "/home", element: <HomePage /> }],
+    element: <HomePage />,
   },
   {
     path: "/archive-board",
@@ -50,9 +50,7 @@ const protectedRoutes: RouteObject[] = [
   },
   {
     path: "/quickdrop",
-    children: [
-      // {path: "/quickdrop", element: <QuickdropPage /> },
-    ],
+    element: <QuickdropPage />,
   },
   {
     path: "/profile",

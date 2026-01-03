@@ -7,10 +7,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef<SwiperType | null>(null);
+
+  const navigate = useNavigate();
 
   const categories = [
     {
@@ -45,7 +48,10 @@ const HomePage = () => {
           }}
         />
         <div className="flex justify-end p-6 z-10">
-          <Icon_notification className="cursor-pointer" />
+          <Icon_notification
+            className="cursor-pointer"
+            onClick={() => navigate("/quickdrop")}
+          />
         </div>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col">
