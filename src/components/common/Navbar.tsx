@@ -37,7 +37,7 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className="w-[282px] h-[65px] bg-[var(--color-black)]/90 rounded-[40px] flex items-center justify-between px-6 z-50">
+        <nav className="w-[282px] h-[65px] bg-[var(--color-gray-900)]/90 rounded-[40px] flex items-center justify-between px-6 z-50">
             {navItems.map((item) => (
                 <NavLink
                     key={item.path}
