@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import Img_3 from "@/assets/images/Img_3.png";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
+import Icon_notification from "@/assets/icons/icon_notification.svg?react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -12,7 +13,10 @@ const HomePage = () => {
   const swiperRef = useRef<SwiperType | null>(null);
 
   const categories = [
-    { name: "Mood", items: ["el1", "el2", "el3"] },
+    {
+      name: "Mood",
+      items: ["#blur", "#grain", "#blur", "#grain", "#blur", "#grain"],
+    },
     { name: "Light", items: ["el1", "el2", "el3"] },
     { name: "Color", items: ["el1", "el2", "el3"] },
     { name: "Texture", items: ["el1", "el2", "el3"] },
@@ -29,7 +33,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col w-full h-dvh overflow-y-auto">
       {/* 헤더 */}
-      <header className="relative flex flex-row justify-between items-end h-[50dvh] bg-cover bg-bottom bg-no-repeat shrink-0">
+      <header className="relative flex flex-col justify-between h-[50dvh] bg-cover bg-bottom bg-no-repeat shrink-0">
         <div
           className="absolute inset-0 w-full h-full object-cover bg-bottom bg-cover bg-no-repeat"
           style={{
@@ -40,19 +44,24 @@ const HomePage = () => {
               "linear-gradient(to bottom, black 70%, transparent 100%)",
           }}
         />
-        <div className="flex flex-col">
-          <div className="B0 text-gray-100 px-6 z-10">
-            <p className="text-[24px]">Drop</p>
-            <p className="text-[24px]">your vibe</p>
-          </div>
-          <div className="H1 mb-6 px-6 z-10">
-            <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
-              #Minimal
-            </h1>
-          </div>
+        <div className="flex justify-end p-6 z-10">
+          <Icon_notification className="cursor-pointer" />
         </div>
-        <div className="z-10 mx-4 mb-9 cursor-pointer">
-          <Icon_shortcut_quickdrop />
+        <div className="flex justify-between items-end w-full">
+          <div className="flex flex-col">
+            <div className="B0 text-gray-100 px-6 z-10">
+              <p className="text-[24px]">Drop</p>
+              <p className="text-[24px]">your vibe</p>
+            </div>
+            <div className="H1 mb-6 px-6 z-10">
+              <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
+                #Minimal
+              </h1>
+            </div>
+          </div>
+          <div className="z-10 mr-5 mb-9 cursor-pointer">
+            <Icon_shortcut_quickdrop />
+          </div>
         </div>
       </header>
       {/* My Trace */}
@@ -76,7 +85,7 @@ const HomePage = () => {
                 className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
               >
                 <p
-                  className={`transition-colors duration-200 ${
+                  className={`ST2 transition-colors duration-200 ${
                     activeIndex === index ? "B2 text-white" : "B2 text-gray-400"
                   }`}
                 >
@@ -85,7 +94,7 @@ const HomePage = () => {
                 {activeIndex === index && (
                   <motion.div
                     layoutId="activeTabIndicator"
-                    className="absolute bottom-0 w-full h-[1px] bg-white z-10"
+                    className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
                     transition={{ stiffness: 500, damping: 30 }}
                   />
                 )}
@@ -120,8 +129,10 @@ const HomePage = () => {
                     key={itemIndex}
                     className="w-[175px] h-[254px] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
                   >
-                    <div className="flex justify-center items-center bg-gray-800 rounded-[5px] w-[80px] h-[27px] mb-4">
-                      {item}
+                    <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
+                      <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">
+                        {item}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -130,6 +141,9 @@ const HomePage = () => {
           ))}
         </Swiper>
       </section>
+      <div className="fixed bottom-0 left-0 w-full h-[12dvh] bg-gradient-to-b from-transparent to-[#121212] pointer-events-none z-50" />
+
+      <div className="h-[env(safe-area-inset-bottom)] w-full shrink-0" />
     </div>
   );
 };
