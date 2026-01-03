@@ -23,7 +23,8 @@
   --color-gray-900: #212224;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;

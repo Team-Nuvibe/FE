@@ -41,7 +41,7 @@ const SignUpPage = () => {
       email: "",
     },
     resolver: zodResolver(schema),
-    mode: "onBlur"
+    mode: "onChange"
   });
 
   // const onSubmit:SubmitHandler<FormFields> = async (data) => {
