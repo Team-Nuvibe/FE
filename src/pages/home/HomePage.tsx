@@ -119,7 +119,7 @@ const HomePage = () => {
             swiperRef.current = swiper;
           }}
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-          className="w-full"
+          className="w-full mt-1"
         >
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
