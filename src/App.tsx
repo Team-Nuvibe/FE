@@ -9,6 +9,9 @@ import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
 import MainLayout from "./layouts/MainLayout";
+import HomePage from "./pages/home/HomePage";
+import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
+import { TagDetailPage } from "./pages/tag/TagDetailPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -32,8 +35,7 @@ const protectedRoutes: RouteObject[] = [
     children: [
       {
         path: "home",
-        // element : <HomeLayout />,
-        children: [],
+        element: <HomePage />,
       },
       {
         path: "archive-board",
@@ -54,9 +56,7 @@ const protectedRoutes: RouteObject[] = [
       },
       {
         path: "quickdrop",
-        children: [
-          // {path: "/quickdrop", element: <QuickdropPage /> },
-        ],
+        element: <QuickdropPage />,
       },
       {
         path: "profile",
@@ -74,7 +74,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tag",
         children: [
           // {index: true, element: <TagPage /> },
-          // {path: "/tag/:tagid", element: </> },
+          { path: "/tag/:tagid", element: <TagDetailPage /> },
         ],
       },
     ],

@@ -11,14 +11,17 @@ import { useNavigate } from "react-router";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+
   const swiperRef = useRef<SwiperType | null>(null);
+  const tabsContainerRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const navigate = useNavigate();
 
   const categories = [
     {
       name: "Mood",
-      items: ["#blur", "#grain", "#blur", "#grain", "#blur", "#grain"],
+      items: ["blur", "grain", "blur", "grain", "blur", "grain"],
     },
     { name: "Light", items: ["el1", "el2", "el3"] },
     { name: "Color", items: ["el1", "el2", "el3"] },
@@ -31,10 +34,26 @@ const HomePage = () => {
 
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
+    scrollToTab(index);
+  };
+
+  const scrollToTab = (index: number) => {
+    const container = tabsContainerRef.current;
+    const tab = tabRefs.current[index];
+
+    if (container && tab) {
+      const scrollLeft =
+        tab.offsetLeft - container.offsetWidth / 2 + tab.offsetWidth / 2;
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
-    <div className="flex flex-col w-full h-dvh overflow-y-auto">
+    <div className="flex flex-col w-full min-h-full">
       {/* 헤더 */}
       <header className="relative flex flex-col justify-between h-[50dvh] bg-cover bg-bottom bg-no-repeat shrink-0">
         <div
@@ -50,7 +69,7 @@ const HomePage = () => {
         <div className="flex justify-end p-6 z-10">
           <Icon_notification
             className="cursor-pointer"
-            onClick={() => navigate("/quickdrop")}
+            onClick={() => navigate("/home")}
           />
         </div>
         <div className="flex justify-between items-end w-full">
@@ -66,7 +85,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="z-10 mr-5 mb-9 cursor-pointer">
-            <Icon_shortcut_quickdrop />
+            <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
           </div>
         </div>
       </header>
@@ -82,11 +101,17 @@ const HomePage = () => {
       {/* Categories */}
       <section className="flex flex-col px-2 py-6">
         <div className="relative mx-6">
-          <div className="absolute bottom-0 left-0 w-full h-[0.5px] bg-gray-400" />
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+          <div className="absolute bottom-[0.5px] left-0 w-full h-[0.5px] bg-gray-400" />
+          <div
+            ref={tabsContainerRef}
+            className="flex gap-3 overflow-x-auto scrollbar-hide"
+          >
             {categories.map((category, index) => (
               <button
                 key={index}
+                ref={(el) => {
+                  tabRefs.current[index] = el;
+                }}
                 onClick={() => handleCategoryClick(index)}
                 className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
               >
@@ -121,10 +146,14 @@ const HomePage = () => {
           }}
           slidesPerView={1}
           spaceBetween={12}
+          autoHeight={true}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
           }}
-          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          onSlideChange={(swiper) => {
+            setActiveIndex(swiper.activeIndex);
+            scrollToTab(swiper.activeIndex);
+          }}
           className="w-full mt-1"
         >
           {categories.map((category, index) => (
@@ -134,10 +163,12 @@ const HomePage = () => {
                   <div
                     key={itemIndex}
                     className="w-[175px] h-[254px] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
+                    onClick={() => navigate(`/tag/${item}`)}
+                    // 임시로 태그 id 대신 이름 사용
                   >
                     <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
                       <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">
-                        {item}
+                        #{item}
                       </p>
                     </div>
                   </div>
@@ -149,7 +180,7 @@ const HomePage = () => {
       </section>
       <div className="fixed bottom-0 left-0 w-full h-[12dvh] bg-gradient-to-b from-transparent to-[#121212] pointer-events-none z-50" />
 
-      <div className="h-[env(safe-area-inset-bottom)] w-full shrink-0" />
+      <div className="h-[calc(env(safe-area-inset-bottom)+12rem)] w-full shrink-0" />
     </div>
   );
 };
