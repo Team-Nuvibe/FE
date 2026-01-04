@@ -19,7 +19,7 @@ export const OnboardingPage = () => {
   return (
     <main className="flex flex-col h-[100dvh] w-full overflow-hidden">
       {/* 닫기 버튼 - 인덱스가 2가 아닐 때만 (세번째 슬라이드가 아닐 때) 버튼 렌더링 */}
-      <div className="flex justify-end w-full px-4 py-2">
+      <div className="flex justify-end w-full px-6 pt-6 pb-2">
         <XbuttonIcon
           /* 인덱스가 2일 때 투명도를 0으로 만들고 클릭을 막아 공간이 그대로 유지되도록 함 */
           className={`cursor-pointer text-gray-600 transition-opacity duration-300
