@@ -23,7 +23,8 @@
   --color-gray-900: #212224;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -75,6 +76,12 @@ input,
 textarea {
   user-select: text;
   -webkit-user-select: text;
+}
+
+/* Edge 브라우저 기본 눈 아이콘 및 삭제 버튼 숨기기 */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }
 
 button {

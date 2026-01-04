@@ -8,8 +8,12 @@ import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
+<<<<<<< HEAD
 import ArchivePage from "./pages/archive-board/ArchivePage";
 
+=======
+import MainLayout from "./layouts/MainLayout";
+>>>>>>> origin/develop
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -28,50 +32,56 @@ const publicRoutes: RouteObject[] = [
 // 인증이 필요한 라우트
 const protectedRoutes: RouteObject[] = [
   {
-    path: "/home",
-    // element : <HomeLayout />,
-    children: [],
-  },
-  {
-    path: "/archive-board",
+    path: "/",
+    element: <MainLayout />,
     children: [
-      {index: true , element: <ArchivePage/> },
-      // {path: "/archive-board/vibetone", element: </> },
-      // {path: "/archive-board/blur", element: </> },
-      // {path: "/archive-board/:boardid", element: </> },
-    ],
-  },
-  {
-    path: "/tribe-chat",
-    children: [
-      // {index: true , element: <TribechatPage /> },
-      // {path: "/tribe-chat:tagid", element: </> },
-      // {path: "/tribe-chat:tagid/album", element: </> },
-    ],
-  },
-  {
-    path: "/quickdrop",
-    children: [
-      // {path: "/quickdrop", element: <QuickdropPage /> },
-    ],
-  },
-  {
-    path: "/profile",
-    children: [
-      // {index: true, element: <ProfilePage /> },
-    ],
-  },
-  {
-    path: "/notification",
-    children: [
-      // {index: true, element: <NotificationPage /> },
-    ],
-  },
-  {
-    path: "/tag",
-    children: [
-      // {index: true, element: <TagPage /> },
-      // {path: "/tag/:tagid", element: </> },
+      {
+        path: "home",
+        // element : <HomeLayout />,
+        children: [],
+      },
+      {
+        path: "archive-board",
+        children: [
+          // {index: true , element: <ArchiveBoardPage/> },
+          // {path: "/archive-board/vibetone", element: </> },
+          // {path: "/archive-board/blur", element: </> },
+          // {path: "/archive-board/:boardid", element: </> },
+        ],
+      },
+      {
+        path: "tribe-chat",
+        children: [
+          // {index: true , element: <TribechatPage /> },
+          // {path: "/tribe-chat:tagid", element: </> },
+          // {path: "/tribe-chat:tagid/album", element: </> },
+        ],
+      },
+      {
+        path: "quickdrop",
+        children: [
+          // {path: "/quickdrop", element: <QuickdropPage /> },
+        ],
+      },
+      {
+        path: "profile",
+        children: [
+          // {index: true, element: <ProfilePage /> },
+        ],
+      },
+      {
+        path: "notification",
+        children: [
+          // {index: true, element: <NotificationPage /> },
+        ],
+      },
+      {
+        path: "tag",
+        children: [
+          // {index: true, element: <TagPage /> },
+          // {path: "/tag/:tagid", element: </> },
+        ],
+      },
     ],
   },
 ];
