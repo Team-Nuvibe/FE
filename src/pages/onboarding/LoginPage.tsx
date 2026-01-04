@@ -23,7 +23,7 @@ const LoginPage = () => {
   
   const handleLoginSubmit = () => {
     // api 통신
-    navigate('/archive-board')
+    navigate('/home')
   }
   
   const handleGoogleLogin = () => {
