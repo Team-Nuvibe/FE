@@ -8,12 +8,12 @@ import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
-<<<<<<< HEAD
 import ArchivePage from "./pages/archive-board/ArchivePage";
 
-=======
 import MainLayout from "./layouts/MainLayout";
->>>>>>> origin/develop
+import HomePage from "./pages/home/HomePage";
+import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
+import { TagDetailPage } from "./pages/tag/TagDetailPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -37,13 +37,12 @@ const protectedRoutes: RouteObject[] = [
     children: [
       {
         path: "home",
-        // element : <HomeLayout />,
-        children: [],
+        element: <HomePage />,
       },
       {
         path: "archive-board",
         children: [
-          // {index: true , element: <ArchiveBoardPage/> },
+          {index: true , element: <ArchivePage/> },
           // {path: "/archive-board/vibetone", element: </> },
           // {path: "/archive-board/blur", element: </> },
           // {path: "/archive-board/:boardid", element: </> },
@@ -59,9 +58,7 @@ const protectedRoutes: RouteObject[] = [
       },
       {
         path: "quickdrop",
-        children: [
-          // {path: "/quickdrop", element: <QuickdropPage /> },
-        ],
+        element: <QuickdropPage />,
       },
       {
         path: "profile",
@@ -79,7 +76,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tag",
         children: [
           // {index: true, element: <TagPage /> },
-          // {path: "/tag/:tagid", element: </> },
+          { path: "/tag/:tagid", element: <TagDetailPage /> },
         ],
       },
     ],

@@ -2,24 +2,26 @@
 
 @font-face {
   font-family: "Pretendard";
-  src: url('assets/fonts/PretendardVariable.woff2') format('woff2');
+  src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
   font-style: normal;
 }
 
 @theme {
-  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
+    "Malgun Gothic", sans-serif;
   --color-black: #121212;
-  --color-white: #FAFAFA;
-  --color-gray-100: #E2E2E2;
-  --color-gray-200: #D0D3D7;
-  --color-gray-300: #E3E3E3;
-  --color-gray-400: #8F9297;
-  --color-gray-500: #75787E;
-  --color-gray-600: #64676D;
-  --color-gray-700: #474A50;
-  --color-gray-800: #36383E;
+  --color-white: #fafafa;
+  --color-gray-100: #e2e2e2;
+  --color-gray-200: #d0d3d7;
+  --color-gray-300: #e3e3e3;
+  --color-gray-400: #8f9297;
+  --color-gray-500: #75787e;
+  --color-gray-600: #64676d;
+  --color-gray-700: #474a50;
+  --color-gray-800: #36383e;
   --color-gray-900: #212224;
 }
 
@@ -35,8 +37,12 @@ body {
   overscroll-behavior-y: none;
 }
 
-body {}
+body {
+}
 
+::-webkit-scrollbar {
+  display: none;
+}
 
 /* 앱 전용 컨테이너 설정 */
 #root {
@@ -65,7 +71,6 @@ body {}
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
-
 
 /* 스크롤바 숨기기 */
 #root::-webkit-scrollbar {
@@ -162,4 +167,25 @@ button {
     font-size: 14px;
     font-weight: 400;
   }
+}
+
+/* .home-scrollbar {
+  height: 1px !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+} */
+
+.home-scrollbar {
+  display: none;
+}
+
+/* .home-scrollbar .swiper-scrollbar-drag {
+  background: #fafafa;
+  border-radius: 1px;
+  height: 1.5px;
+} */
+
+/* 네이티브 스크롤바 숨기기 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
