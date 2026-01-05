@@ -8,6 +8,8 @@ import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
+import ArchivePage from "./pages/archive-board/ArchivePage";
+
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/home/HomePage";
 import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
@@ -40,7 +42,7 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "archive-board",
         children: [
-          // {index: true , element: <ArchiveBoardPage/> },
+          {index: true , element: <ArchivePage/> },
           // {path: "/archive-board/vibetone", element: </> },
           // {path: "/archive-board/blur", element: </> },
           // {path: "/archive-board/:boardid", element: </> },
