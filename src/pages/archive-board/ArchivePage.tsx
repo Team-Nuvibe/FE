@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import SearchIcon from '@/assets/icons/icon_search.svg?react'
 import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
+import { useNavigate } from 'react-router';
 
 interface ArchiveItem {
   id: string;
@@ -18,7 +19,13 @@ interface ResentDrops {
 }
 
 const ArchivePage  = () => {
+  const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleVibeTone = () => {
+    navigate('/archive-board/vibetone')
+  }
 
   const resentDrops: ResentDrops[] = [
     { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
@@ -32,7 +39,7 @@ const ArchivePage  = () => {
 
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
 
-  const archiveItems: ArchiveItem[] = [
+  const [items, setItems] = useState<ArchiveItem[]>([
     { id: '1', title: '2026 추구미' },
     { id: '2', title: '보드명' },
     { id: '3', title: '' },
@@ -46,7 +53,34 @@ const ArchivePage  = () => {
     { id: '11', title: '' },
     { id: '12', title: '' },
     { id: '13', title: '' },
-  ];
+  ]);
+
+  // Archive Section 관리용
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode);
+    setSelectedIds([]); // 모드 변경 시 선택 초기화
+  };
+
+  // 아이템 선택/해제 토글
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => 
+      prev.includes(id) 
+        ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
+        : [...prev, id] // 없으면 추가
+    );
+  };
+
+  // 선택된 항목 삭제
+  const handleBoardDelete = () => {
+    if (selectedIds.length === 0) return;
+    if (confirm(`${selectedIds.length}개의 항목을 삭제하시겠습니까?`)) {
+      setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
+      setIsSelectMode(false); // 삭제 후 편집 모드 종료
+      setSelectedIds([]);
+    }
+  };
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
@@ -128,7 +162,10 @@ const ArchivePage  = () => {
         <div className="px-4 mb-10">
           <div className="flex items-center justify-between mb-4">
             <p className="ST1 text-gray-200">0000's Vibe Tone</p>
-            <button className="text-[12px] font-normal text-[#828282]">more &gt;</button>
+            <button 
+              className="text-[12px] font-normal text-[#828282]"
+              onClick={handleVibeTone}
+              >more &gt;</button>
           </div>
           
           {/* Tags */}
@@ -193,7 +230,7 @@ const ArchivePage  = () => {
           {/* Scrollable Grid */}
           <div className="px-4">
             <div className="grid grid-cols-2 gap-4 pb-6">
-              {archiveItems.map((item) => (
+              {items.map((item) => (
                 <div 
                   key={item.id}
                   className="aspect-square bg-gradient-to-b from-white/20 to-white/10 rounded-[10px] flex items-center justify-center cursor-pointer"
