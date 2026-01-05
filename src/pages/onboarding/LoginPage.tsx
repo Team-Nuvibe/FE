@@ -102,7 +102,7 @@ const LoginPage = () => {
             <KakaoTalk_logo />
           </button>
         </div>
-        <footer className="absolute bottom-0 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
+        <footer className="absolute !bottom-12 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
             key='/signup'

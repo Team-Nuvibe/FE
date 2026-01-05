@@ -112,7 +112,7 @@ export const OnboardingPage = () => {
       </Swiper>
       <div
         className={
-          "onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"
+          "onboarding-pagination absolute !bottom-16 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"
         }
       />
     </main>
