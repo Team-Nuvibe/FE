@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Img_3 from "@/assets/images/img_3.png";
 import Icon_backbutton from "@/assets/icons/icon_backbutton.svg?react";
 
 export const TagDetailPage = () => {
   const { tagid } = useParams<{ tagid: string }>();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col w-full min-h-full">
@@ -18,8 +19,11 @@ export const TagDetailPage = () => {
               "linear-gradient(to bottom, black 70%, transparent 100%)",
           }}
         />
-        <div className="flex justify-end p-6 z-10">
-          <div className="w-[35px] h-[35px] rounded-full bg-gray-900 flex justify-center items-center cursor-pointer">
+        <div className="flex justify-start p-6 z-10">
+          <div
+            className="w-[35px] h-[35px] rounded-full bg-gray-900 flex justify-center items-center cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
             <Icon_backbutton className="h-[24px] text-gray-100" />
           </div>
         </div>
