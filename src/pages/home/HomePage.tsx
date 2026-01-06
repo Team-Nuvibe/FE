@@ -75,16 +75,16 @@ const HomePage = () => {
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col">
             <div className="B0 text-gray-100 px-4 z-10">
-              <p className="text-[24px]">Drop</p>
-              <p className="text-[24px]">your vibe</p>
+              <p className="text-[24px] leading-none">Drop</p>
+              <p className="text-[24px] leading-none">your vibe</p>
             </div>
-            <div className="H1 pb-4 px-4 z-10">
+            <div className="H1 pt-[10px] pb-4 px-4 z-10">
               <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
                 #Minimal
               </h1>
             </div>
           </div>
-          <div className="z-10 mr-4 mb-9 cursor-pointer">
+          <div className="z-10 mr-4 mb-7 cursor-pointer">
             <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
           </div>
         </div>
@@ -164,17 +164,17 @@ const HomePage = () => {
             setActiveIndex(swiper.activeIndex);
             scrollToTab(swiper.activeIndex);
           }}
-          className="w-full mt-1"
+          className="w-full"
         >
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-4 px-[16px]">
+              <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
                     className="w-full aspect-[177/236] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
                     onClick={() => navigate(`/tag/${item}`)}
-                  // 임시로 태그 id 대신 이름 사용
+                    // 임시로 태그 id 대신 이름 사용
                   >
                     <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
                       <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">
