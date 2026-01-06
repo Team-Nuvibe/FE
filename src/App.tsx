@@ -16,6 +16,7 @@ import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
 import { TagDetailPage } from "./pages/tag/TagDetailPage";
 import ArchiveDetailPage from "./pages/archive-board/ArchiveDetailPage";
 import VibetonePage from "./pages/archive-board/VibetonePage";
+import NotificationPage from "./pages/notification/NotificationPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
