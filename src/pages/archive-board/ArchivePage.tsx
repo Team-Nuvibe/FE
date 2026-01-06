@@ -5,10 +5,12 @@ import SearchIcon from '@/assets/icons/icon_search.svg?react'
 import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
-import { useNavigate, useOutletContext } from 'react-router';
+import { useNavigate } from 'react-router';
 import { BoardDeleteBottomSheet } from '../../components/archive-board/BoardDeleteBottomSheet';
+import { useNavbarActions } from '../../hooks/useNavbarStore';
+import { BoardDeleteModal } from '../../components/archive-board/BoardDeleteModal';
 
-interface ArchiveItem {
+interface ArchiveBoard {
   id: string;
   title: string;
   thumbnail?: string;
@@ -42,7 +44,7 @@ const ArchivePage  = () => {
 
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
 
-  const [items, setItems] = useState<ArchiveItem[]>([
+  const [archiveboard, setArciveboard] = useState<ArchiveBoard[]>([
     { id: '1', title: '2026 추구미' },
     { id: '2', title: '보드명' },
     { id: '3', title: '' },
@@ -75,15 +77,31 @@ const ArchivePage  = () => {
     );
   };
 
-  // 선택된 항목 삭제
-  const handleBoardDelete = () => {
+  // Board 삭제 Modal 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const handleTrashClick = () => {
     if (selectedIds.length === 0) return;
-    if (confirm(`${selectedIds.length}개의 항목을 삭제하시겠습니까?`)) {
-      setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
-      setIsSelectMode(false); // 삭제 후 편집 모드 종료
-      setSelectedIds([]);
-    }
+    setIsDeleteModalOpen(true);
   };
+  
+  // Board 삭제 함수
+  const executeDelete = () => {
+    setArciveboard((prev) => prev.filter((board) => !selectedIds.includes(board.id)));
+    setIsSelectMode(false);
+    setSelectedIds([]);
+    setIsDeleteModalOpen(false); 
+  };
+
+
+  // Navbar 상태 관리
+  const { setNavbarVisible } = useNavbarActions();
+  useEffect(() => {
+    setNavbarVisible(!isSelectMode);
+    return () => setNavbarVisible(true);
+  }, [isSelectMode, setNavbarVisible]);
+
+  
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
@@ -164,7 +182,7 @@ const ArchivePage  = () => {
         {/* Vibe Tone */}
         <div className="px-4">
           <div className="flex items-center justify-between mb-4">
-            <p className="H2 text-gray-200">Vibers's Vibe Tone</p>
+            <p className="H2 text-gray-200">Vibers's 바이브 톤</p>
             <button 
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
@@ -227,10 +245,10 @@ const ArchivePage  = () => {
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="검색어를 입력하세요"
+                placeholder="아카이브 보드명을 입력하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[48px] bg-gray-900 rounded-[5px] pl-10 pr-4 py-3 placeholder:text-gray-600 placeholder:text-[18px] placeholder:font-normal focus:outline-none"
+                className="w-full h-[48px] bg-gray-900 rounded-[5px] pl-10 pr-4 py-3 placeholder:text-gray-600 placeholder:text-[16px] placeholder:font-normal focus:outline-none"
               />
             </div>
           </div>
@@ -238,19 +256,21 @@ const ArchivePage  = () => {
           {/* Scrollable Grid */}
           <div className="px-4">
             <div className="grid grid-cols-3 gap-4 pb-6">
-              {items.map((item) => {
+              {archiveboard.map((board) => {
                 // 현재 아이템이 선택되었는지 확인
-                const isSelected = selectedIds.includes(item.id);
+                const isSelected = selectedIds.includes(board.id);
 
                 return (
                   <div 
-                    key={item.id}
+                    key={board.id}
                     onClick={() => {
                       if (isSelectMode) {
-                        toggleSelection(item.id);
+                        toggleSelection(board.id);
                       } else {
                         // 상세 페이지로 이동
-                        // navigate('/archive-board/:boardid')
+                        // navigate(`/archive-board/${board.id}`)
+                        // 임시로 boardtitle로 적용
+                        navigate(`/archive-board/${board.title}`)
                       }
                     }}
                     className={`
@@ -258,8 +278,8 @@ const ArchivePage  = () => {
                       ${isSelectMode ? 'active:scale-95' : ''} 
                     `}
                   >
-                    {item.title && (
-                      <span className="ST2">{item.title}</span>
+                    {board.title && (
+                      <span className="ST2">{board.title}</span>
                     )}
 
                     {/* 체크 표시 오버레이 */}
@@ -281,8 +301,17 @@ const ArchivePage  = () => {
         </div>
       </div>
       {isSelectMode && (
-        <BoardDeleteBottomSheet count={selectedIds.length} onDelete={handleBoardDelete}/>
+        <BoardDeleteBottomSheet 
+          count={selectedIds.length} 
+          onDelete={handleTrashClick} 
+        />
       )}
+      <BoardDeleteModal
+        isOpen={isDeleteModalOpen}
+        count={selectedIds.length}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={executeDelete}
+      />
     </div>
   );
 };
