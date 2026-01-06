@@ -17,13 +17,16 @@ export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 px-4">
       
       {/* 모달 컨텐츠 박스 */}
-      <div className="w-[296px] h-[167px] max-w-[335px] bg-gray-900/85 backdrop-blur-[22px] rounded-[10px] p-[16px] flex flex-col items-center text-center">
+      <div className="
+        w-[304px] h-[174px] max-w-[335px] p-[16px] -translate-y-3
+        bg-gray-900/85 backdrop-blur-[22px] rounded-[10px]  
+        flex flex-col items-center justify-center text-center">
         
         {/* 아이콘 */}
-        <WarningIcon className="w-[32px] h-[32px] mb-2"/>
+        <WarningIcon className="w-[32px] h-[32px] mb-3"/>
         <div className="mb-4">
           <div className="text-[17.38px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
-          {maintext}
+            {count}{maintext}
           </div>
           {/* 서브 텍스트 */}
           <p className="text-[10.43px] font-medium text-gray-300 leading-[150%] tracking-[-0.025em]">

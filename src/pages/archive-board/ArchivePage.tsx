@@ -314,7 +314,7 @@ const ArchivePage  = () => {
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         count={selectedIds.length}
-        maintext="정말 해당 보드를 삭제하시겠습니까?"
+        maintext="개의 보드를 삭제하시겠습니까?"
         subtext="삭제하면 보드 안의 모든 이미지가 사라져요"
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={executeDelete}
