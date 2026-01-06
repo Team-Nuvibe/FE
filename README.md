@@ -16,6 +16,7 @@
   <img src="https://img.shields.io/badge/FRAMER MOTION-1E5397?style=flat-square&logo=framermotion&logoColor=white"/>
   <img src="https://img.shields.io/badge/Zustand-FF8800?style=flat-square&logo=Zustand&logoColor=white"/>
   <img src="https://img.shields.io/badge/immer-FF8800?style=flat-square&logo=immer&logoColor=white"/>
+  <img src="https://img.shields.io/badge/date fns-770C56?style=flat-square&logo=datefns&logoColor=white"/>
   date-fns
 </p>
   
