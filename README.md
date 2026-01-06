@@ -15,6 +15,7 @@
   <img src="https://img.shields.io/badge/SWIPER-6332F6?style=flat-square&logo=swiper&logoColor=white"/>
   <img src="https://img.shields.io/badge/FRAMER MOTION-1E5397?style=flat-square&logo=framermotion&logoColor=white"/>
   <img src="https://img.shields.io/badge/Zustand-FF8800?style=flat-square&logo=Zustand&logoColor=white"/>
+  <img src="https://img.shields.io/badge/immer-FF8800?style=flat-square&logo=immer&logoColor=white"/>
 </p>
   
 ## 📌 GitHub Convention
