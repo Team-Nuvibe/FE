@@ -2,10 +2,11 @@ import TrashIcon  from '@/assets/icons/icon_trashcan.svg?react';
 
 interface Props {
   count: number;
+  maintext: string;
   onDelete: () => void;
 }
 
-export const BoardDeleteBottomSheet = ({ count, onDelete }: Props) => {
+export const DeleteBottomSheet = ({ count, onDelete, maintext }: Props) => {
   return (
     <div 
       className="
@@ -22,7 +23,7 @@ export const BoardDeleteBottomSheet = ({ count, onDelete }: Props) => {
         <div className="relative flex items-center">
           {/* 중앙 텍스트 */}
           <span className="ST2 text-gray-200 whitespace-nowrap">
-            {count}개의 아카이브 보드 선택됨
+            {count}{maintext}
           </span>
           
           {/* 휴지통 아이콘 */}

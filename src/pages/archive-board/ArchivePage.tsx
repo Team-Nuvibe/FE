@@ -6,9 +6,9 @@ import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
 import { useNavigate } from 'react-router';
-import { BoardDeleteBottomSheet } from '../../components/archive-board/BoardDeleteBottomSheet';
 import { useNavbarActions } from '../../hooks/useNavbarStore';
-import { BoardDeleteModal } from '../../components/archive-board/BoardDeleteModal';
+import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
+import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
 
 interface ArchiveBoard {
   id: string;
@@ -151,6 +151,7 @@ const ArchivePage  = () => {
                         bg-clip-text 
                         text-transparent 
                         bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)]
+                        leading-[150%] tracking-[-0.025em]
                       "
                     >
                       {post.tag}
@@ -182,12 +183,12 @@ const ArchivePage  = () => {
         {/* Vibe Tone */}
         <div className="px-4">
           <div className="flex items-center justify-between mb-4">
-            <p className="H2 text-gray-200">Vibers's 바이브 톤</p>
+            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
             <button 
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
             >
-              <span className="B2 text-gray-500">더보기</span>
+              <span className="B2 text-gray-500 leading-[150%] tracking-[-0.025em]">더보기</span>
               <ChevronRightIcon />
             </button>
             
@@ -208,7 +209,8 @@ const ArchivePage  = () => {
                       className="
                         bg-clip-text 
                         text-transparent 
-                        bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)]
+                        bg-[linear-gradient(90deg,rgba(247,247,247,0.8)_35.59%,rgba(247,247,247,0.4)_105%)]
+                        leading-[150%] tracking-[-0.025em]
                       "
                     >
                       {tag}
@@ -225,7 +227,7 @@ const ArchivePage  = () => {
           {/* Fixed Header */}
           <div className="px-4 p-6 bg-black sticky top-0 z-10 pb-4">
             <div className="flex items-center justify-between mb-4">
-              <div className="H2 text-gray-200">아카이브 보드</div>
+              <div className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">아카이브 보드</div>
               <div className="flex gap-[24px]">
                 <button
                   className={`B2 ${isSelectMode ? 'text-gray-200' : 'text-gray-200'}`}
@@ -248,7 +250,9 @@ const ArchivePage  = () => {
                 placeholder="아카이브 보드명을 입력하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[48px] bg-gray-900 rounded-[5px] pl-10 pr-4 py-3 placeholder:text-gray-600 placeholder:text-[16px] placeholder:font-normal focus:outline-none"
+                className="w-full h-[48px] bg-gray-900 rounded-[5px] pl-10 pr-4 py-3
+                placeholder:text-gray-600 placeholder:text-[16px] placeholder:font-normal placeholder:leading-[150%] placeholder:tracking-[-0.025em]
+                focus:outline-none"
               />
             </div>
           </div>
@@ -301,14 +305,17 @@ const ArchivePage  = () => {
         </div>
       </div>
       {isSelectMode && (
-        <BoardDeleteBottomSheet 
+        <DeleteBottomSheet 
           count={selectedIds.length} 
           onDelete={handleTrashClick} 
+          maintext="개의 아카이브 보드 선택됨"
         />
       )}
-      <BoardDeleteModal
+      <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         count={selectedIds.length}
+        maintext="정말 해당 보드를 삭제하시겠습니까?"
+        subtext="삭제하면 보드 안의 모든 이미지가 사라져요"
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={executeDelete}
       />

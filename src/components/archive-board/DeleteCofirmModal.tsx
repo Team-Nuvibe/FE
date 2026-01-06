@@ -1,13 +1,15 @@
 import WarningIcon from '@/assets/icons/icon_warning.svg?react'
 
-interface Props {
+interface DeleteModalProps {
   isOpen: boolean;
   count: number;
+  maintext: string;
+  subtext: string;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export const BoardDeleteModal = ({ isOpen, count, onClose, onConfirm }: Props) => {
+export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext, subtext }: DeleteModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -21,14 +23,13 @@ export const BoardDeleteModal = ({ isOpen, count, onClose, onConfirm }: Props) =
         <WarningIcon className="w-[32px] h-[32px] mb-2"/>
         <div className="mb-4">
           <div className="text-[17.38px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
-          정말 해당 보드를 삭제하시겠습니까?
+          {maintext}
           </div>
           {/* 서브 텍스트 */}
           <p className="text-[10.43px] font-medium text-gray-300 leading-[150%] tracking-[-0.025em]">
-            삭제하면 보드 안의 모든 이미지가 사라져요.
+            {subtext}
           </p>
         </div>
-        {/* 메인 텍스트 */}
         
 
         {/* 버튼 영역 */}
