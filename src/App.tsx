@@ -71,7 +71,7 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "notification",
         children: [
-          // {index: true, element: <NotificationPage /> },
+          { index: true, element: <NotificationPage /> },
         ],
       },
       {

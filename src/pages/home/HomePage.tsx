@@ -69,29 +69,29 @@ const HomePage = () => {
         <div className="flex justify-end p-6 z-10">
           <Icon_notification
             className="cursor-pointer"
-            onClick={() => navigate("/home")}
+            onClick={() => navigate("/notification")}
           />
         </div>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col">
-            <div className="B0 text-gray-100 px-6 z-10">
+            <div className="B0 text-gray-100 px-4 z-10">
               <p className="text-[24px]">Drop</p>
               <p className="text-[24px]">your vibe</p>
             </div>
-            <div className="H1 mb-6 px-6 z-10">
+            <div className="H1 pb-4 px-4 z-10">
               <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
                 #Minimal
               </h1>
             </div>
           </div>
-          <div className="z-10 mr-5 mb-9 cursor-pointer">
+          <div className="z-10 mr-4 mb-9 cursor-pointer">
             <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
           </div>
         </div>
       </header>
       {/* My Trace */}
-      <section className="flex flex-col px-6 py-6 gap-4">
-        <h2 className="H2 text-gray-200">MY trace</h2>
+      <section className="flex flex-col px-4 pt-4 pb-4 gap-4">
+        <h2 className="H2 text-gray-200">나의 기록</h2>
         <div className="flex">
           <div className="w-[123px] h-[116px] bg-gray-900 rounded-[5px] flex justify-center items-center cursor-pointer border-dashed border-1 border-gray-800">
             <Icon_plus className="h-[16px]" />
@@ -99,43 +99,53 @@ const HomePage = () => {
         </div>
       </section>
       {/* Categories */}
-      <section className="flex flex-col px-2 py-6">
-        <div className="relative mx-6">
-          <div className="absolute bottom-[0.5px] left-0 w-full h-[0.5px] bg-gray-400" />
-          <div
-            ref={tabsContainerRef}
-            className="flex gap-3 overflow-x-auto scrollbar-hide"
-          >
-            {categories.map((category, index) => (
-              <button
-                key={index}
-                ref={(el) => {
-                  tabRefs.current[index] = el;
-                }}
-                onClick={() => handleCategoryClick(index)}
-                className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
-              >
-                <p
-                  className={`ST2 transition-colors duration-200 ${
-                    activeIndex === index ? "B2 text-white" : "B2 text-gray-400"
-                  }`}
+      <section className="flex flex-col pb-4">
+        <div className="sticky top-0 z-40 bg-black pt-4 pb-4">
+          <div className="relative mx-4">
+            <div className="absolute bottom-[0.5px] left-0 w-full h-[0.5px] bg-gray-400" />
+            <div
+              ref={tabsContainerRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide"
+              style={{
+                maskImage:
+                  "linear-gradient(to right, black 90%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, black 90%, transparent 100%)",
+              }}
+            >
+              {categories.map((category, index) => (
+                <button
+                  key={index}
+                  ref={(el) => {
+                    tabRefs.current[index] = el;
+                  }}
+                  onClick={() => handleCategoryClick(index)}
+                  className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
                 >
-                  {"\u00A0" + category.name + "\u00A0"}
-                </p>
-                {activeIndex === index && (
-                  <motion.div
-                    layoutId="activeTabIndicator"
-                    className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
-                    transition={{ stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
+                  <p
+                    className={`ST2 transition-colors duration-200 ${
+                      activeIndex === index
+                        ? "B2 text-white"
+                        : "B2 text-gray-400"
+                    }`}
+                  >
+                    {"\u00A0" + category.name + "\u00A0"}
+                  </p>
+                  {activeIndex === index && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
+                      transition={{ stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className=""></div>
-        <div className="mx-4 mb-4"></div>
+        <div className="mx-4"></div>
 
         <Swiper
           modules={[Scrollbar]}
@@ -158,13 +168,13 @@ const HomePage = () => {
         >
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
-              <div className="grid grid-cols-2 gap-y-4 justify-items-center">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4 px-[16px]">
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className="w-[175px] h-[254px] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
+                    className="w-full aspect-[177/236] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
                     onClick={() => navigate(`/tag/${item}`)}
-                    // 임시로 태그 id 대신 이름 사용
+                  // 임시로 태그 id 대신 이름 사용
                   >
                     <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
                       <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">
