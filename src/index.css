@@ -48,7 +48,7 @@ body {
 #root {
   /* [레이아웃 크기 및 위치] */
   width: 100%;
-  max-width: 430px;
+  max-width: 393px;
   height: 100dvh;
   margin: 0 auto;
   position: relative;

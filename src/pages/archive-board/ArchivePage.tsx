@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import SearchIcon from '@/assets/icons/icon_search.svg?react'
 import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
-import { useNavigate } from 'react-router';
+import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
+import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
+import { useNavigate, useOutletContext } from 'react-router';
+import { BoardDeleteBottomSheet } from '../../components/archive-board/BoardDeleteBottomSheet';
 
 interface ArchiveItem {
   id: string;
@@ -67,7 +70,7 @@ const ArchivePage  = () => {
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) => 
       prev.includes(id) 
-        ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
+          ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
         : [...prev, id] // 없으면 추가
     );
   };
@@ -159,13 +162,17 @@ const ArchivePage  = () => {
         </div>
 
         {/* Vibe Tone */}
-        <div className="px-4 mb-10">
+        <div className="px-4">
           <div className="flex items-center justify-between mb-4">
-            <p className="ST1 text-gray-200">0000's Vibe Tone</p>
+            <p className="H2 text-gray-200">Vibers's Vibe Tone</p>
             <button 
-              className="text-[12px] font-normal text-[#828282]"
               onClick={handleVibeTone}
-              >more &gt;</button>
+              className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
+            >
+              <span className="B2 text-gray-500">더보기</span>
+              <ChevronRightIcon />
+            </button>
+            
           </div>
           
           {/* Tags */}
@@ -178,7 +185,7 @@ const ArchivePage  = () => {
             >
               {tags.map((tag) => (
                 <SwiperSlide key={tag} className="!w-auto">
-                  <div className="px-3 py-1.5 bg-[#252525] rounded-[5px] ST2 whitespace-nowrap">
+                  <div className="px-3 py-1.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
                     <span 
                       className="
                         bg-clip-text 
@@ -198,18 +205,19 @@ const ArchivePage  = () => {
         {/* Archive Section */}
         <div className="flex-1 flex flex-col">
           {/* Fixed Header */}
-          <div className="px-4 bg-black sticky top-0 z-10 pb-4">
+          <div className="px-4 p-6 bg-black sticky top-0 z-10 pb-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[20.3px] font-normal">Archive</h2>
-              <div className="flex gap-2">
+              <div className="H2 text-gray-200">아카이브 보드</div>
+              <div className="flex gap-[24px]">
                 <button
-                  className="B2 text-gray-200"
+                  className={`B2 ${isSelectMode ? 'text-gray-200' : 'text-gray-200'}`}
+                  onClick={toggleSelectMode}
                 >
-                  선택
+                  {isSelectMode ? '취소' : '선택'}
                 </button>
                 <button 
                 >
-                  <Plusbutton className="w-[16px] h-[16px]"/>
+                  <Plusbutton className="w-[24px] h-[24px]"/>
                 </button>
               </div>
             </div>
@@ -229,21 +237,52 @@ const ArchivePage  = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            <div className="grid grid-cols-2 gap-4 pb-6">
-              {items.map((item) => (
-                <div 
-                  key={item.id}
-                  className="aspect-square bg-gradient-to-b from-white/20 to-white/10 rounded-[10px] flex items-center justify-center cursor-pointer"
-                >
-                  {item.title && (
-                    <span className="ST2">{item.title}</span>
-                  )}
-                </div>
-              ))}
+            <div className="grid grid-cols-3 gap-4 pb-6">
+              {items.map((item) => {
+                // 현재 아이템이 선택되었는지 확인
+                const isSelected = selectedIds.includes(item.id);
+
+                return (
+                  <div 
+                    key={item.id}
+                    onClick={() => {
+                      if (isSelectMode) {
+                        toggleSelection(item.id);
+                      } else {
+                        // 상세 페이지로 이동
+                        // navigate('/archive-board/:boardid')
+                      }
+                    }}
+                    className={`
+                      relative w-[110px] h-[110px] bg-gray-900 rounded-[5px] flex items-center justify-center cursor-pointer overflow-hidden transition-all
+                      ${isSelectMode ? 'active:scale-95' : ''} 
+                    `}
+                  >
+                    {item.title && (
+                      <span className="ST2">{item.title}</span>
+                    )}
+
+                    {/* 체크 표시 오버레이 */}
+                    {isSelectMode && (
+                      <>
+                        {/* 선택되었을 때 보여질 체크마크 오버레이 */}
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-white/30 flex items-center justify-center rounded-[10px]">
+                            <SelectedImageIcon className="w-[42px] h-[42px]" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
+      {isSelectMode && (
+        <BoardDeleteBottomSheet count={selectedIds.length} onDelete={handleBoardDelete}/>
+      )}
     </div>
   );
 };

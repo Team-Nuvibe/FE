@@ -43,9 +43,9 @@ const protectedRoutes: RouteObject[] = [
         path: "archive-board",
         children: [
           {index: true , element: <ArchivePage/> },
-          // {path: "/archive-board/vibetone", element: </> },
+          // {path: "/archive-board/vibetone", element: <VibetonePage/> },
           // {path: "/archive-board/blur", element: </> },
-          // {path: "/archive-board/:boardid", element: </> },
+          // {path: "/archive-board/:boardid", element: <ArchiveDetailPage/> },
         ],
       },
       {

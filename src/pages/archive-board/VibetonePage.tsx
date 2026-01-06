@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Archiveboard = () => {
+const VibetonePage = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const Archiveboard = () => {
   )
 }
 
-export default Archiveboard
+export default VibetonePage
