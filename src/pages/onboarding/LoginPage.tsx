@@ -1,4 +1,4 @@
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import Google_G_logo from '@/assets/logos/Google_logo.svg?react';
 import Naver_logo from '@/assets/logos/Naver_logo.svg?react';
 import KakaoTalk_logo from '@/assets/logos/KakaoTalk_logo.svg?react'
@@ -7,6 +7,7 @@ import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
 
   const { values, errors, getInputProps } = useForm<UserSigninInformation>({
         initialValues: {
@@ -22,6 +23,7 @@ const LoginPage = () => {
   
   const handleLoginSubmit = () => {
     // api 통신
+    navigate('/home')
   }
   
   const handleGoogleLogin = () => {
@@ -100,7 +102,7 @@ const LoginPage = () => {
             <KakaoTalk_logo />
           </button>
         </div>
-        <footer className="absolute bottom-0 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
+        <footer className="absolute !bottom-12 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
             key='/signup'

@@ -37,8 +37,7 @@ body {
   overscroll-behavior-y: none;
 }
 
-body {
-}
+body {}
 
 ::-webkit-scrollbar {
   display: none;

@@ -100,7 +100,7 @@ export const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
 
   return (
     <div className="absolute inset-0 z-9999 flex flex-col items-center justify-center bg-[var(--color-black)]">
-      <div className="relative flex flex-col items-center justify-center gap-4">
+      <div className="relative flex flex-col items-center justify-center gap-4 -translate-y-14">
 
         {/* 도형 영역 */}
         <div className="relative w-[77px] h-[77px] flex items-center justify-center">

@@ -101,7 +101,7 @@ export const OnboardingPage = () => {
                 Vibers
               </h1>
               <button
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/login")}
                 className="cursor-pointer bg-white px-10 py-3 rounded-[10px] scale-100 drop-shadow-[0_0_8px_rgba(250,250,250,0.4)] border border-gray-500"
               >
                 <img src={Onboarding3_text} />
@@ -112,7 +112,7 @@ export const OnboardingPage = () => {
       </Swiper>
       <div
         className={
-          "onboarding-pagination absolute bottom-0 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"
+          "onboarding-pagination absolute !bottom-16 w-full flex justify-center gap-2 pb-[env(safe-area-inset-bottom)] z-50"
         }
       />
     </main>
