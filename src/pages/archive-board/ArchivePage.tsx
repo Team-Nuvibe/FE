@@ -173,7 +173,7 @@ const ArchivePage  = () => {
               className="w-full h-full object-cover"
             />
             </div>
-            <div className="mt-5 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
+            <div className="mt-2 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
               {/* user.nickname */}
               Vibers
             </div>
@@ -182,7 +182,7 @@ const ArchivePage  = () => {
 
         {/* Vibe Tone */}
         <div className="px-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
             <button 
               onClick={handleVibeTone}
@@ -204,7 +204,7 @@ const ArchivePage  = () => {
             >
               {tags.map((tag) => (
                 <SwiperSlide key={tag} className="!w-auto">
-                  <div className="px-3 py-1.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
+                  <div className="px-3 py-1.5 mb-7.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
                     <span 
                       className="
                         bg-clip-text 
@@ -226,7 +226,7 @@ const ArchivePage  = () => {
         <div className="flex-1 flex flex-col">
           {/* Fixed Header */}
           <div className="px-4 p-6 bg-black sticky top-0 z-10 pb-4">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">아카이브 보드</div>
               <div className="flex gap-[24px]">
                 <button
