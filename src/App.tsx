@@ -14,7 +14,8 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/home/HomePage";
 import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
 import { TagDetailPage } from "./pages/tag/TagDetailPage";
-import NotificationPage from "./pages/notification/NotificationPage";
+import ArchiveDetailPage from "./pages/archive-board/ArchiveDetailPage";
+import VibetonePage from "./pages/archive-board/VibetonePage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -43,10 +44,10 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "archive-board",
         children: [
-          { index: true, element: <ArchivePage /> },
-          // {path: "/archive-board/vibetone", element: </> },
+          {index: true , element: <ArchivePage/> },
+          {path: "/archive-board/vibetone", element: <VibetonePage /> },
           // {path: "/archive-board/blur", element: </> },
-          // {path: "/archive-board/:boardid", element: </> },
+          {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
       {
