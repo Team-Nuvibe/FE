@@ -25,7 +25,7 @@ const QuickDropButton = () => {
 
   return (
     <button
-      className="w-[65px] h-[65px] bg-[var(--color-gray-900)]/90 rounded-[40px] flex items-center justify-center z-50 transition-transform"
+      className="relative w-[65px] h-[65px] bg-[var(--color-gray-900)]/90 rounded-[40px] flex items-center justify-center z-50 transition-transform"
       aria-label="Quick Drop"
     >
       <IconQuickDrop className="w-full h-full" />
