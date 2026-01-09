@@ -1,18 +1,42 @@
-import Icon_quickdrop_close from "@/assets/icons/icon_quickdrop_close.svg?react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { ImageEditor } from "../../components/features/ImageEditor";
+import { useState } from "react";
+import { TagSelector } from "../../components/features/TagSelector";
 
 export const QuickdropPage = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const { file } = location.state || {};
+
+  const [step, setStep] = useState<"edit" | "tag" | "board">("edit");
+  const [imageData, setImageData] = useState<{
+    image: Blob | null;
+    tag: string;
+    board: number | null;
+  }>({
+    image: null,
+    tag: "",
+    board: null,
+  });
+
   return (
     <div className="flex flex-col w-full h-dvh">
-      <div className="flex justify-between items-center py-4 px-4">
-        <Icon_quickdrop_close
-          className="cursor-pointer"
-          onClick={() => navigate(-1)}
+      {step === "edit" && (
+        <ImageEditor
+          file={file}
+          onNext={(blob) => {
+            setImageData((prev) => ({ ...prev, image: blob }));
+            setStep("tag");
+          }}
         />
-        <h2 className="H2 text-white">Vibe Drop</h2>
-        <p className="ST2 text-white cursor-pointer">다음</p>
-      </div>
+      )}
+      {step === "tag" && (
+        <TagSelector
+          onNext={(selectedTag) => {
+            setImageData((prev) => ({ ...prev, tag: selectedTag }));
+            setStep("board");
+          }}
+        />
+      )}
     </div>
   );
 };
