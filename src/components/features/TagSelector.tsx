@@ -1,7 +1,8 @@
-import IconXbutton from "@/assets/icons/icon_xbutton.svg?react";
+import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
+import IxonXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import { useNavigate } from "react-router-dom";
-import { act, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -13,6 +14,8 @@ interface TagSelectorProps {
 
 export const TagSelector = ({ onNext }: TagSelectorProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const swiperRef = useRef<SwiperType | null>(null);
 
@@ -23,27 +26,67 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
     swiperRef.current?.slideTo(index);
   };
 
+  // 임시 최근 검색어 데이터
+  const recentSearches = ["Grain", "Morning", "Mono"];
+
+  // 임시 카테고리 데이터
+  const categories = [
+    "Mood",
+    "Light",
+    "Color",
+    "Texture",
+    "Space",
+    "Daily",
+    "Fashion",
+    "Media",
+    "Travel",
+  ];
+
+  // 임시 Mood 태그 데이터
+  const moodTags = [
+    "Blur",
+    "Grain",
+    "Silence",
+    "Calm",
+    "Slow",
+    "Lovely",
+    "Heavy",
+    "Light",
+    "Raw",
+    "Warm",
+    "Cool",
+    "Deep",
+    "Still",
+    "Soft",
+    "Muted",
+  ];
+
   return (
     <div>
       <header className="flex justify-between items-center pt-2 pb-6 px-4">
-        <IconXbutton className="cursor-pointer" onClick={() => navigate(-1)} />
-        <h2 className="H2 text-white">Vibe Drop</h2>
+        <IconXbuttonGray3
+          className="cursor-pointer"
+          onClick={() => navigate(-1)}
+        />
+        <h2 className="H2 text-white tracking-tight">바이브 드랍</h2>
         <p className="ST2 text-white cursor-pointer">다음</p>
       </header>
       <div className="flex items-center mx-4 mb-5 h-12 rounded-[5px] bg-gray-900">
         <IconSearch className="ml-4 mr-3" />
-        <input type="text" placeholder="검색어를 입력하세요." className="B1" />
+        <input
+          type="text"
+          placeholder="검색어를 입력하세요."
+          className="B1 tracking-tight focus:outline-none"
+        />
       </div>
-      <div className="relative flex justify-between items-center">
-        <div className="absolute bottom-[0.5px] left-0 w-[200px] h-[0.5px] mx-4 bg-gray-400" />
+      <div className="relative flex justify-between items-center mx-4 mb-4 tracking-tight">
+        <div className="absolute bottom-[0.5px] left-0 w-[206px] h-[0.5px] bg-gray-400" />
         <div className="flex">
-          <button onClick={() => handleTabClick(0)} className="relative mx-2">
+          <button onClick={() => handleTabClick(0)} className="relative">
             <p
-              className={`${
-                activeIndex === 0
-                  ? "ST2 text-gray-200 px-4"
-                  : "B2 text-gray-600 px-5"
-              } pb-[2px]`}
+              className={`transition-all duration-200 ease-in-out ${
+                activeIndex === 0 ? "ST2 text-gray-200" : "B2 text-gray-600"
+              } px-[22px] pb-[2px]`}
             >
               최근 검색어
             </p>
@@ -51,17 +94,14 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
               <motion.div
                 layoutId="activeTabIndicator"
                 className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
-                transition={{ stiffness: 500, damping: 30 }}
               />
             )}
           </button>
           <button onClick={() => handleTabClick(1)} className="relative">
             <p
-              className={`${
-                activeIndex === 1
-                  ? "ST2 text-gray-200 px-[22px]"
-                  : "B2 text-gray-600 px-[22px]"
-              } pb-[2px]`}
+              className={`transition-all duration-200 ease-in-out ${
+                activeIndex === 1 ? "ST2 text-gray-200" : "B2 text-gray-600"
+              } px-[22px] pb-[2px]`}
             >
               태그 찾기
             </p>
@@ -77,7 +117,7 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
         <p
           className={`${
             activeIndex === 0 ? "opacity-100" : "opacity-0"
-          } B2 text-gray-600 cursor-pointer mx-4`}
+          } B2 text-gray-600 cursor-pointer`}
         >
           전체 삭제
         </p>
@@ -98,8 +138,70 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
           setActiveIndex(swiper.activeIndex);
         }}
       >
-        <SwiperSlide>최근 검색어</SwiperSlide>
-        <SwiperSlide>태그 찾기</SwiperSlide>
+        <SwiperSlide>
+          <div className="flex flex-wrap px-4 gap-3">
+            {recentSearches.map((tag) => (
+              <div className="flex justify-between items-center gap-3 bg-gray-900 rounded-[5px] px-2 py-[3px]">
+                <p className="ST1 text-gray-200 tracking-tight">#{tag}</p>
+                <IxonXbuttonQuickdropTag className="cursor-pointer w-[8px]" />
+              </div>
+            ))}
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="flex flex-col tracking-tight px-4">
+            <p className="ST1 text-gray-200 mb-3">카테고리</p>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`relative px-2 py-[3px] cursor-pointer rounded-[5px] border-[1px] border-gray-900 ${
+                    selectedCategory === category
+                      ? "bg-gray-900 text-gray-200"
+                      : "bg-black text-gray-500"
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  <span className="ST1 invisible block">{category}</span>
+                  <span
+                    className={`absolute inset-0 flex justify-center items-center ${
+                      selectedCategory === category ? "ST1" : "B0"
+                    }`}
+                  >
+                    {category}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {selectedCategory === "Mood" && (
+              <>
+                <p className="ST1 text-gray-200 mt-4 mb-3">태그</p>
+                <div className="flex flex-wrap gap-2">
+                  {moodTags.map((tag) => (
+                    <button
+                      key={tag}
+                      className={`relative px-2 py-[3px] cursor-pointer rounded-[5px] border-[1px] border-gray-900 ${
+                        selectedTag === tag
+                          ? "bg-gray-900 text-gray-200"
+                          : "bg-black text-gray-500"
+                      }`}
+                      onClick={() => setSelectedTag(tag)}
+                    >
+                      <span className="ST1 invisible block">#{tag}</span>
+                      <span
+                        className={`absolute inset-0 flex justify-center items-center ${
+                          selectedTag === tag ? "ST1" : "B0"
+                        }`}
+                      >
+                        #{tag}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </SwiperSlide>
       </Swiper>
     </div>
   );

@@ -152,7 +152,7 @@ export const ImageEditor = ({ file, onNext }: ImageEditorProps) => {
     <div>
       <header className="flex justify-between items-center pt-2 pb-6 px-4">
         <IconXbutton className="cursor-pointer" onClick={() => navigate(-1)} />
-        <h2 className="H2 text-white">Vibe Drop</h2>
+        <h2 className="H2 text-white">바이브 드랍</h2>
         <p
           className="ST2 text-white cursor-pointer"
           onClick={() => handleExportImage()}
