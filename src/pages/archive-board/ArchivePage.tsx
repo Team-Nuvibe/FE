@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router';
 import { useNavbarActions } from '../../hooks/useNavbarStore';
 import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
 import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
+import { useUserStore } from '@/hooks/useUserStore';
 
 interface ArchiveBoard {
   id: string;
@@ -23,7 +24,7 @@ interface ResentDrops {
   thumbnail: string;
 }
 
-const ArchivePage  = () => {
+const ArchivePage = () => {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +32,8 @@ const ArchivePage  = () => {
   const handleVibeTone = () => {
     navigate('/archive-board/vibetone')
   }
+
+  const { nickname, profileImage } = useUserStore();
 
   const resentDrops: ResentDrops[] = [
     { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
@@ -70,9 +73,9 @@ const ArchivePage  = () => {
 
   // 아이템 선택/해제 토글
   const toggleSelection = (id: string) => {
-    setSelectedIds((prev) => 
-      prev.includes(id) 
-          ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
+    setSelectedIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
         : [...prev, id] // 없으면 추가
     );
   };
@@ -84,13 +87,13 @@ const ArchivePage  = () => {
     if (selectedIds.length === 0) return;
     setIsDeleteModalOpen(true);
   };
-  
+
   // Board 삭제 함수
   const executeDelete = () => {
     setArciveboard((prev) => prev.filter((board) => !selectedIds.includes(board.id)));
     setIsSelectMode(false);
     setSelectedIds([]);
-    setIsDeleteModalOpen(false); 
+    setIsDeleteModalOpen(false);
   };
 
 
@@ -101,7 +104,7 @@ const ArchivePage  = () => {
     return () => setNavbarVisible(true);
   }, [isSelectMode, setNavbarVisible]);
 
-  
+
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
@@ -112,18 +115,18 @@ const ArchivePage  = () => {
           {/* Background Video Posts */}
           <Swiper
             modules={[Autoplay]}
-            spaceBetween={12} 
-            slidesPerView={'auto'} 
-            slidesOffsetBefore={16} 
-            slidesOffsetAfter={16} 
-            className="pb-2 [&>.swiper-wrapper]:!ease-linear" 
+            spaceBetween={12}
+            slidesPerView={'auto'}
+            slidesOffsetBefore={16}
+            slidesOffsetAfter={16}
+            className="pb-2 [&>.swiper-wrapper]:!ease-linear"
             speed={10000} // 이동 속도 
             resistanceRatio={0}
-            freeMode={{ 
+            freeMode={{
               enabled: true,
               momentum: false, // 관성 
-              sticky: false,  
-            }} 
+              sticky: false,
+            }}
             loop={false}
             allowTouchMove={true} // 사용자가 손가락으로 스와이프 가능
             autoplay={{
@@ -134,13 +137,13 @@ const ArchivePage  = () => {
             }}
           >
             {resentDrops.map((post) => (
-              <SwiperSlide 
-                key={post.id} 
+              <SwiperSlide
+                key={post.id}
                 className="!w-[165px]"
               >
                 <div className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px]">
-                  <img 
-                    src={post.thumbnail} 
+                  <img
+                    src={post.thumbnail}
                     alt={post.tag}
                     className="w-full h-full object-cover "
                   />
@@ -166,16 +169,15 @@ const ArchivePage  = () => {
           </Swiper>
           <div className="absolute top-[260px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
             {/* 프로필 이미지 */}
-            <div className="w-[76.14px] h-[76.14px] rounded-full bg-black overflow-hidden border border-white/10 pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
-            <img 
-              src="../../src/assets/logos/Subtract.svg" 
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
+            <div className="w-[76.14px] h-[76.14px] rounded-full overflow-hidden pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
+              <img
+                src={profileImage}
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="mt-2 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
-              {/* user.nickname */}
-              Vibers
+              {nickname}
             </div>
           </div>
         </div>
@@ -184,28 +186,28 @@ const ArchivePage  = () => {
         <div className="px-4">
           <div className="flex items-center justify-between mb-3">
             <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
-            <button 
+            <button
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
             >
               <span className="B2 text-gray-500 leading-[150%] tracking-[-0.025em]">더보기</span>
               <ChevronRightIcon />
             </button>
-            
+
           </div>
-          
+
           {/* Tags */}
           <div className="w-full">
             <Swiper
               spaceBetween={8}
               slidesPerView={'auto'}
               className="px-4"
-              freeMode={true} 
+              freeMode={true}
             >
               {tags.map((tag) => (
                 <SwiperSlide key={tag} className="!w-auto">
                   <div className="px-3 py-1.5 mb-7.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
-                    <span 
+                    <span
                       className="
                         bg-clip-text 
                         text-transparent 
@@ -235,9 +237,9 @@ const ArchivePage  = () => {
                 >
                   {isSelectMode ? '취소' : '선택'}
                 </button>
-                <button 
+                <button
                 >
-                  <Plusbutton className="w-[24px] h-[24px]"/>
+                  <Plusbutton className="w-[24px] h-[24px]" />
                 </button>
               </div>
             </div>
@@ -265,7 +267,7 @@ const ArchivePage  = () => {
                 const isSelected = selectedIds.includes(board.id);
 
                 return (
-                  <div 
+                  <div
                     key={board.id}
                     onClick={() => {
                       if (isSelectMode) {
@@ -305,9 +307,9 @@ const ArchivePage  = () => {
         </div>
       </div>
       {isSelectMode && (
-        <DeleteBottomSheet 
-          count={selectedIds.length} 
-          onDelete={handleTrashClick} 
+        <DeleteBottomSheet
+          count={selectedIds.length}
+          onDelete={handleTrashClick}
           maintext="개의 아카이브 보드 선택됨"
         />
       )}

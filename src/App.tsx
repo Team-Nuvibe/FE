@@ -9,14 +9,16 @@ import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
 import ArchivePage from "./pages/archive-board/ArchivePage";
-
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/home/HomePage";
 import { QuickdropPage } from "./pages/quickdrop/QuickdropPage";
 import { TagDetailPage } from "./pages/tag/TagDetailPage";
 import ArchiveDetailPage from "./pages/archive-board/ArchiveDetailPage";
 import VibetonePage from "./pages/archive-board/VibetonePage";
-import NotificationPage from "./pages/notification/NotificationPage";
+import { NotificationPage } from "./pages/notification/NotificationPage";
+import ProfilePage from "./pages/profile/ProfilePage";
+import ProfileEditPage from "./pages/profile/ProfileEditPage";
+import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -45,10 +47,10 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "archive-board",
         children: [
-          {index: true , element: <ArchivePage/> },
-          {path: "/archive-board/vibetone", element: <VibetonePage /> },
+          { index: true, element: <ArchivePage /> },
+          { path: "/archive-board/vibetone", element: <VibetonePage /> },
           // {path: "/archive-board/blur", element: </> },
-          {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
+          { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
       {
@@ -66,7 +68,10 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "profile",
         children: [
-          // {index: true, element: <ProfilePage /> },
+          { index: true, element: <ProfilePage /> },
+          { path: "edit/:type", element: <ProfileEditPage /> },
+          { path: "setting/:type", element: <ProfileSettingPage /> },
+          { path: "info/:type", element: <ProfileSettingPage /> },
         ],
       },
       {
