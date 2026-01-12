@@ -1,18 +1,29 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUserStore } from '@/hooks/useUserStore';
 import ChevronRightIcon2 from '@/assets/icons/icon_chevron_right2.svg?react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
 
 const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
     const { setNickname } = useUserStore();
+    const { setNavbarVisible } = useNavbarActions();
     const [newNickname, setNewNickname] = useState('');
+    const [showToast, setShowToast] = useState(false);
+
+    useEffect(() => {
+        setNavbarVisible(false);
+        return () => setNavbarVisible(true);
+    }, [setNavbarVisible]);
 
     const handleSave = () => {
         if (newNickname.length > 0) {
             setNickname(newNickname);
-            navigate(-1);
+            setShowToast(true);
+            setTimeout(() => {
+                navigate(-1);
+            }, 1000); // 1초 후 뒤로가기
         }
     };
 
@@ -27,7 +38,7 @@ const ProfileEditPage = () => {
     };
 
     return (
-        <div className="w-full h-full bg-black text-white flex flex-col px-[20px]">
+        <div className="w-full h-full bg-black text-white flex flex-col px-[20px] relative">
             <header className="flex items-center justify-center relative mt-[70px] mb-[42px]">
                 <button
                     onClick={() => navigate(-1)}
@@ -84,6 +95,15 @@ const ProfileEditPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Toast Message */}
+            {showToast && (
+                <div className="absolute left-0 right-0 bottom-[122px] px-[16px] z-50 animate-fade-in-out flex justify-center">
+                    <div className="w-full h-[46px] bg-[#36383E]/80 backdrop-blur-[20px] text-white text-[14px] font-normal leading-[150%] tracking-[-0.025em] flex items-center justify-center rounded-[5px] shadow-lg">
+                        닉네임이 성공적으로 변경되었습니다.
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
