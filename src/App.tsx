@@ -17,6 +17,7 @@ import { TagDetailPage } from "./pages/tag/TagDetailPage";
 import ArchiveDetailPage from "./pages/archive-board/ArchiveDetailPage";
 import VibetonePage from "./pages/archive-board/VibetonePage";
 import NotificationPage from "./pages/notification/NotificationPage";
+import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -47,6 +48,7 @@ const protectedRoutes: RouteObject[] = [
         children: [
           {index: true , element: <ArchivePage/> },
           {path: "/archive-board/vibetone", element: <VibetonePage /> },
+          {path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
           // {path: "/archive-board/blur", element: </> },
           {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],

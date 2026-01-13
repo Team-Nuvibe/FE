@@ -41,15 +41,15 @@ export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext
             onClick={onConfirm}
             className=" 
               w-[130px] h-[36px] rounded-[5px] bg-gray-700 flex items-center justify-center
-              text-gray-300 B2"
+              text-gray-300 ST3"
           >
-            네 삭제할래요
+            삭제하기
           </button>
           <button
             onClick={onClose}
             className="
               w-[130px] h-[36px] rounded-[5px] bg-gray-300
-              text-gray-800 B2"
+              text-gray-800 ST3"
           >
             돌아가기
           </button>
