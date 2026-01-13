@@ -37,7 +37,8 @@ body {
   overscroll-behavior-y: none;
 }
 
-body {}
+body {
+}
 
 ::-webkit-scrollbar {
   display: none;
@@ -112,21 +113,14 @@ button {
 
 /* 비활성 점의 색상 */
 .swiper-pagination-bullet {
-  background-color: var(--color-white) !important;
-  border-radius: 4px !important;
-  opacity: 1;
-  margin: 0 !important;
-}
-
-.swiper-pagination-bullet {
-  background-color: var(--color-white) !important;
+  background-color: var(--color-gray-300) !important;
   border-radius: 4px !important;
   opacity: 1;
   margin: 0 !important;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: var(--color-white) !important;
+  background-color: var(--color-gray-300) !important;
 }
 
 @layer utilities {
