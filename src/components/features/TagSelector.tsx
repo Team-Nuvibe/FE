@@ -1,5 +1,6 @@
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
+import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
@@ -66,13 +67,17 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
     <div>
       <div className="flex flex-col">
         <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
-          <IconXbuttonGray3
+          <IconChevronLeft
             className="cursor-pointer"
             onClick={() => onPrevious()}
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className="ST2 text-white cursor-pointer"
+            className={`ST2 ${
+              selectedTag
+                ? "text-white cursor-pointer"
+                : "text-gray-700 cursor-not-allowed"
+            }`}
             onClick={() => onNext(selectedTag)}
           >
             다음

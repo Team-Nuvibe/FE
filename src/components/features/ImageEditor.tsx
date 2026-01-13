@@ -141,13 +141,7 @@ export const ImageEditor = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `
-      brightness(${finalBrightness}%)
-      contrast(${100 + levels.contrast / 2 + levels.structure / 2}%)
-      sepia(${levels.temperature > 0 ? levels.temperature : 0}%)
-      hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0}deg)
-      saturate(${100 + levels.saturation * 2}%)
-    `.trim();
+    return `brightness(${finalBrightness > 100 ? (finalBrightness - 100) * 2 + 100 : (finalBrightness - 100) * 4 + 100}%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${levels.temperature > 0 ? levels.temperature : 0}%) hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0}deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   const handleExportImage = () => {
@@ -159,6 +153,8 @@ export const ImageEditor = ({
 
     const imgWidth = img.naturalWidth;
     const imgHeight = img.naturalHeight;
+
+    const MAX_SIZE = 1280;
 
     const targetRatio = 3 / 4;
     const imgRatio = imgWidth / imgHeight;
@@ -179,8 +175,25 @@ export const ImageEditor = ({
       sy = (imgHeight - sHeight) / 2;
     }
 
-    canvas.width = sWidth;
-    canvas.height = sHeight;
+    // 크기 최적화
+    // 출력 캔버스 크기 계산 (리사이징 적용)
+    let dWidth = sWidth;
+    let dHeight = sHeight;
+
+    if (dWidth > MAX_SIZE || dHeight > MAX_SIZE) {
+        if (dWidth > dHeight) {
+            // 가로가 긴 경우 (비율상 여기에 걸릴 일은 적지만 안전장치)
+            dHeight = (dHeight * MAX_SIZE) / dWidth;
+            dWidth = MAX_SIZE;
+        } else {
+            // 세로가 긴 경우 (3:4 비율이므로 주로 여기에 해당)
+            dWidth = (dWidth * MAX_SIZE) / dHeight;
+            dHeight = MAX_SIZE;
+        }
+    }
+
+    canvas.width = dWidth;
+    canvas.height = dHeight;
 
     if (ctx) {
       ctx.filter = getFilterStyle(adjustmentLevels);
@@ -192,16 +205,17 @@ export const ImageEditor = ({
         sHeight,
         0,
         0,
-        canvas.width,
-        canvas.height
+        dWidth,
+        dHeight
       );
+      const exportType = file.type === 'image/heic' ? 'image/jpeg' : file.type;
       canvas.toBlob((blob) => {
         if (blob) {
           onNext(blob, adjustmentLevels);
         } else {
           console.error("이미지 내보내기 실패");
         }
-      }, file.type);
+      }, exportType, 0.9);
     }
   };
 
