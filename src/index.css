@@ -37,7 +37,8 @@ body {
   overscroll-behavior-y: none;
 }
 
-body {}
+body {
+}
 
 ::-webkit-scrollbar {
   display: none;
@@ -64,11 +65,29 @@ body {}
   overflow: hidden;
 
   /* [앱 제스처/터치 제어] */
-  touch-action: none;
+  touch-action: manipulation;
 
   /* 텍스트 선택 방지 */
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3s ease-in-out forwards;
 }
 
 /* 스크롤바 숨기기 */
@@ -94,21 +113,14 @@ button {
 
 /* 비활성 점의 색상 */
 .swiper-pagination-bullet {
-  background-color: var(--color-white) !important;
-  border-radius: 4px !important;
-  opacity: 1;
-  margin: 0 !important;
-}
-
-.swiper-pagination-bullet {
-  background-color: var(--color-white) !important;
+  background-color: var(--color-gray-300) !important;
   border-radius: 4px !important;
   opacity: 1;
   margin: 0 !important;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: var(--color-white) !important;
+  background-color: var(--color-gray-300) !important;
 }
 
 // 보드 이름 변경 바텀시트 애니메이션
