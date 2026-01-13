@@ -182,7 +182,7 @@ const ArchivePage = () => {
             </div>
             <div className="mt-1 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
               {/* user.nickname */}
-              Vibers
+              {nickname}
             </div>
           </div>
         </div>
