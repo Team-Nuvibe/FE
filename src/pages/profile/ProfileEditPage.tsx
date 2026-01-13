@@ -21,30 +21,47 @@ const ProfileEditPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
     const isValidPassword = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/.test(newPassword);
     const isPasswordMatch = newPassword === confirmPassword;
     const isSameAsCurrent = newPassword === storedPassword;
 
     const handleSave = () => {
+        // 모바일 키보드 닫기
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+
+        setIsSaving(true);
+
         if (type === 'nickname' && newNickname.length > 0) {
             setNickname(newNickname);
-            navigate('/profile', {
-                replace: true,
-                state: { toastMessage: '닉네임이 성공적으로 변경되었습니다.' }
-            });
+            // 모바일에서 키보드가 닫히는 애니메이션 시간을 잠시 기다려줌
+            setTimeout(() => {
+                navigate('/profile', {
+                    replace: true,
+                    state: { toastMessage: '닉네임이 성공적으로 변경되었습니다.' }
+                });
+            }, 100);
         } else if (type === 'email' && isEmailVerified) {
             setEmail(newEmail);
-            navigate('/profile', {
-                replace: true,
-                state: { toastMessage: '이메일이 성공적으로 변경되었습니다.' }
-            });
+            setTimeout(() => {
+                navigate('/profile', {
+                    replace: true,
+                    state: { toastMessage: '이메일이 성공적으로 변경되었습니다.' }
+                });
+            }, 100);
         } else if (type === 'password' && passwordStep === 'change' && isValidPassword && isPasswordMatch && !isSameAsCurrent) {
             setPassword(newPassword);
-            navigate('/profile', {
-                replace: true,
-                state: { toastMessage: '비밀번호가 성공적으로 변경되었습니다.' }
-            });
+            setTimeout(() => {
+                navigate('/profile', {
+                    replace: true,
+                    state: { toastMessage: '비밀번호가 성공적으로 변경되었습니다.' }
+                });
+            }, 100);
+        } else {
+            setIsSaving(false);
         }
     };
 
@@ -114,7 +131,7 @@ const ProfileEditPage = () => {
                         </div>
 
                         <button
-                            disabled={newNickname.length === 0}
+                            disabled={newNickname.length === 0 || isSaving}
                             onClick={handleSave}
                             className={`
                                 w-full rounded-[5px] h-[48px] px-[50px] py-[6px] mt-[24px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
@@ -155,11 +172,11 @@ const ProfileEditPage = () => {
                             />
                             <button
                                 onClick={handleVerifyEmail}
-                                disabled={!isValidEmail || isEmailVerified}
+                                disabled={!isValidEmail || isEmailVerified || newEmail === email}
                                 className={`w-[73px] h-[28px] rounded-[4px] text-[10px] font-medium leading-[150%] tracking-[-0.025em] whitespace-nowrap
                                     ${isEmailVerified
                                         ? 'bg-gray-600 text-gray-900 cursor-default'
-                                        : isValidEmail
+                                        : isValidEmail && newEmail !== email
                                             ? 'bg-gray-300 text-gray-900'
                                             : 'bg-gray-600 text-gray-900'}
                                 `}
@@ -167,14 +184,20 @@ const ProfileEditPage = () => {
                                 {isEmailVerified ? '인증 완료' : '이메일 인증'}
                             </button>
                         </div>
+                        {newEmail === email && newEmail.length > 0 && !isEmailVerified && (
+                            <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
+                                현재 이메일과 동일한 이메일입니다.
+                            </p>
+                        )}
 
                         <button
-                            className={`w-full rounded-[5px] h-[48px] px-[50px] py-[6px] mt-[24px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                            className={`w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                ${newEmail === email && newEmail.length > 0 ? 'mt-[12px]' : 'mt-[24px]'}
                                 ${isEmailVerified
                                     ? 'bg-gray-200 text-gray-900'
                                     : 'bg-gray-700 text-gray-900 cursor-not-allowed'}
                             `}
-                            disabled={!isEmailVerified}
+                            disabled={!isEmailVerified || isSaving}
                             onClick={handleSave}
                         >
                             저장하기
@@ -196,7 +219,7 @@ const ProfileEditPage = () => {
                                 <label className="text-gray-400 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
                                     현재 비밀번호
                                 </label>
-                                <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[24px]">
+                                <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center">
                                     <input
                                         type="password"
                                         value={currentPassword}
@@ -206,7 +229,7 @@ const ProfileEditPage = () => {
                                     />
                                 </div>
                                 {passwordError && (
-                                    <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[24px]">
+                                    <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
                                         {passwordError}
                                     </p>
                                 )}
@@ -215,6 +238,7 @@ const ProfileEditPage = () => {
                                     disabled={currentPassword.length < 8}
                                     className={`
                                         w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                        ${passwordError ? 'mt-[12px]' : 'mt-[24px]'}
                                         ${currentPassword.length >= 8
                                             ? 'bg-gray-200 text-gray-900'
                                             : 'bg-gray-700 text-gray-900 cursor-not-allowed'}
@@ -237,9 +261,9 @@ const ProfileEditPage = () => {
                                         className="w-full bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0"
                                     />
                                 </div>
-                                {isSameAsCurrent && newPassword.length > 0 && (
+                                {isSameAsCurrent && newPassword.length > 0 && !isSaving && (
                                     <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
-                                        현재 비밀번호와 다른 비밀번호를 입력해주세요.
+                                        새로운 비밀번호를 입력해주세요.
                                     </p>
                                 )}
 
@@ -257,17 +281,18 @@ const ProfileEditPage = () => {
                                 </div>
 
                                 {confirmPassword.length > 0 && (
-                                    <p className={`text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[24px] ${isPasswordMatch ? 'text-green-500' : 'text-red-500'}`}>
-                                        {isPasswordMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}
+                                    <p className={`text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px] ${isPasswordMatch ? 'text-green-500' : 'text-red-500'}`}>
+                                        {isPasswordMatch ? '비밀번호가 일치합니다.' : '동일한 비밀번호를 입력해주세요.'}
                                     </p>
                                 )}
                                 {confirmPassword.length === 0 && <div className="mb-[24px]"></div>}
 
                                 <button
                                     onClick={handleSave}
-                                    disabled={!isValidPassword || !isPasswordMatch || isSameAsCurrent}
+                                    disabled={!isValidPassword || !isPasswordMatch || isSameAsCurrent || isSaving}
                                     className={`
                                         w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                        ${confirmPassword.length > 0 ? 'mt-[12px]' : 'mt-[0px]'}
                                         ${isValidPassword && isPasswordMatch && !isSameAsCurrent
                                             ? 'bg-gray-200 text-gray-900'
                                             : 'bg-gray-700 text-gray-900 cursor-not-allowed'}

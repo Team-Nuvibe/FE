@@ -11,6 +11,7 @@ interface UserState {
     setProfileImage: (image: string) => void;
     setEmail: (email: string) => void;
     setPassword: (password: string) => void;
+    reset: () => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -24,6 +25,12 @@ export const useUserStore = create<UserState>()(
             setProfileImage: (image) => set({ profileImage: image }),
             setEmail: (email) => set({ email }),
             setPassword: (password) => set({ password }),
+            reset: () => set({
+                nickname: 'Viber',
+                profileImage: DefaultProfileImage,
+                email: 'nuvibe_test@google.com',
+                password: 'password123!'
+            }),
         }),
         {
             name: 'user-storage',

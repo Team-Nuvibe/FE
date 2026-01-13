@@ -8,7 +8,7 @@ import { LogoutModal } from '@/components/profile/LogoutModal';
 import { DeleteAccountModal } from '@/components/profile/DeleteAccountModal';
 
 const ProfilePage = () => {
-  const { nickname, profileImage, setProfileImage } = useUserStore();
+  const { nickname, profileImage, setProfileImage, reset } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -44,11 +44,13 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     setIsLogoutModalOpen(false);
+    reset(); // 저장된 데이터 초기화
     navigate('/login', { state: { toastMessage: '로그아웃 되었습니다.' } });
   };
 
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(false);
+    reset(); // 저장된 데이터 초기화
     navigate('/login', { state: { toastMessage: '계정이 성공적으로 삭제 되었습니다.' } });
   };
 
@@ -135,7 +137,7 @@ const ProfilePage = () => {
       </div>
       {toastMessage && (
         <div className="fixed left-1/2 -translate-x-1/2 bottom-[113px] w-full max-w-[393px] px-[24.5px] z-[9999] animate-fade-in-out flex justify-center pointer-events-none">
-          <div className="w-full h-[48px] bg-[#D0D3D7]/85 backdrop-blur-[30px] text-black text-[14px] font-normal leading-[150%] tracking-[-0.025em] flex items-center justify-start pl-[16px] pr-[8px] py-[10px] rounded-[5px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]">
+          <div className="w-full h-[48px] bg-[#D0D3D7]/85 backdrop-blur-[30px] text-black text-[14px] font-normal leading-[150%] tracking-[-0.025em] flex items-center justify-center px-[12px] py-[10px] rounded-[5px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]">
             {toastMessage}
           </div>
         </div>

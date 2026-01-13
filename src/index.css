@@ -64,11 +64,29 @@ body {}
   overflow: hidden;
 
   /* [앱 제스처/터치 제어] */
-  touch-action: none;
+  touch-action: manipulation;
 
   /* 텍스트 선택 방지 */
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3s ease-in-out forwards;
 }
 
 /* 스크롤바 숨기기 */

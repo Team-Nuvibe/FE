@@ -79,7 +79,7 @@ const ProfileSettingPage = () => {
 
             <div className="flex-1 overflow-y-auto scrollbar-hide pb-[120px]">
                 {type === 'terms' ? (
-                    <div className="mx-[0px] bg-gray-700 rounded-[5px] overflow-hidden">
+                    <div className="mx-[3px] bg-gray-700 rounded-[5px] overflow-hidden py-[14px] px-[21px]">
                         <ImgPersonalInfo1 className="w-full h-auto" />
                         <ImgPersonalInfo2 className="w-full h-auto" />
                         <ImgPersonalInfo3 className="w-full h-auto" />
