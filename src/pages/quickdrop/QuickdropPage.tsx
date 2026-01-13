@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImageEditor } from "../../components/features/ImageEditor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
 import { BoardSelector } from "../../components/features/BoardSelector";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -29,10 +29,12 @@ export const QuickdropPage = () => {
   );
   const [imageData, setImageData] = useState<{
     image: Blob | null;
+    imageUrl: string | null;
     tag: string;
     board: Board | null;
   }>({
     image: null,
+    imageUrl: null,
     tag: "",
     board: null,
   });
@@ -54,6 +56,14 @@ export const QuickdropPage = () => {
   const [paginationEl, setPaginationEl] = useState<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  useEffect(() => {
+    return () => {
+      if (imageData.imageUrl) {
+        URL.revokeObjectURL(imageData.imageUrl);
+      }
+    };
+  }, [imageData.imageUrl]);
+
   const navigate = useNavigate();
 
   return (
@@ -63,7 +73,14 @@ export const QuickdropPage = () => {
           file={file}
           initialState={editorState}
           onNext={(blob: Blob, currentState) => {
-            setImageData((prev) => ({ ...prev, image: blob }));
+            const imageUrl = URL.createObjectURL(blob);
+            console.log(imageUrl, imageData.imageUrl);
+            setImageData((prev) => {
+              if (prev.imageUrl) {
+                URL.revokeObjectURL(prev.imageUrl);
+              }
+              return { ...prev, image: blob, imageUrl };
+            });
             setEditorState(currentState);
             setStep("tag");
           }}
@@ -81,6 +98,7 @@ export const QuickdropPage = () => {
       {step === "board" && (
         <BoardSelector
           image={imageData.image}
+          imageUrl={imageData.imageUrl}
           tag={imageData.tag}
           onNext={(selectedBoard: Board) => {
             setImageData((prev) => ({ ...prev, board: selectedBoard }));
@@ -117,9 +135,7 @@ export const QuickdropPage = () => {
                   <div
                     className="absolute inset-0"
                     style={{
-                      backgroundImage: `url(${URL.createObjectURL(
-                        imageData.image!
-                      )})`,
+                      backgroundImage: `url(${imageData.imageUrl})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       maskImage:
@@ -132,9 +148,7 @@ export const QuickdropPage = () => {
                   <div
                     className="absolute inset-0"
                     style={{
-                      backgroundImage: `url(${URL.createObjectURL(
-                        imageData.image!
-                      )})`,
+                      backgroundImage: `url(${imageData.imageUrl})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       filter: "blur(15px)",
