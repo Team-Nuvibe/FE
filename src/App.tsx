@@ -17,7 +17,6 @@ import ArchiveDetailPage from "./pages/archive-board/ArchiveDetailPage";
 import VibetonePage from "./pages/archive-board/VibetonePage";
 import NotificationPage from "./pages/notification/NotificationPage";
 import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
-import { NotificationPage } from "./pages/notification/NotificationPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
