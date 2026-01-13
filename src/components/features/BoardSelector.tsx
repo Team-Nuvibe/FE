@@ -198,6 +198,7 @@ export const BoardSelector = ({
                   ? "text-white cursor-pointer"
                   : "text-gray-700 cursor-not-allowed"
               }`}
+              onClick={() => onNext(selectedBoard!)}
             >
               완료
             </p>
