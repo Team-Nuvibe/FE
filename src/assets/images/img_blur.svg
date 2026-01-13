@@ -1,0 +1,25 @@
+<svg viewBox="0 0 361 481" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-40" y="-40" width="441" height="561"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(20px);clip-path:url(#bgblur_0_5081_2661_clip_path);height:100%;width:100%"></div></foreignObject><g filter="url(#filter0_n_5081_2661)" data-figma-bg-blur-radius="40">
+<path d="M346 0C354.284 0 361 6.71573 361 15V466C361 474.284 354.284 481 346 481H15C6.71573 481 0 474.284 0 466V15C0 6.71573 6.71573 1.36905e-07 15 0H346Z" fill="#E2E2E2" fill-opacity="0.5"/>
+<path d="M346 0C354.284 0 361 6.71573 361 15V466C361 474.284 354.284 481 346 481H15C6.71573 481 0 474.284 0 466V15C0 6.71573 6.71573 1.36905e-07 15 0H346Z" fill="#B9BDC2" fill-opacity="0.2"/>
+</g>
+<defs>
+<filter id="filter0_n_5081_2661" x="-40" y="-40" width="441" height="561" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="2.2" stitchTiles="stitch" numOctaves="3" result="noise" seed="5401" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(0, 0, 0, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect1_noise_5081_2661">
+<feMergeNode in="shape" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<clipPath id="bgblur_0_5081_2661_clip_path" transform="translate(40 40)"><path d="M346 0C354.284 0 361 6.71573 361 15V466C361 474.284 354.284 481 346 481H15C6.71573 481 0 474.284 0 466V15C0 6.71573 6.71573 1.36905e-07 15 0H346Z"/>
+</clipPath></defs>
+</svg>
