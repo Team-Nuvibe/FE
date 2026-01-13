@@ -1,31 +1,45 @@
-import { NavLink, useNavigate } from "react-router"
+import { NavLink, useNavigate, useLocation } from "react-router"
 import Google_G_logo from '@/assets/logos/Google_logo.svg?react';
 import Naver_logo from '@/assets/logos/Naver_logo.svg?react';
 import KakaoTalk_logo from '@/assets/logos/KakaoTalk_logo.svg?react'
 import { validateSignin, type UserSigninInformation } from "../../utils/validate";
 import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
+import { useEffect, useState } from "react";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.state?.toastMessage) {
+      setToastMessage(location.state.toastMessage);
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+        window.history.replaceState({}, document.title);
+      }, 3000); // 3초 후 토스트 메시지 제거
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   const { values, errors, getInputProps } = useForm<UserSigninInformation>({
-        initialValues: {
-            email: "",
-            password: "",
-        },
-        validate: validateSignin
-    })
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: validateSignin
+  })
 
-  const isDisabled = 
-        Object.values(errors || {}).some((error)=>error.length > 0) || // 오류 있으면 true
-        Object.values(values).some((value)=> value === ""); // 입력 값 비어있으면 true
-  
+  const isDisabled =
+    Object.values(errors || {}).some((error) => error.length > 0) || // 오류 있으면 true
+    Object.values(values).some((value) => value === ""); // 입력 값 비어있으면 true
+
   const handleLoginSubmit = () => {
     // api 통신
     navigate('/home')
   }
-  
+
   const handleGoogleLogin = () => {
 
   }
@@ -37,21 +51,21 @@ const LoginPage = () => {
   const handleKakaoLogin = () => {
 
   }
-  
+
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-[100dvh] pt-10 pb-33 text-white">
+      <div className="flex flex-col justify-center items-center min-h-[100dvh] pt-10 pb-33 text-white relative">
         <div className="H0 text-white w-fit flex justify-center items-center p-9">
           Start nuvibe
         </div>
         <div className="flex flex-col gap-3">
           <InputBox
-            {...getInputProps("email")} 
+            {...getInputProps("email")}
             type="email"
             placeholder="이메일"
           />
           <InputBox
-            {...getInputProps("password")}  
+            {...getInputProps("password")}
             type="password"
             placeholder="비밀번호"
           />
@@ -64,10 +78,10 @@ const LoginPage = () => {
               <div>아이디 저장</div>
             </div>
             <div className="cursor-pointer hover:underline">
-              비밀번호를 잊어버리셨나요? 
+              비밀번호를 잊어버리셨나요?
             </div>
           </div>
-          <button 
+          <button
             className="
               w-[339px] h-[48px]
               rounded-[5px]
@@ -83,7 +97,7 @@ const LoginPage = () => {
             로그인하기
           </button>
         </div>
-        <div className="border-gray-800 border-t mt-4 mb-2 w-[339px]"/>
+        <div className="border-gray-800 border-t mt-4 mb-2 w-[339px]" />
         <div className="text-gray-500 text-[11.64px] p-4">간편로그인하기</div>
         <div className="flex gap-2">
           <button
@@ -102,6 +116,15 @@ const LoginPage = () => {
             <KakaoTalk_logo />
           </button>
         </div>
+
+        {toastMessage && (
+          <div className="absolute bottom-[122px] w-[361px] h-[46px] bg-gray-800 rounded-[5px] flex items-center justify-center animate-fade-in-out z-50">
+            <span className="text-white text-[14px] font-normal leading-[150%] tracking-[-0.025em]">
+              {toastMessage}
+            </span>
+          </div>
+        )}
+
         <footer className="absolute !bottom-12 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
