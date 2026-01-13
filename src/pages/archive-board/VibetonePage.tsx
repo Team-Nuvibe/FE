@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BackButton } from '../../components/onboarding/BackButton';
-// Swiper 관련 임포트 추가
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules'; 
+import { Pagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { CalendarModal } from '../../components/archive-board/CalendarModal';
+import { useNavigate } from 'react-router';
 
 interface TagRanking {
   rank: number;
@@ -16,44 +15,58 @@ interface TagRanking {
 }
 
 const VibeTonePage = () => {
-  // 탭 상태와 스와이퍼 인스턴스 상태 관리
+  const navigate = useNavigate();
+
+  // 1. 상태 관리: 탭과 Swiper 인스턴스
   const [activeTab, setActiveTab] = useState<'weekly' | 'all'>('weekly');
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
+  // 2. 데이터 정의 (Weekly용, All용)
   const weeklyRankings: TagRanking[] = [
     { rank: 1, tag: '#Minimal', drops: 5, status: '3 weeks in a row !' },
-    { rank: 2, tag: '#Minimal', drops: 4, status: 'New this week !' },
-    { rank: 3, tag: '#Minimal', drops: 3, status: 'Back again !' },
-    { rank: 4, tag: '#Minimal', drops: 1, status: 'Back again !' },
+    { rank: 2, tag: '#Cozy', drops: 4, status: 'New this week !' },
+    { rank: 3, tag: '#Vintage', drops: 3, status: 'Back again !' },
+    { rank: 4, tag: '#Modern', drops: 1, status: 'Back again !' },
   ];
 
-  // 탭 클릭 핸들러 (탭 변경 + 스와이퍼 이동)
-  const handleTabClick = (tab: 'weekly' | 'all', index: number) => {
-    setActiveTab(tab);
-    swiperInstance?.slideTo(index);
-  };
+  const allRankings: TagRanking[] = [
+    { rank: 1, tag: '#Minimal', drops: 150, status: 'All time best' },
+    { rank: 2, tag: '#Street', drops: 120, status: 'Steady seller' },
+    { rank: 3, tag: '#Retro', drops: 90, status: '' },
+    { rank: 4, tag: '#Sporty', drops: 80, status: '' },
+  ];
 
-  // 캘린더 모달 상태 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  // 3. 현재 탭에 맞는 데이터 선택
+  const currentData = activeTab === 'weekly' ? weeklyRankings : allRankings;
+
+  // 4. 탭이 변경될 때 Swiper를 0번 슬라이드로 초기화 (UX 향상)
+  useEffect(() => {
+    if (swiperInstance) {
+      swiperInstance.slideTo(0);
+    }
+  }, [activeTab, swiperInstance]);
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-4 pt-6 pb-4 flex items-center justify-between shrink-0">
         <BackButton className="w-6 h-6" />
-        <h1 className="H2 text-gray-200">Viber's Vibe Tone</h1>
-        <button className="w-6 h-6 flex items-center justify-center" onClick={() => setIsCalendarOpen(true)}>
+        <h1 className="H2 text-gray-200">바이브 톤</h1>
+        <button
+          className="w-6 h-6 flex items-center justify-center"
+          onClick={() => navigate('/archive-board/vibecalendar')}
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
           </svg>
         </button>
       </div>
 
-      {/* Tab Navigation */}
+      {/* Tab Navigation (필터 역할로 변경) */}
       <div className="px-4 flex gap-6 mb-2 shrink-0">
         <button
-          onClick={() => handleTabClick('weekly', 0)}
+          onClick={() => setActiveTab('weekly')}
           className={`pb-2 ST1 relative transition-colors ${
             activeTab === 'weekly' ? 'text-gray-200' : 'text-gray-500'
           }`}
@@ -64,7 +77,7 @@ const VibeTonePage = () => {
           )}
         </button>
         <button
-          onClick={() => handleTabClick('all', 1)}
+          onClick={() => setActiveTab('all')}
           className={`pb-2 ST1 relative transition-colors ${
             activeTab === 'all' ? 'text-gray-200' : 'text-gray-500'
           }`}
@@ -78,36 +91,34 @@ const VibeTonePage = () => {
         <span className="B2 text-gray-500 self-end pb-2">since : 2025.03</span>
       </div>
 
-      {/* Swiper Area */}
-      {/* flex-1을 주어 남은 영역을 모두 차지하게 함 */}
-      <div className="flex-1 min-h-0 relative"> 
+      {/* Main Content Area */}
+      <div className="flex-1 min-h-0 flex flex-col relative">
         <Swiper
           modules={[Pagination]}
-          onSwiper={setSwiperInstance} // 스와이퍼 제어권 획득
-          onSlideChange={(swiper) => {
-            // 스와이프 시 탭 상태 동기화
-            setActiveTab(swiper.activeIndex === 0 ? 'weekly' : 'all');
-          }}
+          onSwiper={setSwiperInstance}
           pagination={{
             el: '.onboarding-pagination',
             clickable: true,
             type: 'bullets',
           }}
-          className="w-full h-full"
+          className="w-full flex-1" // flex-1로 남은 공간 차지
         >
-          {/* Slide 1: Weekly */}
+          {/* Slide 1: 랭킹 리스트 (currentData를 props처럼 사용) */}
           <SwiperSlide className="overflow-y-auto">
-            <div className="px-4 pt-4 pb-24"> {/* 스크롤 패딩 확보 */}
-              
+            <div className="px-4 pt-4 pb-10">
               {/* My Top Tag Card */}
               <div className="bg-gray-900 rounded-[10px] p-6 mb-6">
-                <h2 className="H3 text-gray-200 mb-2">My Top Tage</h2>
-                <p className="B2 text-gray-400 mb-6">This Week 34 drops</p>
+                <h2 className="H3 text-gray-200 mb-2">
+                  My Top Tags ({activeTab === 'weekly' ? 'Weekly' : 'All Time'})
+                </h2>
+                <p className="B2 text-gray-400 mb-6">
+                  {activeTab === 'weekly' ? 'This Week 34 drops' : 'Total 450 drops'}
+                </p>
 
-                {/* Rankings */}
+                {/* Rankings Map */}
                 <div className="space-y-4">
-                  {weeklyRankings.map((item) => (
-                    <div key={item.rank} className="flex items-center gap-4">
+                  {currentData.map((item) => (
+                    <div key={`${item.tag}-${item.rank}`} className="flex items-center gap-4">
                       <span className="H2 text-gray-200 w-8">{item.rank}.</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
@@ -126,35 +137,30 @@ const VibeTonePage = () => {
                   ))}
                 </div>
               </div>
-
-              {/* Save Button  */}
-              
             </div>
           </SwiperSlide>
 
-          {/* Slide 2 */}
+          {/* Slide 2: 추가 정보 혹은 다음 페이지 (예시) */}
           <SwiperSlide className="overflow-y-auto">
-            <div>
-              123123
+            <div className="px-4 pt-4 text-center text-gray-400">
+              <p className="H3 mb-4">More Analysis</p>
+              <p>추가적인 분석 데이터가 들어갈 페이지입니다.</p>
+              <p>현재 탭: {activeTab}</p>
             </div>
           </SwiperSlide>
 
-          {/* Pagination Container */}
+          {/* Pagination Container (Swiper 내부에 위치) */}
           <div className="onboarding-pagination !absolute !bottom-4 !left-0 !w-full flex justify-center gap-2 z-10" />
         </Swiper>
+      </div>
+
+      {/* Footer / Save Button (Swiper 밖으로 빼서 하단 고정) */}
+      <div className="px-4 py-4 shrink-0 bg-black mb-25">
         <button className="w-full h-[56px] bg-transparent border border-gray-700 rounded-[10px] flex items-center justify-center gap-2 ST1 text-gray-200 hover:bg-gray-900 transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Save My Week
+          
+          Save My {activeTab === 'weekly' ? 'Week' : 'History'}
         </button>
       </div>
-      <CalendarModal 
-        isOpen={isCalendarOpen} 
-        onClose={() => setIsCalendarOpen(false)} 
-      />
     </div>
   );
 };

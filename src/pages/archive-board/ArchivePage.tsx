@@ -5,16 +5,20 @@ import SearchIcon from '@/assets/icons/icon_search.svg?react'
 import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
+import Icon_folder from '@/assets/icons/icon_folder2.svg?react'
 import { useNavigate } from 'react-router';
 import { useNavbarActions } from '../../hooks/useNavbarStore';
 import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
 import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
 import { useUserStore } from '@/hooks/useUserStore';
 
+
+
 interface ArchiveBoard {
   id: string;
   title: string;
   thumbnail?: string;
+  image?: string;
 }
 
 interface ResentDrops {
@@ -48,9 +52,9 @@ const ArchivePage = () => {
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
 
   const [archiveboard, setArciveboard] = useState<ArchiveBoard[]>([
-    { id: '1', title: '2026 추구미' },
-    { id: '2', title: '보드명' },
-    { id: '3', title: '' },
+    { id: '1', title: '2026 추구미', image: '../../src/assets/images/img_7.svg' },
+    { id: '2', title: '보드명', image: '../../src/assets/images/img_7.svg' },
+    { id: '3', title: '', image: '' },
     { id: '4', title: '' },
     { id: '5', title: '' },
     { id: '6', title: '' },
@@ -111,7 +115,7 @@ const ArchivePage = () => {
       {/* Main Content - Scrollable */}
       <div className="flex-1 overflow-y-auto pb-24 touch-auto">
         {/* Video Posts Section with Overlay */}
-        <div className="relative mb-37 mt-2">
+        <div className="relative mb-[134px] mt-2">
           {/* Background Video Posts */}
           <Swiper
             modules={[Autoplay]}
@@ -176,8 +180,9 @@ const ArchivePage = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="mt-2 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
-              {nickname}
+            <div className="mt-1 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
+              {/* user.nickname */}
+              Vibers
             </div>
           </div>
         </div>
@@ -227,7 +232,7 @@ const ArchivePage = () => {
         {/* Archive Section */}
         <div className="flex-1 flex flex-col">
           {/* Fixed Header */}
-          <div className="px-4 p-6 bg-black sticky top-0 z-10 pb-4">
+          <div className="px-4 p-5 bg-black sticky top-0 z-50 pb-4">
             <div className="flex items-center justify-between mb-3">
               <div className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">아카이브 보드</div>
               <div className="flex gap-[24px]">
@@ -261,11 +266,10 @@ const ArchivePage = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            <div className="grid grid-cols-3 gap-4 pb-6">
+            
+            <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
               {archiveboard.map((board) => {
-                // 현재 아이템이 선택되었는지 확인
                 const isSelected = selectedIds.includes(board.id);
-
                 return (
                   <div
                     key={board.id}
@@ -273,32 +277,59 @@ const ArchivePage = () => {
                       if (isSelectMode) {
                         toggleSelection(board.id);
                       } else {
-                        // 상세 페이지로 이동
-                        // navigate(`/archive-board/${board.id}`)
-                        // 임시로 boardtitle로 적용
-                        navigate(`/archive-board/${board.title}`)
+                        navigate(`/archive-board/${board.title}`);
                       }
                     }}
                     className={`
-                      relative w-[110px] h-[110px] bg-gray-900 rounded-[5px] flex items-center justify-center cursor-pointer overflow-hidden transition-all
+                      flex flex-col items-center gap-2 cursor-pointer transition-all
                       ${isSelectMode ? 'active:scale-95' : ''} 
                     `}
                   >
-                    {board.title && (
-                      <span className="ST2">{board.title}</span>
-                    )}
+                    {/* 폴더 컨테이너 */}
+                    <div className="relative w-full aspect-square max-w-[110px] shrink-0 rounded-[5px] bg-[#212224]/80 overflow-hidden">
+                      {/* 내부 이미지 (썸네일) */}
+                      {board.image ? (
+                        <img
+                          src={board.image}
+                          alt="thumbnail"
+                          className="absolute w-[66%] h-[88%] top-[3%] left-[16%] py-2"
+                        />
+                      ) : (
+                        <div className="absolute w-[66%] h-[88%] top-[3%] left-[16%] bg-gray-800" />
+                      )}
 
-                    {/* 체크 표시 오버레이 */}
-                    {isSelectMode && (
-                      <>
-                        {/* 선택되었을 때 보여질 체크마크 오버레이 */}
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-white/30 flex items-center justify-center rounded-[10px]">
-                            <SelectedImageIcon className="w-[42px] h-[42px]" />
-                          </div>
-                        )}
-                      </>
-                    )}
+                      {/* 폴더 오버레이 아이콘 */}
+                      <Icon_folder className="absolute bottom-0 left-0 w-full h-auto z-10 pointer-events-none" />
+
+                      {/* 날짜 (우측 상단) */}
+                      <div className="absolute top-[40%] right-2 z-20 text-gray-300 text-[6px] font-light leading-[150%] font-['Montserrat']">
+                        2026. 01. 03
+                      </div>
+
+                      {/* 폴더 제목 (하단) */}
+                      <div className="absolute flex justify-between bottom-[9.5px] left-[6.39px] right-[6px] z-20">
+                        <p className="text-gray-200 text-[10px] font-normal leading-[150%] tracking-[-0.025em] line-clamp-2 text-white">
+                          {board.title}
+                        </p>
+                        {/* 보드 내의 태그 갯수 */}
+                        <p className='flex items-end text-[7px] font-normal text-gray-300'>12tag</p>
+                      </div>
+                      
+                      
+
+                      {/* 체크표시 */}
+                      {isSelectMode && (
+                        <div
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
+                            isSelected ? 'bg-white/30' : 'bg-transparent'
+                          }`}
+                        >
+                          {isSelected && (
+                            <SelectedImageIcon className="w-[32px] h-[32px]" />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
