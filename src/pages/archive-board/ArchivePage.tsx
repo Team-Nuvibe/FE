@@ -190,7 +190,7 @@ const ArchivePage = () => {
         {/* Vibe Tone */}
         <div className="px-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
+            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">{nickname}'s 바이브 톤</p>
             <button
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
