@@ -52,6 +52,18 @@ const HomePage = () => {
     }
   };
 
+  const inputImageRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      alert("파일을 선택하지 않았습니다.");
+      return;
+    }
+    console.log("Selected file:", file);
+    navigate("/quickdrop", { state: { file } });
+  };
+
   return (
     <div className="flex flex-col w-full min-h-full">
       {/* 헤더 */}
@@ -74,8 +86,8 @@ const HomePage = () => {
         </div>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col">
-            <div className="B0 text-gray-100 px-4 z-10">
-              <p className="text-[24px]">Drop</p>
+            <div className="B0 text-gray-100 px-4 z-10 tracking-tight">
+              <p className="text-[24px] leading-4">Drop</p>
               <p className="text-[24px]">your vibe</p>
             </div>
             <div className="H1 pb-4 px-4 z-10">
@@ -86,6 +98,13 @@ const HomePage = () => {
           </div>
           <div className="z-10 mr-4 mb-9 cursor-pointer">
             <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
+            <input
+              type="file"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              accept="image/*"
+              ref={inputImageRef}
+              onChange={handleImageChange}
+            />
           </div>
         </div>
       </header>
@@ -174,7 +193,7 @@ const HomePage = () => {
                     key={itemIndex}
                     className="w-full aspect-[177/236] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
                     onClick={() => navigate(`/tag/${item}`)}
-                  // 임시로 태그 id 대신 이름 사용
+                    // 임시로 태그 id 대신 이름 사용
                   >
                     <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
                       <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">

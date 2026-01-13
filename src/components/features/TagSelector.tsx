@@ -1,5 +1,5 @@
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
-import IxonXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
+import IconXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
@@ -10,12 +10,13 @@ import { motion } from "framer-motion";
 
 interface TagSelectorProps {
   onNext: (selectedTag: string) => void;
+  onPrevious: () => void;
 }
 
-export const TagSelector = ({ onNext }: TagSelectorProps) => {
+export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string>("");
 
   const swiperRef = useRef<SwiperType | null>(null);
 
@@ -63,22 +64,30 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
 
   return (
     <div>
-      <header className="flex justify-between items-center pt-2 pb-6 px-4">
-        <IconXbuttonGray3
-          className="cursor-pointer"
-          onClick={() => navigate(-1)}
-        />
-        <h2 className="H2 text-white tracking-tight">바이브 드랍</h2>
-        <p className="ST2 text-white cursor-pointer">다음</p>
-      </header>
-      <div className="flex items-center mx-4 mb-5 h-12 rounded-[5px] bg-gray-900">
-        <IconSearch className="ml-4 mr-3" />
-        <input
-          type="text"
-          placeholder="검색어를 입력하세요."
-          className="B1 tracking-tight focus:outline-none"
-        />
+      <div className="flex flex-col">
+        <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
+          <IconXbuttonGray3
+            className="cursor-pointer"
+            onClick={() => onPrevious()}
+          />
+          <h2 className="H2 text-white">바이브 드랍</h2>
+          <p
+            className="ST2 text-white cursor-pointer"
+            onClick={() => onNext(selectedTag)}
+          >
+            다음
+          </p>
+        </header>
+        <div className="flex items-center mx-4 mb-5 h-12 rounded-[5px] bg-gray-900">
+          <IconSearch className="ml-4 mr-3" />
+          <input
+            type="text"
+            placeholder="검색어를 입력하세요."
+            className="B1 tracking-tight focus:outline-none"
+          />
+        </div>
       </div>
+
       <div className="relative flex justify-between items-center mx-4 mb-4 tracking-tight">
         <div className="absolute bottom-[0.5px] left-0 w-[206px] h-[0.5px] bg-gray-400" />
         <div className="flex">
@@ -141,9 +150,13 @@ export const TagSelector = ({ onNext }: TagSelectorProps) => {
         <SwiperSlide>
           <div className="flex flex-wrap px-4 gap-3">
             {recentSearches.map((tag) => (
-              <div className="flex justify-between items-center gap-3 bg-gray-900 rounded-[5px] px-2 py-[3px]">
+              <div
+                className="flex justify-between items-center gap-3 bg-gray-900 rounded-[5px] px-2 py-[3px] cursor-pointer"
+                key={tag}
+                onClick={() => onNext(tag)}
+              >
                 <p className="ST1 text-gray-200 tracking-tight">#{tag}</p>
-                <IxonXbuttonQuickdropTag className="cursor-pointer w-[8px]" />
+                <IconXbuttonQuickdropTag className="cursor-pointer w-[8px]" />
               </div>
             ))}
           </div>
