@@ -96,7 +96,7 @@ const HomePage = () => {
               </h1>
             </div>
           </div>
-          <div className="z-10 mr-4 mb-9 cursor-pointer">
+          <div className="relative z-10 mr-4 mb-9 cursor-pointer">
             <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
             <input
               type="file"
