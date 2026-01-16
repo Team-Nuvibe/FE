@@ -6,14 +6,18 @@ import EtcButton from '@/assets/icons/icon_etcbutton.svg?react';
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react';
 
 // Components
-import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
-import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
-import { ArchiveOptionMenu } from '../../components/archive-board/ArchiveOptionMenu';
-import { EditBoardNameBottomSheet } from '../../components/archive-board/EditBoardnameBottomSheet';
-import { useNavbarActions } from '../../hooks/useNavbarStore';
+import { DeleteBottomSheet } from '@/components/archive-board/DeleteBottomSheet';
+import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal';
+import { ArchiveOptionMenu } from '@/components/archive-board/ArchiveOptionMenu';
+import { EditBoardNameBottomSheet } from '@/components/archive-board/EditBoardnameBottomSheet';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
+
+// Data
+import { tagItems } from '@/constants/TagItems';
 
 // Swiper styles
 import 'swiper/css';
+
 
 
 interface ModelItem {
@@ -34,7 +38,7 @@ const ArchiveDetailPage = () => {
   }, [boardid]);
 
   const [selectedFilter, setSelectedFilter] = useState<string>('최신순');
-  const filters = ['최신순', 'Warm', 'Blur', 'Moody', 'Minimal'];
+  const filters = ['최신순', 'Mood', 'Light', 'Color'];
 
   // State Management
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,16 +49,14 @@ const ArchiveDetailPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditNameModalOpen, setIsEditNameModalOpen] = useState(false);
 
-  const [allModelItems, setAllModelItems] = useState<ModelItem[]>([
-    { id: '1', tag: 'Blur' },
-    { id: '2', tag: 'Blur' },
-    { id: '3', tag: 'Warm' },
-    { id: '4', tag: 'Moody' },
-    { id: '5', tag: 'Minimal' },
-    { id: '6', tag: 'Blur' },
-    { id: '7', tag: 'Warm' },
-    { id: '8', tag: 'Minimal' },
-  ]);
+  // Convert tagItems to ModelItem format and add to state
+  const [allModelItems, setAllModelItems] = useState<ModelItem[]>(
+    tagItems.map(item => ({
+      id: item.id,
+      tag: item.tag.replace('#', ''), // Remove # from tag
+      thumbnail: item.thumbnail
+    }))
+  );
 
   // Filter Logic
   const modelItems = (() => {
@@ -201,6 +203,7 @@ const ArchiveDetailPage = () => {
                     <img
                       src={item.thumbnail}
                       alt={item.tag}
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
                   ) : (

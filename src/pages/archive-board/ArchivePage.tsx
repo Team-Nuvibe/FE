@@ -40,12 +40,12 @@ const ArchivePage = () => {
   const { nickname, profileImage } = useUserStore();
 
   const resentDrops: ResentDrops[] = [
-    { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '2', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '3', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '4', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '5', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '6', tag: '#End', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+    { id: '1', tag: '#Color', time: '12m', thumbnail: 'https://drive.google.com/thumbnail?id=1dMIEDAhlbkxIezdzyffcYZX7srUXuz0k&sz=w1000' },
+    { id: '2', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1vHWPQpWoQQ5PgN6f97YeEXaHFLbZYJCA&sz=w1000' },
+    { id: '3', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1k5uqmKAqCjYy-Bq49TWDFrzJn_Y0TsuK&sz=w1000' },
+    { id: '4', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=16wOYnBu0VJotnd2YEimT7gNuQSiJNNG1&sz=w1000' },
+    { id: '5', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1Xz60hNsv3o-eQREjtYKhvliSCQUDbg8B&sz=w1000' },
+    { id: '6', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1yEtGoWgsvy05wHWgrvHtv6FTeCgnCFkF&sz=w1000' },
 
   ];
 
@@ -149,7 +149,8 @@ const ArchivePage = () => {
                   <img
                     src={post.thumbnail}
                     alt={post.tag}
-                    className="w-full h-full object-cover "
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black pointer-events-none" />
                   <div className="absolute top-1 left-1 px-2 py-1 rounded-lg ST1">
