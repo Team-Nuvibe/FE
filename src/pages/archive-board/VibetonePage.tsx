@@ -104,7 +104,7 @@ const VibeTonePage = () => {
           className="w-full flex-1" // flex-1로 남은 공간 차지
         >
           {/* Slide 1: 랭킹 리스트 (currentData를 props처럼 사용) */}
-          <SwiperSlide className="overflow-y-auto">
+          <SwiperSlide className="overflow-y-auto ">
             <div className="px-4 pt-4 pb-10">
               {/* My Top Tag Card */}
               <div className="bg-gray-900 rounded-[10px] p-6 mb-6">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, isSameDay } from 'date-fns';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -9,13 +10,13 @@ interface VibeData {
   thumbnail: string;
   tag: string;
   label: string;
+  imageUrl?: string; // 실제 이미지 URL (reveal에 전달할 데이터)
 }
 
 interface VibeCalendarBottomCardProps {
   selectedDate: Date;
   activeDates: string[];
-  vibeData?: VibeData[]; // 추후 DB 데이터로 대체
-  onRevealClick: () => void;
+  vibeData?: VibeData[];
   onDropClick?: () => void;
 }
 
@@ -23,9 +24,9 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
   selectedDate,
   activeDates,
   vibeData = [],
-  onRevealClick,
   onDropClick,
 }) => {
+  const navigate = useNavigate();
   const today = new Date();
   const isToday = isSameDay(selectedDate, today);
   const dateString = format(selectedDate, 'yyyy-MM-dd');
@@ -106,7 +107,12 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
                 
                   <button 
                     className="w-full h-[36px] bg-gray-300 rounded-[8px] text-gray-800 ST3"
-                    onClick={onRevealClick}>
+                    onClick={() => navigate('/archive-board/reveal', {
+                      state: {
+                        imageUrl: item.imageUrl || item.thumbnail,
+                        tag: item.tag
+                      }
+                    })}>
                     확인하기
                   </button>
                 </div>
