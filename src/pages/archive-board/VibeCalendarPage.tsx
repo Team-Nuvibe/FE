@@ -17,13 +17,11 @@ import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react';
 import 'swiper/css';
 import ChevronLeftIcon from '@/assets/icons/icon_chevron_left.svg?react'
 import MovemonthIcon from '@/assets/icons/icon_backbutton.svg?react'
-import { AnimatePresence } from 'framer-motion';
 
 import { useNavbarActions } from '../../hooks/useNavbarStore';
 
 // 더미 데이터용 
 import img7 from '@/assets/images/img_7.svg';
-import RevealImageModal from '@/components/archive-board/vibecalendar/RevealImageModal';
 import VibeCalendarBottomCard from '@/components/archive-board/vibecalendar/VibeCalendarBottomCard';
 
 // 달력 그리드 컴포넌트 (최적화 적용)
@@ -140,16 +138,15 @@ export const VibeCalandarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 1)); 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeDates, setActiveDates] = useState<string[]>([]);
-  const [showReveal, setShowReveal] = useState(false);
   
   const swiperRef = useRef<SwiperClass | null>(null);
 
   const {setNavbarVisible} = useNavbarActions();
 
   useEffect(() => {
-    setNavbarVisible(!showReveal);
+    setNavbarVisible(true);
     return () => setNavbarVisible(true);
-  }, [showReveal, setNavbarVisible]);
+  }, [setNavbarVisible]);
 
   useEffect(() => {
     const fetchMonthlyData = async () => {
@@ -258,7 +255,7 @@ export const VibeCalandarPage = () => {
       </div>
 
       {/* Bottom Card with Swiper */}
-      {selectedDate && !showReveal && (
+      {selectedDate && (
         <VibeCalendarBottomCard
           selectedDate={selectedDate}
           activeDates={activeDates}
@@ -267,19 +264,9 @@ export const VibeCalandarPage = () => {
             { thumbnail: img7, tag: '#Vibe', label: '지난 달의 오늘' },
             { thumbnail: img7, tag: '#Moment', label: '지난 달의 오늘' },
           ]}
-          onRevealClick={() => setShowReveal(true)}
           onDropClick={() => {/* TODO: 바이브 드랍 페이지로 이동 */}}
         />
       )}
-      <AnimatePresence>
-        {showReveal && (
-        <RevealImageModal
-          imageUrl={img7}
-          tag="#Raw"
-          onClose={() => setShowReveal(false)}
-        />
-        )}
-      </AnimatePresence>
     </div>
     
     
