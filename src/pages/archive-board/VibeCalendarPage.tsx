@@ -18,11 +18,13 @@ import 'swiper/css';
 import ChevronLeftIcon from '@/assets/icons/icon_chevron_left.svg?react'
 import MovemonthIcon from '@/assets/icons/icon_backbutton.svg?react'
 import { AnimatePresence } from 'framer-motion';
-import RevealImageModal from '../../components/archive-board/RevealImageModal';
+
 import { useNavbarActions } from '../../hooks/useNavbarStore';
 
 // 더미 데이터용 
 import img7 from '@/assets/images/img_7.svg';
+import RevealImageModal from '@/components/archive-board/vibecalendar/RevealImageModal';
+import VibeCalendarBottomCard from '@/components/archive-board/vibecalendar/VibeCalendarBottomCard';
 
 // 달력 그리드 컴포넌트 (최적화 적용)
 interface CalendarGridProps {
@@ -52,7 +54,7 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
 
   return (
     <div className="px-[39px] h-full">
-      <div className="grid grid-cols-7 pb-[10px]">
+      <div className="grid grid-cols-7 pb-[19.61px]">
         {weeks.map((day) => (
           <div key={day} className="text-center text-[12px] text-gray-100 font-medium">
             {day}
@@ -60,7 +62,7 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-y-1"> {/* gap-y-6에서 4로 살짝 조정하여 밀도 높임 */}
+      <div className="grid grid-cols-7 pb-1">
         {calendarDays.map((dayItem) => {
           const isCurrentMonth = isSameMonth(dayItem, monthStart);
           const dateString = format(dayItem, 'yyyy-MM-dd');
@@ -73,19 +75,21 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
           // 날짜 컨테이너 스타일
           let containerStyle = "bg-transparent";
           if (isCurrentMonth) {
-            if (isSelected) {
-              containerStyle = "bg-gray-800/50"; 
-            } else if (isToday) {
-              containerStyle = "bg-gray-800/100"; 
+            if (isToday) {
+              containerStyle = "bg-gray-300/100"; 
+            } else if (isSelected) {
+              containerStyle = "bg-gray-300/30"; 
             }
           }
           
           // 텍스트 색상 
-          const textStyle = (isSelected || isToday) 
-            ? 'text-gray-100' 
-            : isFuture || hasData
-              ? 'text-gray-100' 
-              : 'text-gray-400'; 
+          const textStyle = isToday 
+            ? 'text-gray-900 font-[500]' 
+            : isSelected 
+              ? 'text-gray-100 font-[400]'
+              : (isFuture || hasData) 
+                ? 'text-gray-100' 
+                : 'text-gray-400';
 
           return (
             <div 
@@ -95,8 +99,8 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
               <div 
                 className={`
                   flex flex-col items-center justify-center 
-                  w-[36px] h-[46px] rounded-[12px] cursor-pointer transition-colors duration-200
-                  gap-1
+                  w-[33px] h-[46px] rounded-[5px] cursor-pointer transition-colors duration-200
+                  px-1.5 pt-1.5
                   ${containerStyle}
                   ${!isCurrentMonth ? 'invisible' : ''}
                 `}
@@ -107,7 +111,7 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
                 {/* 다이아몬드 아이콘 */}
                 <div 
                   className={`
-                    w-1.5 h-1.5 rotate-45 transition-colors rounded-[1px]
+                    size-1.75 rotate-45 transition-colors rounded-[2px]
                     ${hasData ? 'bg-[#D9D9D9]' : 'bg-transparent'}
                   `} 
                 />
@@ -115,7 +119,7 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
                 {/* Day Number */}
                 <span 
                   className={`
-                    text-[18px] font-normal leading-none
+                    text-[18px] leading-[1.5] tracking-[-0.45px] flex items-center justify-center
                     ${textStyle}
                   `}
                 >
@@ -189,7 +193,7 @@ export const VibeCalandarPage = () => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="w-full px-4 pt-[27px] pb-[36px] flex items-center justify-between">
+      <div className="w-full px-4 pt-[27px] pb-[24px] flex items-center justify-between">
         <button onClick={() => navigate(-1)}>
             <ChevronLeftIcon />
         </button>
@@ -197,7 +201,7 @@ export const VibeCalandarPage = () => {
         <div className="w-6" /> 
       </div>
 
-      <div className="flex flex-col w-full items-center justify-center pb-[35px]">
+      <div className="flex flex-col w-full items-center justify-center pb-[28px]">
         <span className="text-gray-400 text-[10px] mb-1">{format(currentDate, 'yyyy')}</span>
         <div className="flex w-full justify-between px-[35.03px]">
           <button onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
@@ -253,40 +257,19 @@ export const VibeCalandarPage = () => {
         </Swiper>
       </div>
 
-      {/* Bottom Card */}
+      {/* Bottom Card with Swiper */}
       {selectedDate && !showReveal && (
-        <div className="
-        absolute bottom-[120px]
-        left-0 right-0 mx-auto
-        bg-gray-900 rounded-[10px] shadow-[inset_0_0_30px_0_rgba(255,255,255,0.2)]
-        w-[341px]
-        p-4 flex gap-4 animate-slide-up z-40"
-        >
-          <div className="w-[96px] h-[130px] bg-gray-600 rounded-[8px] overflow-hidden">
-             {/* 썸네일 */}
-          </div>
-          
-          <div className="flex-1 flex flex-col gap-5 justify-between">
-            <div>
-              <p className="text-gray-100 H3">지난 달의 오늘</p>
-              <span className="
-                H1
-                bg-[linear-gradient(90deg,#FFF_35.59%,rgba(247,247,247,0.30)_105%)]
-                bg-clip-text 
-                text-transparent
-              ">
-                #Raw
-              </span>
-            </div>
-          
-            <button 
-              className="w-full h-[36px] bg-gray-300 rounded-[8px] text-gray-800 ST3"
-              onClick={() => setShowReveal(true)}>
-              확인하기
-            </button>
-            
-          </div>
-        </div>
+        <VibeCalendarBottomCard
+          selectedDate={selectedDate}
+          activeDates={activeDates}
+          vibeData={[
+            { thumbnail: img7, tag: '#Raw', label: '지난 달의 오늘' },
+            { thumbnail: img7, tag: '#Vibe', label: '지난 달의 오늘' },
+            { thumbnail: img7, tag: '#Moment', label: '지난 달의 오늘' },
+          ]}
+          onRevealClick={() => setShowReveal(true)}
+          onDropClick={() => {/* TODO: 바이브 드랍 페이지로 이동 */}}
+        />
       )}
       <AnimatePresence>
         {showReveal && (

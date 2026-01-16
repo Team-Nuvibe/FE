@@ -9,8 +9,9 @@
 }
 
 @theme {
-  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
-    Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
+  --font-sans:
+    "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
     "Malgun Gothic", sans-serif;
   --color-black: #121212;
   --color-white: #fafafa;
@@ -123,14 +124,53 @@ button {
   background-color: var(--color-gray-300) !important;
 }
 
-/* 보드 이름 변경 바텀시트 애니메이션 */
+/* Bottom Card Pagination */
+.bottom-card-pagination .swiper-pagination-bullet {
+  width: 6px !important;
+  height: 6px !important;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+}
+
+.bottom-card-pagination .swiper-pagination-bullet-active {
+  background-color: rgba(255, 255, 255, 1) !important;
+}
+
+/* Bottom Card Pagination */
+.bottom-card-pagination .swiper-pagination-bullet {
+  width: 6px !important;
+  height: 6px !important;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+}
+
+.bottom-card-pagination .swiper-pagination-bullet-active {
+  background-color: rgba(255, 255, 255, 1) !important;
+}
+
+// 보드 이름 변경 바텀시트 애니메이션 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-4px); }
-  30% { transform: translateX(4px); }
-  45% { transform: translateX(-2px); }
-  60% { transform: translateX(2px); }
-  75% { transform: translateX(-1px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-4px);
+  }
+  30% {
+    transform: translateX(4px);
+  }
+  45% {
+    transform: translateX(-2px);
+  }
+  60% {
+    transform: translateX(2px);
+  }
+  75% {
+    transform: translateX(-1px);
+  }
 }
 
 .animate-shake {

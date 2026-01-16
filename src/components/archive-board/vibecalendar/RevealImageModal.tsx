@@ -185,7 +185,7 @@ const RevealImageModal: React.FC<RevealImageModalProps> = ({
       </div>
 
       {/* Image Area */}
-      <div className="flex px-4 pb-6 flex items-center justify-center">
+      <div className="flex px-4 pb-6 items-center justify-center">
         <div 
           ref={containerRef}
           className="relative w-full max-w-[390px] h-[481px] aspect-[3/4] rounded-[10px] overflow-hidden bg-white"
