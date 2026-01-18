@@ -11,7 +11,8 @@ import { useNavbarActions } from '../../hooks/useNavbarStore';
 import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
 import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
 import { useUserStore } from '@/hooks/useUserStore';
-
+import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
+import { ProfileImageDisplay } from '@/components/common/ProfileImageDisplay';
 
 
 interface ArchiveBoard {
@@ -173,13 +174,20 @@ const ArchivePage = () => {
           </Swiper>
           <div className="absolute top-[260px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
             {/* 프로필 이미지 */}
-            <div className="w-[76.14px] h-[76.14px] rounded-full overflow-hidden pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
-              <img
+            {profileImage === DefaultProfileImage ? (
+              <div className="w-[76.14px] h-[76.14px] pointer-events-auto">
+                <img
+                  src={profileImage}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <ProfileImageDisplay
                 src={profileImage}
-                alt="profile"
-                className="w-full h-full object-cover"
+                className="w-[76.14px] h-[76.14px] pointer-events-auto"
               />
-            </div>
+            )}
             <div className="mt-1 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
               {/* user.nickname */}
               {nickname}
@@ -190,7 +198,7 @@ const ArchivePage = () => {
         {/* Vibe Tone */}
         <div className="px-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
+            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">{nickname}'s 바이브 톤</p>
             <button
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
@@ -266,7 +274,7 @@ const ArchivePage = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            
+
             <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
               {archiveboard.map((board) => {
                 const isSelected = selectedIds.includes(board.id);
@@ -314,15 +322,14 @@ const ArchivePage = () => {
                         {/* 보드 내의 태그 갯수 */}
                         <p className='flex items-end text-[7px] font-normal text-gray-300'>12tag</p>
                       </div>
-                      
-                      
+
+
 
                       {/* 체크표시 */}
                       {isSelectMode && (
                         <div
-                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
-                            isSelected ? 'bg-white/30' : 'bg-transparent'
-                          }`}
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? 'bg-white/30' : 'bg-transparent'
+                            }`}
                         >
                           {isSelected && (
                             <SelectedImageIcon className="w-[32px] h-[32px]" />

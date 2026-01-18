@@ -30,6 +30,8 @@ const ProfileSettingPage = () => {
         switch (type) {
             case 'notifications': return '알림 설정';
             case 'terms': return '서비스 이용약관';
+            case 'privacy-policy': return '개인정보 처리 방침';
+            case 'privacy-collection': return '개인정보 수집 및 이용 동의';
             default: return '설정';
         }
     };
@@ -66,7 +68,7 @@ const ProfileSettingPage = () => {
 
     return (
         <div className="w-full h-full bg-black text-white flex flex-col px-[20px]">
-            <header className="flex items-center justify-between relative mt-[70px] mb-[28px] shrink-0 h-[30px]">
+            <header className="flex items-center justify-between relative mt-[8.06px] mb-[28px] shrink-0 h-[30px]">
                 <button
                     onClick={() => navigate(-1)}
                     className="rotate-180 p-2 -ml-2"
@@ -80,8 +82,14 @@ const ProfileSettingPage = () => {
             <div className="flex-1 overflow-y-auto scrollbar-hide pb-[120px]">
                 {type === 'terms' ? (
                     <div className="mx-[3px] bg-gray-700 rounded-[5px] overflow-hidden py-[14px] px-[21px]">
-                        <ImgPersonalInfo1 className="w-full h-auto" />
                         <ImgPersonalInfo2 className="w-full h-auto" />
+                    </div>
+                ) : type === 'privacy-policy' ? (
+                    <div className="mx-[3px] bg-gray-700 rounded-[5px] overflow-hidden py-[14px] px-[21px]">
+                        <ImgPersonalInfo1 className="w-full h-auto" />
+                    </div>
+                ) : type === 'privacy-collection' ? (
+                    <div className="mx-[3px] bg-gray-700 rounded-[5px] overflow-hidden py-[14px] px-[21px]">
                         <ImgPersonalInfo3 className="w-full h-auto" />
                     </div>
                 ) : type === 'notifications' ? (

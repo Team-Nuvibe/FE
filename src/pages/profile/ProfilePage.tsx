@@ -1,6 +1,8 @@
 import ChevronRightIcon2 from '@/assets/icons/icon_chevron_right2.svg?react';
 import ChangeProfileIcon from '@/assets/icons/icon_change_profile_picture.svg?react';
 import { useUserStore } from '@/hooks/useUserStore';
+import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
+import { ProfileImageDisplay } from '@/components/common/ProfileImageDisplay';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { LogoutModal } from '@/components/profile/LogoutModal';
@@ -70,21 +72,30 @@ const ProfilePage = () => {
       items: [
         { label: "알림", onClick: () => navigate('/profile/setting/notifications'), hasArrow: true },
         { label: "서비스 이용약관", onClick: () => navigate('/profile/info/terms'), hasArrow: true },
+        { label: "개인정보 처리 방침", onClick: () => navigate('/profile/info/privacy-policy'), hasArrow: true },
+        { label: "개인정보 수집 및 이용 동의", onClick: () => navigate('/profile/info/privacy-collection'), hasArrow: true },
       ]
     }
   ];
 
   return (
     <div className="w-full h-full bg-black text-white flex flex-col overflow-y-auto">
-      <div className="flex flex-col items-center mt-[100px] mb-8">
+      <div className="flex flex-col items-center mt-[38.06px] mb-8">
         <div className="relative mb-[12px]">
-          <div className="w-[89.79px] h-[89.79px] rounded-full overflow-hidden">
-            <img
+          {profileImage === DefaultProfileImage ? (
+            <div className="w-[89.79px] h-[89.79px] overflow-visible">
+              <img
+                src={profileImage}
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <ProfileImageDisplay
               src={profileImage}
-              alt="profile"
-              className="w-full h-full object-cover"
+              className="w-[89.79px] h-[89.79px]"
             />
-          </div>
+          )}
           <input
             type="file"
             ref={fileInputRef}
@@ -104,7 +115,7 @@ const ProfilePage = () => {
         <div className="
           font-['Pretendard'] 
           font-[500] 
-          text-[35.4px] 
+          text-[28px] 
           text-[#F7F7F7] 
           leading-[140%] 
           tracking-[-0.03em]
