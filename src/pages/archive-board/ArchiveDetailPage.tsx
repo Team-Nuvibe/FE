@@ -12,7 +12,7 @@ import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal
 import { ArchiveOptionMenu } from '@/components/archive-board/ArchiveOptionMenu';
 import { EditBoardNameBottomSheet } from '@/components/archive-board/EditBoardnameBottomSheet';
 import { useNavbarActions } from '@/hooks/useNavbarStore';
-import { BoardSelector } from '@/components/archive-board/BoardSelector';
+import { BoardSelector, type Board } from '@/components/archive-board/BoardSelector';
 import { ImageDetailModal } from '@/components/archive-board/ImageDetailModal';
 
 // Data
@@ -20,8 +20,6 @@ import { tagItems } from '@/constants/TagItems';
 
 // Swiper styles
 import 'swiper/css';
-
-
 
 interface ModelItem {
   id: string;
@@ -301,6 +299,14 @@ const ArchiveDetailPage = () => {
           <ImageDetailModal
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
+            boardTitle={boardTitle}
+            onTagUpdate={(newTag) => {
+              if (selectedItem) {
+                const updatedItem = { ...selectedItem, tag: newTag };
+                setSelectedItem(updatedItem); // Update modal view
+                setAllModelItems(prev => prev.map(item => item.id === selectedItem.id ? updatedItem : item)); // Update list view
+              }
+            }}
           />
         )}
       </AnimatePresence>
@@ -315,7 +321,7 @@ const ArchiveDetailPage = () => {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="absolute inset-0 z-[60] bg-black"
           >
-           <BoardSelector
+          <BoardSelector
               onSelect={handleBoardSelect}
               onClose={() => setIsBoardSelectorOpen(false)}
             />
