@@ -11,9 +11,9 @@ const RecapSecondSlide = ({ isActive, activeTab }: { isActive: boolean; activeTa
 
   // 테스트용 이미지
   const images = [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", 
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80", 
-    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&q=80", 
+    "https://drive.google.com/thumbnail?id=1GSrTDxIbpF51wLBnC54gNDKJs_qf0UOb&sz=w1000", 
+    "https://drive.google.com/thumbnail?id=1NiYVh5jdbPlQl_mrXkDS3zH8G1NZBi0Y&sz=w1000", 
+    "https://drive.google.com/thumbnail?id=1mcn0PnuftGvBxPqhtizGxQWbJXw1_5j6&sz=w1000", 
   ];
   const [weekDate, setWeekDate] = useState<{ start: string; end: string }>({
     start: '2026.01.05',
