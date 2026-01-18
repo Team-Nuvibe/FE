@@ -20,6 +20,7 @@ import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
+import TribechatPage from "./pages/tribe-chat/TribechatPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -58,7 +59,7 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "tribe-chat",
         children: [
-          // {index: true , element: <TribechatPage /> },
+          { index: true, element: <TribechatPage /> },
           // {path: "/tribe-chat:tagid", element: </> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
