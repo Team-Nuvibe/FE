@@ -214,9 +214,9 @@ export const BoardSelector = ({
               className="B1 tracking-tight focus:outline-none"
             />
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col mx-4 gap-3">
             {boards.map((board) => (
-              <div className="flex flex-col mx-4 gap-[10px]">
+              <div className="flex flex-col  gap-[10px]">
                 <div className="flex items-center gap-6">
                   <div
                     className={`relative w-[74px] h-[74px] shrink-0 rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900 overflow-hidden cursor-pointer`}
@@ -249,8 +249,8 @@ export const BoardSelector = ({
                 <div className="w-full h-[0.5px] bg-gray-900" />
               </div>
             ))}
-            <div className="mx-4 w-full h-[0.5px] bg-gray-900" />
-            <div className="mx-4 w-full h-[0.5px] bg-gray-900" />
+            <div className="w-full h-[0.5px] bg-gray-900" />
+            <div className="w-full h-[0.5px] bg-gray-900" />
           </div>
         </>
       )}

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { ImageEditor } from "../../components/features/ImageEditor";
+import { ImageEditor } from "../../components/features/image-editor/ImageEditor";
 import { useEffect, useState } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
 import { BoardSelector } from "../../components/features/BoardSelector";
