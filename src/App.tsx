@@ -20,9 +20,6 @@ import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
-import GravityTestPage from "./pages/archive-board/test/GravityTestPage";
-import FolderTestPage from "./pages/archive-board/test/FolderTestPage";
-import PatternAnalysisPage from "./pages/archive-board/test/PatternAnalysisPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
 
 // 인증 없이 접근 가능한 라우트
@@ -56,8 +53,7 @@ const protectedRoutes: RouteObject[] = [
           {path: "/archive-board/vibetone", element: <VibetonePage /> },
           {path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
           {path: "/archive-board/reveal", element: <RevealImagePage /> },
-          // {path: "/archive-board/blur", element: </> },
-          { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
+          {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
       {
@@ -92,14 +88,6 @@ const protectedRoutes: RouteObject[] = [
         children: [
           // {index: true, element: <TagPage /> },
           { path: "/tag/:tagid", element: <TagDetailPage /> },
-        ],
-      },
-      {
-        path: "test",
-        children: [
-          {path: "/test/gravity" , element: <GravityTestPage /> },
-          {path: "/test/folder" , element: <FolderTestPage /> },
-          {path: "/test/pattern" , element: <PatternAnalysisPage /> },
         ],
       },
     ],
