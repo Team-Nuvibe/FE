@@ -40,7 +40,8 @@ export const ArchiveOptionMenu = ({ onClose, onDeleteMode, onMoveBoard, onEditNa
             onClose();
           }}
           className="w-full text-left px-[16px] py-[10px] text-gray-300 font-normal
-          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors  
+          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors
+          active:bg-[#474A5099] active:text-white
           border-b-[0.5px] border-gray-700"
         >
           이미지 삭제하기
@@ -50,7 +51,8 @@ export const ArchiveOptionMenu = ({ onClose, onDeleteMode, onMoveBoard, onEditNa
         <button 
           onClick={onMoveBoard}
           className="w-full text-left px-[16px] py-[10px] text-gray-300 font-normal
-          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors  
+          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors
+          active:bg-[#474A5099] active:text-white
           border-b-[0.5px] border-gray-700"
         >
           이미지 이동하기
@@ -60,7 +62,8 @@ export const ArchiveOptionMenu = ({ onClose, onDeleteMode, onMoveBoard, onEditNa
         <button 
           onClick={onEditName}
           className="w-full text-left px-[16px] py-[10px] text-gray-300 font-normal
-          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors  "
+          hover:bg-[rgba(71,74,80,0.6)] hover:text-white transition-colors
+          active:bg-[#474A5099] active:text-white"
         >
           아카이브 보드명 수정하기
         </button>

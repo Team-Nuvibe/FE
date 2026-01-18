@@ -1,4 +1,5 @@
 import TrashIcon  from '@/assets/icons/icon_trashcan.svg?react';
+import { motion } from 'framer-motion';
 
 interface Props {
   count: number;
@@ -8,7 +9,11 @@ interface Props {
 
 export const DeleteBottomSheet = ({ count, onDelete, maintext }: Props) => {
   return (
-    <div 
+    <motion.div 
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      exit={{ y: "100%" }}
+      transition={{ type: "spring", damping: 25, stiffness: 300 }}
       className="
         fixed bottom-0 
         w-full max-w-[393px] 
@@ -39,6 +44,6 @@ export const DeleteBottomSheet = ({ count, onDelete, maintext }: Props) => {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
