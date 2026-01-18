@@ -2,7 +2,7 @@ interface Props {
   onClose: () => void; // 메뉴 닫기
   onDeleteMode: () => void; // 이미지 삭제하기 모드 진입
   onMoveBoard?: () => void; // (추후 구현) 보드 이동
-  onEditName?: () => void; // (추후 구현) 보드명 수정
+  onEditName?: () => void; 
 }
 
 export const ArchiveOptionMenu = ({ onClose, onDeleteMode, onMoveBoard, onEditName }: Props) => {

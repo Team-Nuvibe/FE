@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BackButton } from '../../components/onboarding/BackButton';
 import { useParams } from 'react-router';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -6,11 +7,13 @@ import EtcButton from '@/assets/icons/icon_etcbutton.svg?react';
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react';
 
 // Components
-import { DeleteBottomSheet } from '@/components/archive-board/DeleteBottomSheet';
+import { CountBottomSheet } from '@/components/archive-board/CountBottomSheet';
 import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal';
 import { ArchiveOptionMenu } from '@/components/archive-board/ArchiveOptionMenu';
 import { EditBoardNameBottomSheet } from '@/components/archive-board/EditBoardnameBottomSheet';
 import { useNavbarActions } from '@/hooks/useNavbarStore';
+import { BoardSelector } from '@/components/archive-board/BoardSelector';
+import { ImageDetailModal } from '@/components/archive-board/ImageDetailModal';
 
 // Data
 import { tagItems } from '@/constants/TagItems';
@@ -43,11 +46,16 @@ const ArchiveDetailPage = () => {
   // State Management
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSelectMode, setIsSelectMode] = useState(false);
+  const [isMoveMode, setIsMoveMode] = useState(false); // New: Move mode state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   // Modals & Sheets State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditNameModalOpen, setIsEditNameModalOpen] = useState(false);
+  const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false); // New: Board Selector State
+  
+  // Detail Modal State
+  const [selectedItem, setSelectedItem] = useState<ModelItem | null>(null);
 
   // Convert tagItems to ModelItem format and add to state
   const [allModelItems, setAllModelItems] = useState<ModelItem[]>(
@@ -83,6 +91,30 @@ const ArchiveDetailPage = () => {
     setIsDeleteModalOpen(false);
   };
 
+  // Move Logic
+  const handleMoveBoard = () => {
+    setIsMenuOpen(false);
+    setIsMoveMode(true);
+    setIsSelectMode(true);
+  };
+
+  const handleOpenBoardSelector = () => {
+    if (selectedIds.length > 0) {
+      setIsBoardSelectorOpen(true);
+    }
+  };
+
+  const handleBoardSelect = (targetBoard: Board) => {
+    console.log(`Moving items ${selectedIds.join(', ')} to board ${targetBoard.name} (ID: ${targetBoard.id})`);
+    // TODO: Implement actual move logic API call here
+    
+    // Reset states
+    setIsBoardSelectorOpen(false);
+    setIsSelectMode(false);
+    setIsMoveMode(false);
+    setSelectedIds([]);
+  };
+
   // Rename Logic
   const handleEditNameSave = (newTitle: string) => {
     setBoardTitle(newTitle);
@@ -93,13 +125,13 @@ const ArchiveDetailPage = () => {
   const { setNavbarVisible } = useNavbarActions();
   
   useEffect(() => {
-    // 선택 모드이거나(OR) 수정 모달이 열려있으면 네비바를 숨깁니다.
-    const shouldHideNavbar = isSelectMode || isEditNameModalOpen;
+    // 선택 모드이거나(OR) 수정 모달이 열려있거나(OR) 상세 모달이 열려있으면 네비바를 숨깁니다.
+    const shouldHideNavbar = isSelectMode || isEditNameModalOpen || !!selectedItem;
     setNavbarVisible(!shouldHideNavbar);
 
     // 컴포넌트 언마운트 시 네비바 다시 보이게 복구
     return () => setNavbarVisible(true);
-  }, [isSelectMode, isEditNameModalOpen, setNavbarVisible]);
+  }, [isSelectMode, isEditNameModalOpen, selectedItem, setNavbarVisible]);
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
@@ -116,6 +148,7 @@ const ArchiveDetailPage = () => {
           onClick={() => {
             if (isSelectMode) {
               setIsSelectMode(false);
+              setIsMoveMode(false);
               setSelectedIds([]);
             } else {
               setIsMenuOpen(!isMenuOpen);
@@ -138,8 +171,9 @@ const ArchiveDetailPage = () => {
             onDeleteMode={() => {
               setIsMenuOpen(false);
               setIsSelectMode(true);
+              setIsMoveMode(false);
             }}
-            onMoveBoard={() => console.log('보드 이동')}
+            onMoveBoard={handleMoveBoard}
             onEditName={() => {
               setIsMenuOpen(false); // Close menu
               setIsEditNameModalOpen(true); // Open Edit Sheet
@@ -190,7 +224,7 @@ const ArchiveDetailPage = () => {
                   if (isSelectMode) {
                     toggleSelection(item.id);
                   } else {
-                    console.log(`Maps to detail ${item.id}`);
+                    setSelectedItem(item);
                   }
                 }}
                 className={`
@@ -209,12 +243,6 @@ const ArchiveDetailPage = () => {
                   ) : (
                     <span>No Image</span>
                   )}
-                </div>
-
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1.5 bg-black/70 backdrop-blur-sm rounded-[5px] ST2 whitespace-nowrap text-white">
-                    #{item.tag}
-                  </span>
                 </div>
 
                 {isSelectMode && (
@@ -236,16 +264,19 @@ const ArchiveDetailPage = () => {
         </div>
       </div>
 
-      {/* Bottom Sheet for Deletion */}
-      {isSelectMode && (
-        <DeleteBottomSheet
-          count={selectedIds.length}
-          maintext="개의 이미지 선택됨"
-          onDelete={() => {
-            if (selectedIds.length > 0) setIsDeleteModalOpen(true);
-          }}
-        />
-      )}
+      {/* Bottom Sheet for Deletion or Move */}
+      <AnimatePresence>
+        {isSelectMode && (
+          <CountBottomSheet
+            count={selectedIds.length}
+            maintext="개의 이미지 선택됨"
+            onDelete={!isMoveMode ? () => {
+              if (selectedIds.length > 0) setIsDeleteModalOpen(true);
+            } : undefined}
+            onMove={isMoveMode ? handleOpenBoardSelector : undefined}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
@@ -257,13 +288,40 @@ const ArchiveDetailPage = () => {
         onConfirm={handleDelete}
       />
 
-      {/* Edit Board Name Bottom Sheet  */}
       <EditBoardNameBottomSheet
         isOpen={isEditNameModalOpen}
         initialTitle={boardTitle} // Pass current title
         onClose={() => setIsEditNameModalOpen(false)}
         onSave={handleEditNameSave} // Handle save
       />
+
+      {/* Image Detail Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <ImageDetailModal
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Board Selector Bottom Sheet */}
+      <AnimatePresence>
+        {isBoardSelectorOpen && (
+          <motion.div 
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="absolute inset-0 z-[60] bg-black"
+          >
+           <BoardSelector
+              onSelect={handleBoardSelect}
+              onClose={() => setIsBoardSelectorOpen(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
