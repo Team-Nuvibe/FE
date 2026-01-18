@@ -34,33 +34,33 @@ const VibeTonePage = () => {
       </div>
 
       {/* Tab Navigation (필터 역할로 변경) */}
-      <div className="px-4 flex gap-9 shrink-0">
+      <div className="px-4 flex gap-4 shrink-0 items-end h-[27px]">
         <button
           onClick={() => setActiveTab('weekly')}
-          className={`ST2 relative transition-colors ${
-            activeTab === 'weekly' ? 'text-gray-200' : 'text-gray-500'
+          className={`relative transition-all duration-200 w-16 flex justify-center ${
+            activeTab === 'weekly' ? 'ST2 text-gray-200' : 'B2 text-gray-600'
           }`}
         >
           주간
           {activeTab === 'weekly' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-[2px] bg-gray-200" />
           )}
         </button>
         <button
           onClick={() => setActiveTab('all')}
-          className={`ST2 relative transition-colors ${
-            activeTab === 'all' ? 'text-gray-200' : 'text-gray-500'
+          className={`relative transition-all duration-200 w-16 flex justify-center ${
+            activeTab === 'all' ? 'ST2 text-gray-200' : 'B2 text-gray-600'
           }`}
         >
           전체
           {activeTab === 'all' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-[2px] bg-gray-200" />
           )}
         </button>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 min-h-0 flex flex-col relative pt-4">
+      <div className="flex-1 min-h-0 flex flex-col relative pt-5">
         <Swiper
           modules={[Pagination]}
           onSlideChange={(swiper) => setActiveSlideIndex(swiper.activeIndex)}
