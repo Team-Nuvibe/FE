@@ -74,7 +74,11 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
           let containerStyle = "bg-transparent";
           if (isCurrentMonth) {
             if (isToday) {
-              containerStyle = "bg-gray-300/100"; 
+              if (selectedDate && !isSelected) {
+                containerStyle = "bg-gray-300/50"; 
+              } else {
+                containerStyle = "bg-gray-300/100"; 
+              }
             } else if (isSelected) {
               containerStyle = "bg-gray-300/30"; 
             }
@@ -135,7 +139,7 @@ const CalendarGrid = React.memo(({ date, activeDates, selectedDate, onSelectDate
 // 메인 페이지 컴포넌트
 export const VibeCalandarPage = () => {
   const navigate = useNavigate();
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 1)); 
+  const [currentDate, setCurrentDate] = useState(new Date()); 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeDates, setActiveDates] = useState<string[]>([]);
   
