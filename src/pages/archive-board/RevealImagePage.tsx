@@ -207,9 +207,9 @@ const RevealImagePage: React.FC = () => {
           });
           showToast("저장되었습니다");
         } catch (error) {
-           if ((error as Error).name !== 'AbortError') {
-             console.error("Share failed:", error);
-           }
+          if ((error as Error).name !== 'AbortError') {
+            console.error("Share failed:", error);
+          }
         }
       } else {
         // 네이티브 브라우저 다운로드
@@ -342,7 +342,7 @@ const RevealImagePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             className="absolute bottom-24 left-1/2 -translate-x-1/2 z-[60] 
-                       px-6 py-3 bg-gray-800/90 backdrop-blur-md rounded-full 
+                      px-6 py-3 bg-gray-800/90 backdrop-blur-md rounded-full 
                       text-white text-sm font-medium shadow-lg whitespace-nowrap"
           >
             {toastMessage}
