@@ -108,7 +108,10 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                 referrerPolicy="no-referrer"
               />
             )}
-            <div className="absolute inset-0 bg-black/60" />
+            <div 
+              className="absolute inset-0"
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+            />
           </div>
 
           {/* Header */}
@@ -138,7 +141,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 className="flex flex-col items-start gap-5 p-5 bg-transparent"
               >
-              {/* Image Frame */}
+                  {/* Image Frame */}
                 <div className="bg-white overflow-hidden relative rounded-[10px] w-72.75 h-97 shrink-0">
                   {item.thumbnail ? (
                     <>
@@ -170,8 +173,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                   </p>
                   <div className="flex items-center gap-2">
                     <h2 
-                      className="font-pretendard H2 leading-[150%] tracking-[-0.6px] bg-clip-text bg-gradient-to-r from-[#f7f7f7] to-[rgba(247,247,247,0.5)]"
-                      style={{ WebkitTextFillColor: "transparent" }}
+                      className="font-pretendard H2 leading-[150%] tracking-[-0.6px] text-[#f7f7f7]"
                     >
                       #{item.tag}
                     </h2>
@@ -182,7 +184,10 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                       <Xbutton className='w-6 h-6'/>
                     </button>
                   </div>
-                  <p className="font-montserrat pt-1 font-light italic text-[10px] leading-[9.3px] text-[#FAFAFA] opacity-80">
+                  <p 
+                    className="font-montserrat pt-1 font-light italic text-[10px] leading-[9.3px] text-[#FAFAFA]"
+                    style={{ opacity: 0.8 }}
+                  >
                     2025.11.24   |   09:41
                   </p>
                 </div>
