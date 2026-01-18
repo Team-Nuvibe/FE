@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Profile from "@/assets/icons/icon_subtract_vibetone.svg?react"
-import img3 from '@/assets/images/img_3.png';
 import { useUserStore } from '@/hooks/useUserStore';
 
 // ----------------------------------------------------------------------
@@ -62,7 +61,7 @@ const floatingAnimation = {
 };
 
 const RecapThirdSlide = ({ isActive, activeTab }: { isActive: boolean; activeTab: 'weekly' | 'all' }) => {
-  const { nickname } = useUserStore();
+  const { nickname, profileImage } = useUserStore();
 
   // 날짜 및 드롭 카운트 상태
   const [weekDate, setWeekDate] = useState<{ start: string; end: string }>({
@@ -155,7 +154,7 @@ const RecapThirdSlide = ({ isActive, activeTab }: { isActive: boolean; activeTab
           {/* 중앙 이미지 */}
           <div className="w-[110px] h-[110px] rounded-[40px] overflow-hidden relative z-10">
             <img 
-              src={img3}
+              src={profileImage}
               alt="pattern center"
               className="w-full h-full object-cover"
             />
