@@ -7,9 +7,9 @@ import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
 import Icon_folder from '@/assets/icons/icon_folder2.svg?react'
 import { useNavigate } from 'react-router';
-import { useNavbarActions } from '../../hooks/useNavbarStore';
-import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
-import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
+import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal';
+import { CountBottomSheet } from '@/components/archive-board/CountBottomSheet';
 import { useUserStore } from '@/hooks/useUserStore';
 import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
 import { ProfileImageDisplay } from '@/components/common/ProfileImageDisplay';
@@ -346,7 +346,7 @@ const ArchivePage = () => {
         </div>
       </div>
       {isSelectMode && (
-        <DeleteBottomSheet
+        <CountBottomSheet
           count={selectedIds.length}
           onDelete={handleTrashClick}
           maintext="개의 아카이브 보드 선택됨"
