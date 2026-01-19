@@ -4,7 +4,6 @@ import {
   RouterProvider,
   type RouteObject,
 } from "react-router-dom";
-import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
@@ -26,6 +25,8 @@ import GravityTestPage from "./pages/archive-board/test/GravityTestPage";
 import FolderTestPage from "./pages/archive-board/test/FolderTestPage";
 import PatternAnalysisPage from "./pages/archive-board/test/PatternAnalysisPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
+import { AuthProvider } from "./context/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -61,7 +62,6 @@ const protectedRoutes: RouteObject[] = [
             element: <VibeCalandarPage />,
           },
           { path: "/archive-board/reveal", element: <RevealImagePage /> },
-          // {path: "/archive-board/blur", element: </> },
           { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
@@ -109,19 +109,17 @@ const protectedRoutes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter([
-  {
-    // 최상위에서 스플래시 레이아웃으로 감싸줍니다.
-    element: <SplashLayout />,
-    children: [...publicRoutes, ...protectedRoutes],
-  },
-]);
+const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    //  <AuthProvider>
-    <RouterProvider router={router} />
-    // </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -18,7 +18,7 @@ export const logIn = async (
   body: LogInRequest,
 ): Promise<ApiResponse<LogInResponse>> => {
   const { data } = await axiosInstance.post<ApiResponse<LogInResponse>>(
-    "/api/auth/sign-in",
+    "/api/auth/login",
     body,
   );
   return data;
@@ -32,7 +32,7 @@ export const logOut = async (): Promise<ApiResponse<string>> => {
 };
 
 // 회원탈퇴
-export const withDraw = async (): Promise<ApiResponse<string>> => {
+export const deleteUser = async (): Promise<ApiResponse<string>> => {
   const { data } =
     await axiosInstance.delete<ApiResponse<string>>("/api/auth/withdraw");
   return data;
