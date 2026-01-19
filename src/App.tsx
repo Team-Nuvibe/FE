@@ -4,6 +4,7 @@ import {
   RouterProvider,
   type RouteObject,
 } from "react-router-dom";
+import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
@@ -20,8 +21,6 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
-import { AuthProvider } from "./context/AuthContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -50,14 +49,11 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "archive-board",
         children: [
-          { index: true, element: <ArchivePage /> },
-          { path: "/archive-board/vibetone", element: <VibetonePage /> },
-          {
-            path: "/archive-board/vibecalendar",
-            element: <VibeCalandarPage />,
-          },
-          { path: "/archive-board/reveal", element: <RevealImagePage /> },
-          { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
+          {index: true , element: <ArchivePage/> },
+          {path: "/archive-board/vibetone", element: <VibetonePage /> },
+          {path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
+          {path: "/archive-board/reveal", element: <RevealImagePage /> },
+          {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
       {
@@ -83,7 +79,9 @@ const protectedRoutes: RouteObject[] = [
       },
       {
         path: "notification",
-        children: [{ index: true, element: <NotificationPage /> }],
+        children: [
+          { index: true, element: <NotificationPage /> },
+        ],
       },
       {
         path: "tag",
@@ -96,17 +94,19 @@ const protectedRoutes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
-
-const queryClient = new QueryClient();
+const router = createBrowserRouter([
+  {
+    // 최상위에서 스플래시 레이아웃으로 감싸줍니다.
+    element: <SplashLayout />,
+    children: [...publicRoutes, ...protectedRoutes],
+  },
+]);
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </QueryClientProvider>
+    //  <AuthProvider>
+    <RouterProvider router={router} />
+    // </AuthProvider>
   );
 }
 
