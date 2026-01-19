@@ -1,11 +1,3 @@
-// 공통 API 응답 타입
-export interface ArchiveApiResponse<T> {
-  code: string;
-  message: string;
-  data: T;
-  httpStatus: string;
-}
-
 // 아카이브 보드 아이템 타입
 export interface ArchiveBoardItem {
   boardId: number;

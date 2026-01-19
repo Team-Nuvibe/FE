@@ -1,5 +1,4 @@
 import type {
-  ArchiveApiResponse,
   ArchiveBoardDetail,
   ArchiveBoardItem,
   CreatedArchiveBoard,
@@ -7,36 +6,39 @@ import type {
   VibeToneTagsResponse,
 } from "@/types/archive";
 import { axiosInstance } from "./axios";
+import type { ApiResponse } from "@/types/common";
 
 // 아카이브 목록 조회
 export const getArchiveList = async (
   keyword?: string,
-): Promise<ArchiveApiResponse<ArchiveBoardItem[]>> => {
-  const { data } = await axiosInstance.get<
-    ArchiveApiResponse<ArchiveBoardItem[]>
-  >("/api/archive", {
-    params: {
-      keyword,
+): Promise<ApiResponse<ArchiveBoardItem[]>> => {
+  const { data } = await axiosInstance.get<ApiResponse<ArchiveBoardItem[]>>(
+    "/api/archive",
+    {
+      params: {
+        keyword,
+      },
     },
-  });
+  );
   return data;
 };
 
 // 아카이브 보드 생성
 export const createArchiveBoard = async (
   name: string,
-): Promise<ArchiveApiResponse<CreatedArchiveBoard>> => {
-  const { data } = await axiosInstance.post<
-    ArchiveApiResponse<CreatedArchiveBoard>
-  >("/api/archive", { name });
+): Promise<ApiResponse<CreatedArchiveBoard>> => {
+  const { data } = await axiosInstance.post<ApiResponse<CreatedArchiveBoard>>(
+    "/api/archive",
+    { name },
+  );
   return data;
 };
 
 // 아카이브 보드 삭제
 export const deleteArchiveBoard = async (
   boardIds: number[],
-): Promise<ArchiveApiResponse<null>> => {
-  const { data } = await axiosInstance.post<ArchiveApiResponse<null>>(
+): Promise<ApiResponse<null>> => {
+  const { data } = await axiosInstance.post<ApiResponse<null>>(
     "/api/archive/delete",
     { boardIds },
   );
@@ -47,8 +49,8 @@ export const deleteArchiveBoard = async (
 export const addImageToArchiveBoard = async (
   boardId: number,
   imageIds: number,
-): Promise<ArchiveApiResponse<null>> => {
-  const { data } = await axiosInstance.post<ArchiveApiResponse<null>>(
+): Promise<ApiResponse<null>> => {
+  const { data } = await axiosInstance.post<ApiResponse<null>>(
     `/api/archive/${boardId}/images`,
     { imageIds },
   );
@@ -59,8 +61,8 @@ export const addImageToArchiveBoard = async (
 export const deleteArchiveBoardImages = async (
   boardId: number,
   boardImageIds: number[],
-): Promise<ArchiveApiResponse<null>> => {
-  const { data } = await axiosInstance.delete<ArchiveApiResponse<null>>(
+): Promise<ApiResponse<null>> => {
+  const { data } = await axiosInstance.delete<ApiResponse<null>>(
     `/api/archive/${boardId}/delete`,
     {
       data: { boardImageIds },
@@ -73,8 +75,8 @@ export const deleteArchiveBoardImages = async (
 export const updateArchiveBoardName = async (
   boardId: number,
   name: string,
-): Promise<ArchiveApiResponse<null>> => {
-  const { data } = await axiosInstance.patch<ArchiveApiResponse<null>>(
+): Promise<ApiResponse<null>> => {
+  const { data } = await axiosInstance.patch<ApiResponse<null>>(
     `/api/archive/${boardId}/name`,
     { name },
   );
@@ -85,14 +87,15 @@ export const updateArchiveBoardName = async (
 export const getArchiveBoardDetail = async (
   boardId: number,
   tag?: string,
-): Promise<ArchiveApiResponse<ArchiveBoardDetail>> => {
-  const { data } = await axiosInstance.get<
-    ArchiveApiResponse<ArchiveBoardDetail>
-  >(`/api/archive/${boardId}`, {
-    params: {
-      tag,
+): Promise<ApiResponse<ArchiveBoardDetail>> => {
+  const { data } = await axiosInstance.get<ApiResponse<ArchiveBoardDetail>>(
+    `/api/archive/${boardId}`,
+    {
+      params: {
+        tag,
+      },
     },
-  });
+  );
   return data;
 };
 
@@ -100,24 +103,25 @@ export const getArchiveBoardDetail = async (
 export const getArchiveRecapImages = async (
   page: number = 0,
   size: number = 20,
-): Promise<ArchiveApiResponse<RecapImagesResponse>> => {
-  const { data } = await axiosInstance.get<
-    ArchiveApiResponse<RecapImagesResponse>
-  >("/api/archive/images", {
-    params: {
-      page,
-      size,
+): Promise<ApiResponse<RecapImagesResponse>> => {
+  const { data } = await axiosInstance.get<ApiResponse<RecapImagesResponse>>(
+    "/api/archive/images",
+    {
+      params: {
+        page,
+        size,
+      },
     },
-  });
+  );
   return data;
 };
 
 // 바이브톤 태그 조회
 export const getVibeToneTags = async (): Promise<
-  ArchiveApiResponse<VibeToneTagsResponse>
+  ApiResponse<VibeToneTagsResponse>
 > => {
   const { data } =
-    await axiosInstance.get<ArchiveApiResponse<VibeToneTagsResponse>>(
+    await axiosInstance.get<ApiResponse<VibeToneTagsResponse>>(
       "/api/archive/vibe",
     );
   return data;
