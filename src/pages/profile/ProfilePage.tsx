@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LogoutModal } from "@/components/profile/LogoutModal";
 import useLogout from "@/hooks/mutation/auth/useLogout";
+import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
 
 import { DeleteAccountModal } from "@/components/profile/DeleteAccountModal";
 
@@ -19,6 +20,7 @@ const ProfilePage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
   const { mutate: logout } = useLogout();
+  const { mutate: deleteUser } = useDeleteUser();
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -55,9 +57,7 @@ const ProfilePage = () => {
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(false);
     reset(); // 저장된 데이터 초기화
-    navigate("/login", {
-      state: { toastMessage: "계정이 성공적으로 삭제 되었습니다." },
-    });
+    deleteUser();
   };
 
   const menuGroups = [
