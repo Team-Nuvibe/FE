@@ -14,6 +14,7 @@ interface AuthContextType {
   refreshToken: string | null;
   login: (singinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
+  clearSession: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -21,6 +22,7 @@ export const AuthContext = createContext<AuthContextType>({
   refreshToken: null,
   login: async () => {},
   logout: async () => {},
+  clearSession: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -59,8 +61,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const logout = async () => {
-    await logOut();
+  const clearSession = () => {
     removeAccessTokenFromStorage();
     removeRefreshTokenFromStorage();
 
@@ -68,8 +69,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setRefreshToken(null);
   };
 
+  const logout = async () => {
+    await logOut();
+    clearSession();
+  };
+
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, login, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshToken, login, logout, clearSession }}
+    >
       {children}
     </AuthContext.Provider>
   );

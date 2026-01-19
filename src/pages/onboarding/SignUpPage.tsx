@@ -8,6 +8,8 @@ import { BackButton } from "../../components/onboarding/BackButton";
 import InputBox from "../../components/onboarding/InputBox";
 import { BaseModal } from "@/components/onboarding/BaseModal";
 import VerifiedIcon from "@/assets/icons/icon_select_image_white.svg?react";
+import useSignup from "@/hooks/mutation/auth/useSignup";
+import WelcomeSplash from "@/components/onboarding/WelcomeSplash";
 
 const schema = z
   .object({
@@ -37,17 +39,26 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
 
   const {
     register,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    getValues,
+    formState: { errors, isValid },
   } = useForm<FormFields>({
     defaultValues: {
       email: "",
     },
     resolver: zodResolver(schema),
     mode: "onChange",
+  });
+
+  const { mutate: signup, isPending } = useSignup();
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorModalContent, setErrorModalContent] = useState({
+    maintext: "",
+    subtext: "",
   });
 
   const emailValue = watch("email");
@@ -100,22 +111,40 @@ const SignUpPage = () => {
     setIsEmailVerified(true);
   };
 
-  // const onSubmit:SubmitHandler<FormFields> = async (data) => {
-  //   // eslint-disable-next-line
-  //   try {
-  //     const user = {email,password,name:data.name};
-  //     const response = await postSignup(user)
-  //     console.log(response);
-
-  //     navigate("/");
-  //     } catch(error) {
-  //       console.log(error);
-  //       alert("이미 존재하는 유저입니다")
-  //     }
-  // };
   const handleSignupSubmit = () => {
-    navigate("/login");
+    const { email, password, passwordCheck, name, nickname } = getValues();
+
+    signup(
+      { email, password, name, nickname, confirmPassword: passwordCheck },
+      {
+        onSuccess: () => {
+          setShowSplash(true);
+          setTimeout(() => {
+            navigate("/login", {
+              state: {
+                toastMessage:
+                  "회원가입이 완료되었습니다. 로그인을 진행해주세요.",
+              },
+            });
+          }, 2000);
+        },
+        onError: (error: any) => {
+          const errorMessage =
+            error.response?.data?.message || "회원가입에 실패했습니다.";
+          setErrorModalContent({
+            maintext: "회원가입 실패",
+            subtext: errorMessage,
+          });
+          setIsErrorModalOpen(true);
+        },
+      },
+    );
   };
+
+  if (showSplash) {
+    return <WelcomeSplash />;
+  }
+
   return (
     <>
       <div className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center pb-15 text-white">
@@ -190,10 +219,10 @@ const SignUpPage = () => {
         </form>
         <button
           className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid || isPending}
           onClick={handleSignupSubmit}
         >
-          회원가입
+          {isPending ? "가입 중..." : "회원가입"}
         </button>
       </div>
 
@@ -203,6 +232,14 @@ const SignUpPage = () => {
         onClose={() => setIsModalOpen(false)}
         maintext="메일함을 확인해주세요"
         subtext="메일이 보이지 않는다면 스팸함을 함께 확인해주세요"
+      />
+
+      {/* 에러 모달 */}
+      <BaseModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        maintext={errorModalContent.maintext}
+        subtext={errorModalContent.subtext}
       />
     </>
   );
