@@ -60,19 +60,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const logout = async () => {
-    try {
-      await logOut();
-      removeAccessTokenFromStorage();
-      removeRefreshTokenFromStorage();
+    await logOut();
+    removeAccessTokenFromStorage();
+    removeRefreshTokenFromStorage();
 
-      setAccessToken(null);
-      setRefreshToken(null);
-
-      alert("로그아웃 성공");
-    } catch (error) {
-      console.error("로그아웃 오류", error);
-      alert("로그아웃 실패");
-    }
+    setAccessToken(null);
+    setRefreshToken(null);
   };
 
   return (

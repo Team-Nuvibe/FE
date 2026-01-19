@@ -16,7 +16,7 @@ function useLogin() {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.myInfo],
       });
-
+      console.log("로그인 성공");
       // 로그인 성공 시 홈 페이지로 이동
       navigate("/home");
     },
