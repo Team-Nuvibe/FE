@@ -1,16 +1,25 @@
-import { NavLink, useNavigate, useLocation } from "react-router"
-import Google_G_logo from '@/assets/logos/Google_logo.svg?react';
-import Naver_logo from '@/assets/logos/Naver_logo.svg?react';
-import KakaoTalk_logo from '@/assets/logos/KakaoTalk_logo.svg?react'
-import { validateSignin, type UserSigninInformation } from "../../utils/validate";
+import { NavLink, useNavigate, useLocation } from "react-router";
+import Google_G_logo from "@/assets/logos/Google_logo.svg?react";
+import Naver_logo from "@/assets/logos/Naver_logo.svg?react";
+import KakaoTalk_logo from "@/assets/logos/KakaoTalk_logo.svg?react";
+import {
+  validateSignin,
+  type UserSigninInformation,
+} from "../../utils/validate";
 import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
 import { useEffect, useState } from "react";
+import { BaseModal } from "@/components/onboarding/BaseModal";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorModalContent, setErrorModalContent] = useState({
+    maintext: "",
+    subtext: "",
+  });
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -28,34 +37,75 @@ const LoginPage = () => {
       email: "",
       password: "",
     },
-    validate: validateSignin
-  })
+    validate: validateSignin,
+  });
 
   const isDisabled =
     Object.values(errors || {}).some((error) => error.length > 0) || // 오류 있으면 true
     Object.values(values).some((value) => value === ""); // 입력 값 비어있으면 true
 
-  const handleLoginSubmit = () => {
-    // api 통신
-    navigate('/home')
-  }
+  const handleLoginSubmit = async () => {
+    try {
+      // TODO: 실제 로그인 API 호출
+      // const response = await loginAPI({ email: values.email, password: values.password });
 
-  const handleGoogleLogin = () => {
+      // 임시: 에러 시뮬레이션 (테스트용)
+      const simulatedResponse = {
+        success: false,
+        message: "이메일을 확인해주세요", // API에서 직접 전달되는 에러 메시지
+      };
 
-  }
+      if (!simulatedResponse.success) {
+        // API에서 전달된 에러 메시지를 그대로 사용
+        setErrorModalContent({
+          maintext: simulatedResponse.message,
+          subtext: "입력한 정보가 맞는지 다시 확인해주세요",
+        });
+        setIsErrorModalOpen(true);
+      } else {
+        // 로그인 성공
+        navigate("/home");
+      }
 
-  const handleNaverLogin = () => {
+      /*
+      // 실제 API 연동 예시:
+      const response = await loginAPI({ 
+        email: values.email, 
+        password: values.password 
+      });
+      
+      if (!response.success) {
+        // API에서 보내준 에러 메시지를 maintext로 사용
+        setErrorModalContent({
+          maintext: response.message, // 예: "이메일을 확인해주세요" 또는 "비밀번호를 확인해주세요"
+          subtext: "입력한 정보가 맞는지 다시 확인해주세요"
+        });
+        setIsErrorModalOpen(true);
+      } else {
+        // 로그인 성공
+        navigate('/home');
+      }
+      */
+    } catch (error) {
+      console.error("로그인 에러:", error);
+      setErrorModalContent({
+        maintext: "로그인 실패",
+        subtext: "네트워크 오류가 발생했습니다",
+      });
+      setIsErrorModalOpen(true);
+    }
+  };
 
-  }
+  const handleGoogleLogin = () => {};
 
-  const handleKakaoLogin = () => {
+  const handleNaverLogin = () => {};
 
-  }
+  const handleKakaoLogin = () => {};
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-[100dvh] pt-10 pb-33 text-white relative">
-        <div className="H0 text-white w-fit flex justify-center items-center p-9">
+      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center pt-10 pb-33 text-white">
+        <div className="H0 flex w-fit items-center justify-center p-9 text-white">
           Start nuvibe
         </div>
         <div className="flex flex-col gap-3">
@@ -69,12 +119,13 @@ const LoginPage = () => {
             type="password"
             placeholder="비밀번호"
           />
-          <div className="flex justify-between items-center mb-4 text-[12px]">
+          <div className="mb-4 flex items-center justify-between text-[12px]">
             <div className="flex items-center gap-1">
               <input
                 type="checkbox"
-                className="appearance-none w-[12px] h-[12px] rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:bg-gray-800 checked:border-transparent focus:ring-0 focus:ring-offset-0"
-              /> {/* CheckIcon 필요 */}
+                className="h-[12px] w-[12px] appearance-none rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:border-transparent checked:bg-gray-800 focus:ring-0 focus:ring-offset-0"
+              />{" "}
+              {/* CheckIcon 필요 */}
               <div>아이디 저장</div>
             </div>
             <div className="cursor-pointer hover:underline">
@@ -82,62 +133,56 @@ const LoginPage = () => {
             </div>
           </div>
           <button
-            className="
-              w-[339px] h-[48px]
-              rounded-[5px]
-              gap-[8px]
-              flex justify-center items-center
-              bg-white text-black
-              H4
-              disabled:bg-gray-800 disabled:cursor-not-allowed
-            "
+            className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
             onClick={handleLoginSubmit}
             disabled={isDisabled}
           >
             로그인하기
           </button>
         </div>
-        <div className="border-gray-800 border-t mt-4 mb-2 w-[339px]" />
-        <div className="text-gray-500 text-[11.64px] p-4">간편로그인하기</div>
+        <div className="mt-4 mb-2 w-[339px] border-t border-gray-800" />
+        <div className="p-4 text-[11.64px] text-gray-500">간편로그인하기</div>
         <div className="flex gap-2">
-          <button
-            onClick={handleGoogleLogin}
-          >
+          <button onClick={handleGoogleLogin}>
             <Google_G_logo />
           </button>
-          <button
-            onClick={handleNaverLogin}
-          >
+          <button onClick={handleNaverLogin}>
             <Naver_logo />
           </button>
-          <button
-            onClick={handleKakaoLogin}
-          >
+          <button onClick={handleKakaoLogin}>
             <KakaoTalk_logo />
           </button>
         </div>
 
         {toastMessage && (
-          <div className="absolute bottom-[122px] w-[361px] h-[46px] bg-gray-800 rounded-[5px] flex items-center justify-center animate-fade-in-out z-50">
-            <span className="text-white text-[14px] font-normal leading-[150%] tracking-[-0.025em]">
+          <div className="animate-fade-in-out absolute bottom-[122px] z-50 flex h-[46px] w-[361px] items-center justify-center rounded-[5px] bg-gray-800">
+            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-white">
               {toastMessage}
             </span>
           </div>
         )}
 
-        <footer className="absolute !bottom-12 w-full flex justify-center gap-1 text-[12px] pb-[env(safe-area-inset-bottom)]">
+        <footer className="absolute !bottom-12 flex w-full justify-center gap-1 pb-[env(safe-area-inset-bottom)] text-[12px]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
-            key='/signup'
-            to='/signup'
+            key="/signup"
+            to="/signup"
             className={"text-gray-100 underline"}
           >
             회원가입하기
           </NavLink>
         </footer>
       </div>
-    </>
-  )
-}
 
-export default LoginPage
+      {/* 로그인 에러 모달 */}
+      <BaseModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        maintext={errorModalContent.maintext}
+        subtext={errorModalContent.subtext}
+      />
+    </>
+  );
+};
+
+export default LoginPage;
