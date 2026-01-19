@@ -11,7 +11,7 @@ const MainLayout = () => {
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
   if (!accessToken) {
-    alert("로그인이 필요한 서비스 입니다. 로그인을 해주세요!");
+    // alert("로그인이 필요한 서비스 입니다. 로그인을 해주세요!");
     return <Navigate to="/login" replace />;
   }
 
