@@ -21,7 +21,7 @@ const InputBox = ({
   return (
     <div className="relative flex flex-col gap-1">
       <div
-        className={`relative flex h-[48px] w-[339px] items-center justify-between rounded-[5px] border bg-gray-800 px-4 py-2 transition-colors ${
+        className={`relative flex h-[48px] w-full max-w-[339px] items-center justify-between rounded-[5px] border bg-gray-800 px-4 py-2 transition-colors ${
           hasError
             ? "border-gray-300"
             : "border-transparent focus-within:border-gray-300"
@@ -31,7 +31,7 @@ const InputBox = ({
           type={type}
           {...props}
           placeholder=" "
-          className={`peer flex-1 bg-transparent text-[16px] leading-[1.5] font-medium tracking-[-0.4px] text-gray-100 outline-none placeholder:text-gray-500 ${
+          className={`peer min-w-0 flex-1 bg-transparent text-[16px] leading-[1.5] font-medium tracking-[-0.4px] text-gray-100 outline-none placeholder:text-gray-500 ${
             className || ""
           }`}
         />

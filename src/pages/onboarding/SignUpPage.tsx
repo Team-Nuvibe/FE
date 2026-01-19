@@ -173,7 +173,7 @@ const SignUpPage = () => {
                 type="button"
                 onClick={handleEmailVerification}
                 disabled={!isEmailValid() || isEmailVerified}
-                className={`ml-2 h-[28px] shrink-0 rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] transition-colors ${
+                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${
                   isEmailVerified
                     ? "cursor-not-allowed bg-gray-700 text-gray-300"
                     : isEmailValid()
