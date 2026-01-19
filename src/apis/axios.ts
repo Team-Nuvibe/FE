@@ -4,30 +4,22 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_API_URL,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem(LOCAL_STORAGE_KEY.accessToken)}`,
+  },
   withCredentials: false, //쿠키
 });
 
 // "요청 인터셉터(Request Interceptor)"
 // axios가 HTTP 요청을 보내기 직전에 자동으로 '인증 토큰'을 헤더에 추가
-// 단, 로그인/회원가입 같은 공개 엔드포인트는 제외
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 인증이 필요 없는 공개 엔드포인트 목록
-    const publicEndpoints = ["/api/auth/login", "/api/auth/sign-up"];
-    const isPublicEndpoint = publicEndpoints.some((endpoint) =>
-      config.url?.includes(endpoint),
-    );
-
-    // 공개 엔드포인트가 아닌 경우에만 토큰 추가
-    if (!isPublicEndpoint) {
-      const { getItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-      const accessToken = getItem();
-      if (accessToken) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      }
+    const { getItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
+    const accessToken = getItem();
+    if (accessToken) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
     // 수정된 요청 설정을 반환
     return config;
   },
@@ -128,6 +120,6 @@ axiosInstance.interceptors.response.use(
       });
     }
     // 401 에러가 아닌 경우에 그대로 오류를 반환
-    return Promise.reject(error);
+    return Promise.reject();
   },
 );
