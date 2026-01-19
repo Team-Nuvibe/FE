@@ -4,6 +4,7 @@ import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?r
 import IconQuickdropAdd from "@/assets/icons/icon_quickdrop_add.png";
 import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
+import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import { useNavigate } from "react-router-dom";
 import Union from "@/assets/icons/Union.svg?react";
 import { useState } from "react";
@@ -15,6 +16,7 @@ import { AddBoardModal } from "../quickdrop/AddBoardModal";
 
 interface BoardSelectorProps {
   image: Blob | null;
+  imageUrl: string | null;
   tag: string;
   onNext: (selectedBoard: Board) => void;
   onPrevious: () => void;
@@ -31,6 +33,7 @@ interface Board {
 
 export const BoardSelector = ({
   image,
+  imageUrl,
   tag,
   onNext,
   onPrevious,
@@ -45,7 +48,7 @@ export const BoardSelector = ({
       id: 1,
       name: "가나다라마바사아자차카타파하",
       createdAt: "2026. 01. 03",
-      thumbnailUrl: image ? URL.createObjectURL(image) : "",
+      thumbnailUrl: imageUrl || "",
       tagCount: 12,
     },
     {
@@ -59,21 +62,21 @@ export const BoardSelector = ({
       id: 3,
       name: "크리스의 집",
       createdAt: "2026. 01. 03",
-      thumbnailUrl: image ? URL.createObjectURL(image) : "",
+      thumbnailUrl: imageUrl || "",
       tagCount: 12,
     },
     {
       id: 4,
       name: "텔리의 집",
       createdAt: "2026. 01. 03",
-      thumbnailUrl: image ? URL.createObjectURL(image) : "",
+      thumbnailUrl: imageUrl || "",
       tagCount: 12,
     },
     {
       id: 5,
       name: "구디의 집",
       createdAt: "2026. 01. 03",
-      thumbnailUrl: image ? URL.createObjectURL(image) : "",
+      thumbnailUrl: imageUrl || "",
       tagCount: 12,
     },
   ]);
@@ -83,7 +86,7 @@ export const BoardSelector = ({
       id: boards.length + 1,
       name: boardName,
       createdAt: "2026. 01. 13",
-      thumbnailUrl: URL.createObjectURL(image!),
+      thumbnailUrl: imageUrl || "",
       tagCount: 0,
     };
     setBoards([newBoard, ...boards]);
@@ -95,7 +98,7 @@ export const BoardSelector = ({
       {!showingSavedBoards && (
         <>
           <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
-            <IconXbuttonGray3
+            <IconChevronLeft
               className="cursor-pointer"
               onClick={() => onPrevious()}
             />
@@ -113,7 +116,7 @@ export const BoardSelector = ({
           </header>
           <div className="relative w-[360px] h-[480px] mx-auto mb-6 H1">
             <img
-              src={image ? URL.createObjectURL(image) : ""}
+              src={imageUrl || ""}
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
               style={{
@@ -211,9 +214,9 @@ export const BoardSelector = ({
               className="B1 tracking-tight focus:outline-none"
             />
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col mx-4 gap-3">
             {boards.map((board) => (
-              <div className="flex flex-col mx-4 gap-[10px]">
+              <div className="flex flex-col  gap-[10px]">
                 <div className="flex items-center gap-6">
                   <div
                     className={`relative w-[74px] h-[74px] shrink-0 rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900 overflow-hidden cursor-pointer`}
@@ -246,8 +249,8 @@ export const BoardSelector = ({
                 <div className="w-full h-[0.5px] bg-gray-900" />
               </div>
             ))}
-            <div className="mx-4 w-full h-[0.5px] bg-gray-900" />
-            <div className="mx-4 w-full h-[0.5px] bg-gray-900" />
+            <div className="w-full h-[0.5px] bg-gray-900" />
+            <div className="w-full h-[0.5px] bg-gray-900" />
           </div>
         </>
       )}
