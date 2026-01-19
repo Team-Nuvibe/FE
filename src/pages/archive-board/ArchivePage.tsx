@@ -6,13 +6,16 @@ import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
 import Icon_folder from '@/assets/icons/icon_folder2.svg?react'
-import { useNavigate } from 'react-router';
-import { useNavbarActions } from '../../hooks/useNavbarStore';
-import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
-import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
-import { useUserStore } from '@/hooks/useUserStore';
 import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
+import { useNavigate } from 'react-router';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
+import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal';
+import { CountBottomSheet } from '@/components/archive-board/CountBottomSheet';
+import { useUserStore } from '@/hooks/useUserStore';
+import { ImageDetailModal } from '@/components/archive-board/ImageDetailModal';
+import { AnimatePresence } from 'framer-motion';
 import { ProfileImageDisplay } from '@/components/common/ProfileImageDisplay';
+
 
 
 interface ArchiveBoard {
@@ -40,15 +43,14 @@ const ArchivePage = () => {
 
   const { nickname, profileImage } = useUserStore();
 
-  const resentDrops: ResentDrops[] = [
-    { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '2', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '3', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '4', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '5', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '6', tag: '#End', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-
-  ];
+  const [resentDrops, setResentDrops] = useState<ResentDrops[]>([
+    { id: '1', tag: '#Color', time: '12m', thumbnail: 'https://drive.google.com/thumbnail?id=1dMIEDAhlbkxIezdzyffcYZX7srUXuz0k&sz=w1000' },
+    { id: '2', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1vHWPQpWoQQ5PgN6f97YeEXaHFLbZYJCA&sz=w1000' },
+    { id: '3', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1k5uqmKAqCjYy-Bq49TWDFrzJn_Y0TsuK&sz=w1000' },
+    { id: '4', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=16wOYnBu0VJotnd2YEimT7gNuQSiJNNG1&sz=w1000' },
+    { id: '5', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1Xz60hNsv3o-eQREjtYKhvliSCQUDbg8B&sz=w1000' },
+    { id: '6', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1yEtGoWgsvy05wHWgrvHtv6FTeCgnCFkF&sz=w1000' },
+  ]);
 
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
 
@@ -88,6 +90,9 @@ const ArchivePage = () => {
   // Board 삭제 Modal 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  // Detail Modal State
+  const [selectedItem, setSelectedItem] = useState<ResentDrops | null>(null);
+
   const handleTrashClick = () => {
     if (selectedIds.length === 0) return;
     setIsDeleteModalOpen(true);
@@ -105,9 +110,10 @@ const ArchivePage = () => {
   // Navbar 상태 관리
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
-    setNavbarVisible(!isSelectMode);
+    const shouldHideNavbar = isSelectMode || !!selectedItem;
+    setNavbarVisible(!shouldHideNavbar);
     return () => setNavbarVisible(true);
-  }, [isSelectMode, setNavbarVisible]);
+  }, [isSelectMode, selectedItem, setNavbarVisible]);
 
 
 
@@ -146,11 +152,15 @@ const ArchivePage = () => {
                 key={post.id}
                 className="!w-[165px]"
               >
-                <div className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px]">
+                <div 
+                  className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px] cursor-pointer"
+                  onClick={() => setSelectedItem(post)}
+                >
                   <img
                     src={post.thumbnail}
                     alt={post.tag}
-                    className="w-full h-full object-cover "
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black pointer-events-none" />
                   <div className="absolute top-1 left-1 px-2 py-1 rounded-lg ST1">
@@ -309,11 +319,6 @@ const ArchivePage = () => {
                       {/* 폴더 오버레이 아이콘 */}
                       <Icon_folder className="absolute bottom-0 left-0 w-full h-auto z-10 pointer-events-none" />
 
-                      {/* 날짜 (우측 상단) */}
-                      <div className="absolute top-[40%] right-2 z-20 text-gray-300 text-[6px] font-light leading-[150%] font-['Montserrat']">
-                        2026. 01. 03
-                      </div>
-
                       {/* 폴더 제목 (하단) */}
                       <div className="absolute flex justify-between bottom-[9.5px] left-[6.39px] right-[6px] z-20">
                         <p className="text-gray-200 text-[10px] font-normal leading-[150%] tracking-[-0.025em] line-clamp-2 text-white">
@@ -322,9 +327,7 @@ const ArchivePage = () => {
                         {/* 보드 내의 태그 갯수 */}
                         <p className='flex items-end text-[7px] font-normal text-gray-300'>12tag</p>
                       </div>
-
-
-
+                      
                       {/* 체크표시 */}
                       {isSelectMode && (
                         <div
@@ -345,7 +348,7 @@ const ArchivePage = () => {
         </div>
       </div>
       {isSelectMode && (
-        <DeleteBottomSheet
+        <CountBottomSheet
           count={selectedIds.length}
           onDelete={handleTrashClick}
           maintext="개의 아카이브 보드 선택됨"
@@ -359,6 +362,21 @@ const ArchivePage = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={executeDelete}
       />
+      
+      {/* Image Detail Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <ImageDetailModal
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+            onTagUpdate={(newTag) => {
+              const updatedItem = { ...selectedItem, tag: newTag };
+              setSelectedItem(updatedItem);
+              setResentDrops(prev => prev.map(item => item.id === selectedItem.id ? updatedItem : item));
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

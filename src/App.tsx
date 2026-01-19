@@ -20,6 +20,7 @@ import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
+import RevealImagePage from "./pages/archive-board/RevealImagePage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -48,11 +49,11 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "archive-board",
         children: [
-          { index: true, element: <ArchivePage /> },
-          { path: "/archive-board/vibetone", element: <VibetonePage /> },
-          { path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
-          // {path: "/archive-board/blur", element: </> },
-          { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
+          {index: true , element: <ArchivePage/> },
+          {path: "/archive-board/vibetone", element: <VibetonePage /> },
+          {path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
+          {path: "/archive-board/reveal", element: <RevealImagePage /> },
+          {path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
       {
