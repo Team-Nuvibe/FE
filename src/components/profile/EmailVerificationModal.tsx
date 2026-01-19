@@ -19,7 +19,7 @@ export const EmailVerificationModal = ({ isOpen, title, message, onClose }: Aler
             ">
                 <WarningIcon className="w-[32px] h-[32px] mb-[8px]" />
 
-                <div className="mb-[28px] flex flex-col items-center w-full">
+                <div className="mb-[24px] flex flex-col items-center w-full">
                     <div className="text-[17px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
                         {title}
                     </div>

@@ -16,7 +16,7 @@
   --color-white: #fafafa;
   --color-gray-100: #e2e2e2;
   --color-gray-200: #d0d3d7;
-  --color-gray-300: #e3e3e3;
+  --color-gray-300: #b9bdc2;
   --color-gray-400: #8f9297;
   --color-gray-500: #75787e;
   --color-gray-600: #64676d;
@@ -136,7 +136,7 @@ button {
   background-color: rgba(255, 255, 255, 1) !important;
 }
 
-// 보드 이름 변경 바텀시트 애니메이션
+/* 보드 이름 변경 바텀시트 애니메이션 */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   15% { transform: translateX(-4px); }

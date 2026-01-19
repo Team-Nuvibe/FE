@@ -182,13 +182,20 @@ const ArchivePage = () => {
           </Swiper>
           <div className="absolute top-[260px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
             {/* 프로필 이미지 */}
-            <div className="w-[76.14px] h-[76.14px] rounded-full overflow-hidden pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
-              <img
+            {profileImage === DefaultProfileImage ? (
+              <div className="w-[76.14px] h-[76.14px] pointer-events-auto">
+                <img
+                  src={profileImage}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <ProfileImageDisplay
                 src={profileImage}
-                alt="profile"
-                className="w-full h-full object-cover"
+                className="w-[76.14px] h-[76.14px] pointer-events-auto"
               />
-            </div>
+            )}
             <div className="mt-1 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
               {/* user.nickname */}
               {nickname}
@@ -275,7 +282,7 @@ const ArchivePage = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            
+
             <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
               {archiveboard.map((board) => {
                 const isSelected = selectedIds.includes(board.id);
@@ -322,9 +329,8 @@ const ArchivePage = () => {
                       {/* 체크표시 */}
                       {isSelectMode && (
                         <div
-                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
-                            isSelected ? 'bg-white/30' : 'bg-transparent'
-                          }`}
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? 'bg-white/30' : 'bg-transparent'
+                            }`}
                         >
                           {isSelected && (
                             <SelectedImageIcon className="w-[32px] h-[32px]" />

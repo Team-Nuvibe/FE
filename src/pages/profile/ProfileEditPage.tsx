@@ -96,7 +96,7 @@ const ProfileEditPage = () => {
 
     return (
         <div className="w-full h-full bg-black text-white flex flex-col px-[20px] relative">
-            <header className="flex items-center justify-center relative mt-[70px] mb-[42px]">
+            <header className="flex items-center justify-center relative mt-[8.06px] mb-[42px]">
                 <button
                     onClick={() => navigate(-1)}
                     className="absolute left-0 rotate-180 p-2 -ml-2"
