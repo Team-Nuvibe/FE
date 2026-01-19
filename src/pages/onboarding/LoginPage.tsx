@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useLocation } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import Google_G_logo from "@/assets/logos/Google_logo.svg?react";
 import Naver_logo from "@/assets/logos/Naver_logo.svg?react";
 import KakaoTalk_logo from "@/assets/logos/KakaoTalk_logo.svg?react";
@@ -9,10 +9,11 @@ import {
 import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
 import { useEffect, useState } from "react";
+import useLogin from "@/hooks/mutation/auth/useLogin";
 import { BaseModal } from "@/components/onboarding/BaseModal";
+import { useAuth } from "@/context/AuthContext";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -20,6 +21,17 @@ const LoginPage = () => {
     maintext: "",
     subtext: "",
   });
+
+  const { mutate: login, isPending } = useLogin();
+  const { accessToken } = useAuth();
+  const fromPath = location.state?.fromPath || "/home";
+  const navigate = useNavigate();
+  // 이미 로그인 해있을 시 홈으로 이동
+  useEffect(() => {
+    if (accessToken) {
+      navigate(fromPath, { replace: true });
+    }
+  }, [navigate, accessToken, fromPath]);
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -44,56 +56,39 @@ const LoginPage = () => {
     Object.values(errors || {}).some((error) => error.length > 0) || // 오류 있으면 true
     Object.values(values).some((value) => value === ""); // 입력 값 비어있으면 true
 
-  const handleLoginSubmit = async () => {
-    try {
-      // TODO: 실제 로그인 API 호출
-      // const response = await loginAPI({ email: values.email, password: values.password });
+  const handleLoginSubmit = () => {
+    login(
+      {
+        email: values.email,
+        password: values.password,
+      },
+      {
+        onError: (error: unknown) => {
+          const errorMessage = (error as any)?.response?.data?.message || "";
 
-      // 임시: 에러 시뮬레이션 (테스트용)
-      const simulatedResponse = {
-        success: false,
-        message: "이메일을 확인해주세요", // API에서 직접 전달되는 에러 메시지
-      };
+          // API 에러 메시지에 따라 모달 내용 설정
+          if (errorMessage === "사용자를 찾을 수 없습니다") {
+            setErrorModalContent({
+              maintext: "가입되지 않은 계정이에요",
+              subtext: "이메일을 확인하거나, 회원가입을 진행해주세요.",
+            });
+          } else if (errorMessage === "비밀번호가 일치하지 않습니다.") {
+            setErrorModalContent({
+              maintext: "비밀번호가 일치하지 않습니다.",
+              subtext: "입력한 정보가 일치하지 않아요.",
+            });
+          } else {
+            // 기타 에러
+            setErrorModalContent({
+              maintext: "로그인 실패",
+              subtext: "네트워크 오류가 발생했습니다.",
+            });
+          }
 
-      if (!simulatedResponse.success) {
-        // API에서 전달된 에러 메시지를 그대로 사용
-        setErrorModalContent({
-          maintext: simulatedResponse.message,
-          subtext: "입력한 정보가 맞는지 다시 확인해주세요",
-        });
-        setIsErrorModalOpen(true);
-      } else {
-        // 로그인 성공
-        navigate("/home");
-      }
-
-      /*
-      // 실제 API 연동 예시:
-      const response = await loginAPI({ 
-        email: values.email, 
-        password: values.password 
-      });
-      
-      if (!response.success) {
-        // API에서 보내준 에러 메시지를 maintext로 사용
-        setErrorModalContent({
-          maintext: response.message, // 예: "이메일을 확인해주세요" 또는 "비밀번호를 확인해주세요"
-          subtext: "입력한 정보가 맞는지 다시 확인해주세요"
-        });
-        setIsErrorModalOpen(true);
-      } else {
-        // 로그인 성공
-        navigate('/home');
-      }
-      */
-    } catch (error) {
-      console.error("로그인 에러:", error);
-      setErrorModalContent({
-        maintext: "로그인 실패",
-        subtext: "네트워크 오류가 발생했습니다",
-      });
-      setIsErrorModalOpen(true);
-    }
+          setIsErrorModalOpen(true);
+        },
+      },
+    );
   };
 
   const handleGoogleLogin = () => {};
@@ -135,9 +130,9 @@ const LoginPage = () => {
           <button
             className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
             onClick={handleLoginSubmit}
-            disabled={isDisabled}
+            disabled={isDisabled || isPending}
           >
-            로그인하기
+            {isPending ? "로그인 중..." : "로그인하기"}
           </button>
         </div>
         <div className="mt-4 mb-2 w-[339px] border-t border-gray-800" />
