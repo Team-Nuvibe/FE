@@ -22,6 +22,7 @@
   <img src="https://img.shields.io/badge/html2canvas-E72429?style=flat-square&logo=html2canvas&logoColor=white"/>
   <img src="https://img.shields.io/badge/axios-5A29E4?style=flat-square&logo=axios&logoColor=white"/>
   <img src="https://img.shields.io/badge/tanstack-000000?style=flat-square&logo=tanstack&logoColor=white"/>
+  <img src="https://img.shields.io/badge/react-intersection-observer-FF4154?style=flat-square&logo=react-intersection-observer&logoColor=white"/>
 </p>
   
 ## 📌 GitHub Convention
