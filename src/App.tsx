@@ -28,6 +28,7 @@ import RevealImagePage from "./pages/archive-board/RevealImagePage";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TribechatPage from "./pages/tribe-chat/TribechatPage";
+import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
