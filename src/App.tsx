@@ -21,6 +21,7 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 import TribechatPage from "./pages/tribe-chat/TribechatPage";
+import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -51,7 +52,10 @@ const protectedRoutes: RouteObject[] = [
         children: [
           { index: true, element: <ArchivePage /> },
           { path: "/archive-board/vibetone", element: <VibetonePage /> },
-          { path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
+          {
+            path: "/archive-board/vibecalendar",
+            element: <VibeCalandarPage />,
+          },
           // {path: "/archive-board/blur", element: </> },
           { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
@@ -60,7 +64,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tribe-chat",
         children: [
           { index: true, element: <TribechatPage /> },
-          // {path: "/tribe-chat:tagid", element: </> },
+          { path: "/tribe-chat:tagid", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
       },
@@ -79,9 +83,7 @@ const protectedRoutes: RouteObject[] = [
       },
       {
         path: "notification",
-        children: [
-          { index: true, element: <NotificationPage /> },
-        ],
+        children: [{ index: true, element: <NotificationPage /> }],
       },
       {
         path: "tag",
