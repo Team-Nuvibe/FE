@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PicturesIcon from "@/assets/icons/icon_pictures.svg?react";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
@@ -47,7 +47,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     isMine: false,
     userProfile: {
       name: "제이미",
-      avatar: "#E2E2E2", // 임시 색상
+      avatar: "#E2E2E2",
     },
     reactions: {
       amazing: 1,
@@ -64,8 +64,126 @@ const DUMMY_MESSAGES: ChatMessage[] = [
   {
     id: "2",
     imageUrl: imgTemp9,
-    timestamp: "18:03",
+    timestamp: "17:05",
     isMine: true,
+    reactions: {
+      amazing: 0,
+      like: 0,
+      nice: 0,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: false,
+    },
+    isScraped: false,
+  },
+  {
+    id: "3",
+    imageUrl: imgTemp1,
+    timestamp: "17:12",
+    isMine: false,
+    userProfile: {
+      name: "제이미",
+      avatar: "#E2E2E2",
+    },
+    reactions: {
+      amazing: 2,
+      like: 0,
+      nice: 3,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: false,
+    },
+    isScraped: false,
+  },
+  {
+    id: "4",
+    imageUrl: imgTemp9,
+    timestamp: "17:20",
+    isMine: false,
+    userProfile: {
+      name: "선우",
+      avatar: "#B9BDC2",
+    },
+    reactions: {
+      amazing: 0,
+      like: 1,
+      nice: 0,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: false,
+    },
+    isScraped: false,
+  },
+  {
+    id: "5",
+    imageUrl: imgTemp1,
+    timestamp: "17:25",
+    isMine: true,
+    reactions: {
+      amazing: 1,
+      like: 2,
+      nice: 0,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: false,
+    },
+    isScraped: false,
+  },
+  {
+    id: "6",
+    imageUrl: imgTemp9,
+    timestamp: "17:30",
+    isMine: false,
+    userProfile: {
+      name: "제이미",
+      avatar: "#E2E2E2",
+    },
+    reactions: {
+      amazing: 0,
+      like: 0,
+      nice: 1,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: true,
+    },
+    isScraped: false,
+  },
+  {
+    id: "7",
+    imageUrl: imgTemp1,
+    timestamp: "17:35",
+    isMine: true,
+    reactions: {
+      amazing: 0,
+      like: 0,
+      nice: 0,
+    },
+    myReactions: {
+      amazing: false,
+      like: false,
+      nice: false,
+    },
+    isScraped: false,
+  },
+  {
+    id: "8",
+    imageUrl: imgTemp9,
+    timestamp: "17:40",
+    isMine: false,
+    userProfile: {
+      name: "선우",
+      avatar: "#B9BDC2",
+    },
     reactions: {
       amazing: 1,
       like: 1,
@@ -85,12 +203,23 @@ const TribechatRoomPage = () => {
   const { tagId } = useParams<{ tagId: string }>();
   const [messages, setMessages] = useState<ChatMessage[]>(DUMMY_MESSAGES);
   const { setNavbarVisible } = useNavbarActions();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 스크롤을 하단으로 이동
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  };
 
   // 페이지 진입 시 navbar 숨기기, 언마운트 시 다시 표시
   useEffect(() => {
     setNavbarVisible(false);
     return () => setNavbarVisible(true);
   }, [setNavbarVisible]);
+
+  // 페이지 진입 시 스크롤을 하단으로 이동
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
 
   // 스크랩 토글
   const toggleScrap = (messageId: string) => {
@@ -101,7 +230,7 @@ const TribechatRoomPage = () => {
     );
   };
 
-  // 이모지 반응 추가/제거
+  // 이모지 반응 추가/제거 (한 채팅당 1개만 가능)
   const toggleReaction = (
     messageId: string,
     reactionType: keyof ChatMessage["reactions"],
@@ -110,18 +239,35 @@ const TribechatRoomPage = () => {
       prev.map((msg) => {
         if (msg.id === messageId) {
           const isMyReaction = msg.myReactions[reactionType];
+
+          // 현재 내가 반응한 이모지 찾기
+          const currentReaction = (
+            Object.keys(msg.myReactions) as Array<keyof typeof msg.myReactions>
+          ).find((key) => msg.myReactions[key]);
+
+          // 새로운 reactions 객체
+          const newReactions = { ...msg.reactions };
+          const newMyReactions = { amazing: false, like: false, nice: false };
+
+          if (isMyReaction) {
+            // 같은 이모지를 다시 클릭 -> 반응 취소
+            newReactions[reactionType] = msg.reactions[reactionType] - 1;
+          } else {
+            // 다른 이모지 클릭
+            if (currentReaction) {
+              // 기존 반응 제거
+              newReactions[currentReaction] =
+                msg.reactions[currentReaction] - 1;
+            }
+            // 새로운 반응 추가
+            newReactions[reactionType] = msg.reactions[reactionType] + 1;
+            newMyReactions[reactionType] = true;
+          }
+
           return {
             ...msg,
-            reactions: {
-              ...msg.reactions,
-              [reactionType]: isMyReaction
-                ? msg.reactions[reactionType] - 1
-                : msg.reactions[reactionType] + 1,
-            },
-            myReactions: {
-              ...msg.myReactions,
-              [reactionType]: !isMyReaction,
-            },
+            reactions: newReactions,
+            myReactions: newMyReactions,
           };
         }
         return msg;
@@ -131,14 +277,14 @@ const TribechatRoomPage = () => {
 
   // Drop Vibe 버튼 클릭
   const handleDropVibe = () => {
-    console.log("Drop Vibe button clicked!");
+    console.log("Drop Vibe button");
     // TODO: 이미지 업로드 로직 구현
   };
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#121212]">
       {/* 헤더 */}
-      <header className="absolute top-0 left-0 z-20 flex h-[115px] w-full items-center justify-between bg-[#121212] px-4">
+      <header className="sticky top-0 left-0 z-20 flex w-full items-center justify-between border-b border-gray-900 bg-[#121212]/90 px-4 py-5 backdrop-blur-sm">
         {/* 뒤로가기 버튼 */}
         <button
           className="flex h-10 w-10 items-center justify-center"
@@ -206,9 +352,11 @@ const TribechatRoomPage = () => {
                       className="relative flex items-center gap-1"
                     >
                       <LikeEmoji className="h-6 w-6" />
-                      <span className="Label text-white">
-                        {message.reactions.like}
-                      </span>
+                      {message.reactions.like > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.like}
+                        </span>
+                      )}
                       {/* 내가 반응한 경우 밑줄 표시 */}
                       {message.myReactions.like && (
                         <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] rounded-full bg-white" />
@@ -219,9 +367,11 @@ const TribechatRoomPage = () => {
                       className="relative flex items-center gap-1"
                     >
                       <NiceEmoji className="h-6 w-6" />
-                      <span className="Label text-white">
-                        {message.reactions.nice}
-                      </span>
+                      {message.reactions.nice > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.nice}
+                        </span>
+                      )}
                       {/* 내가 반응한 경우 밑줄 표시 */}
                       {message.myReactions.nice && (
                         <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] w-6 rounded-full bg-white" />
@@ -232,9 +382,11 @@ const TribechatRoomPage = () => {
                       className="relative flex items-center gap-1"
                     >
                       <AmazingEmoji className="h-6 w-6" />
-                      <span className="Label text-white">
-                        {message.reactions.amazing}
-                      </span>
+                      {message.reactions.amazing > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.amazing}
+                        </span>
+                      )}
                       {/* 내가 반응한 경우 밑줄 표시 */}
                       {message.myReactions.amazing && (
                         <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] rounded-full bg-white" />
@@ -285,31 +437,49 @@ const TribechatRoomPage = () => {
                   {/* 이모지 반응 */}
                   <div className="mt-2 flex items-center gap-1 rounded-[84px] bg-[#64676D]/80 px-3 py-2 backdrop-blur-[5px]">
                     <button
-                      onClick={() => toggleReaction(message.id, "amazing")}
-                      className="flex items-center gap-1"
-                    >
-                      <AmazingEmoji className="h-4 w-4" />
-                      <span className="Label text-white">
-                        {message.reactions.amazing}
-                      </span>
-                    </button>
-                    <button
                       onClick={() => toggleReaction(message.id, "like")}
-                      className="flex items-center gap-1"
+                      className="relative flex items-center gap-1"
                     >
-                      <LikeEmoji className="h-4 w-4" />
-                      <span className="Label text-white">
-                        {message.reactions.like}
-                      </span>
+                      <LikeEmoji className="h-6 w-6" />
+                      {message.reactions.like > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.like}
+                        </span>
+                      )}
+                      {/* 내가 반응한 경우 밑줄 표시 */}
+                      {message.myReactions.like && (
+                        <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] rounded-full bg-white" />
+                      )}
                     </button>
                     <button
                       onClick={() => toggleReaction(message.id, "nice")}
-                      className="flex items-center gap-1"
+                      className="relative flex items-center gap-1"
                     >
-                      <NiceEmoji className="h-4 w-4" />
-                      <span className="Label text-white">
-                        {message.reactions.nice}
-                      </span>
+                      <NiceEmoji className="h-6 w-6" />
+                      {message.reactions.nice > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.nice}
+                        </span>
+                      )}
+                      {/* 내가 반응한 경우 밑줄 표시 */}
+                      {message.myReactions.nice && (
+                        <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] rounded-full bg-white" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => toggleReaction(message.id, "amazing")}
+                      className="relative flex items-center gap-1"
+                    >
+                      <AmazingEmoji className="h-6 w-6" />
+                      {message.reactions.amazing > 0 && (
+                        <span className="Label text-white">
+                          {message.reactions.amazing}
+                        </span>
+                      )}
+                      {/* 내가 반응한 경우 밑줄 표시 */}
+                      {message.myReactions.amazing && (
+                        <div className="absolute right-0 -bottom-0.5 left-0 h-[2px] rounded-full bg-white" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -330,6 +500,8 @@ const TribechatRoomPage = () => {
             )}
           </div>
         ))}
+        {/* 스크롤 타겟 */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* 하단 Drop Vibe 버튼 */}
