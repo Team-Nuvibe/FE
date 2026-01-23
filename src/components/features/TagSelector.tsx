@@ -1,8 +1,6 @@
-import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
-import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
@@ -20,8 +18,6 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const [selectedTag, setSelectedTag] = useState<string>("");
 
   const swiperRef = useRef<SwiperType | null>(null);
-
-  const navigate = useNavigate();
 
   const handleTabClick = (index: number) => {
     setActiveIndex(index);

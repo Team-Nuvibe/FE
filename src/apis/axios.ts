@@ -3,7 +3,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_API_URL,
+  baseURL: import.meta.env.PROD ? "" : "http://43.200.96.34",
   withCredentials: false, //쿠키
 });
 
@@ -104,6 +104,7 @@ axiosInstance.interceptors.response.use(
           return data.data.accessToken;
         })()
           .catch((error) => {
+            console.error("Failed to refresh token:", error);
             // 즉시 실행 함수로 설정
             const { removeItem: removeAccessToken } = useLocalStorage(
               LOCAL_STORAGE_KEY.accessToken,

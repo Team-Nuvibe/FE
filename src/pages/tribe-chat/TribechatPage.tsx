@@ -1,11 +1,5 @@
-import React from 'react'
-
 const TribechatPage = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default TribechatPage
+export default TribechatPage;

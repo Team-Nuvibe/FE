@@ -37,13 +37,13 @@ export const CropperView = ({
   onCropChange,
 }: CropperViewProps) => {
   const onCropComplete = useCallback(
-    (croppedArea: Area, croppedAreaPixels: Area) => {
+    (_croppedArea: Area, croppedAreaPixels: Area) => {
       onCropChange({
         ...crop,
         croppedAreaPixels,
       });
     },
-    [onCropChange]
+    [onCropChange],
   );
 
   const getFilterStyle = (levels: {
@@ -70,7 +70,7 @@ export const CropperView = ({
 
   return (
     <div
-      className={`relative w-full h-full ${
+      className={`relative h-full w-full ${
         readOnly ? "pointer-events-none" : ""
       }`}
     >
