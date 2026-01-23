@@ -1,5 +1,5 @@
 import { LOCAL_STORAGE_KEY } from "@/constants/key";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
