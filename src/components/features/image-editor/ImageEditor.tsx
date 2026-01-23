@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconAdjustment from "@/assets/icons/icon_quickdrop_adjustment.svg?react";
 import IconAdjustmentActive from "@/assets/icons/icon_quickdrop_adjustment_active.svg?react";
@@ -32,7 +32,7 @@ interface ImageEditorProps {
       temperature: number;
       saturation: number;
       exposure: number;
-    }
+    },
   ) => void;
 }
 
@@ -86,10 +86,8 @@ export const ImageEditor = ({
   });
 
   const [activeTool, setActiveTool] = useState("adjustment");
-
   const [isWideImage, setIsWideImage] = useState(false);
 
-  const imageRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
 
   const tools = [
@@ -175,7 +173,7 @@ export const ImageEditor = ({
         croppedAreaPixels.x,
         croppedAreaPixels.y,
         croppedAreaPixels.width,
-        croppedAreaPixels.height
+        croppedAreaPixels.height,
       );
 
       // 5. 최종 리사이징을 위한 캔버스 생성 (MAX_SIZE 1280)
@@ -215,7 +213,7 @@ export const ImageEditor = ({
         0,
         0,
         dWidth,
-        dHeight
+        dHeight,
       );
 
       // 6. Blob export
@@ -229,7 +227,7 @@ export const ImageEditor = ({
           }
         },
         exportType,
-        0.9
+        0.9,
       );
     };
   };
@@ -261,17 +259,17 @@ export const ImageEditor = ({
   }, [initialState]);
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex h-dvh flex-col">
       {/* 헤더 & 툴바 */}
       <div className="flex-none">
-        <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
+        <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
           <IconXbuttonGray3
             className="cursor-pointer"
             onClick={() => navigate(-1)}
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className="ST2 text-white cursor-pointer"
+            className="ST2 cursor-pointer text-white"
             onClick={() => handleExportImage()}
           >
             다음
@@ -286,17 +284,17 @@ export const ImageEditor = ({
         </div>
       </div>
       {/* 이미지 */}
-      <div className="flex-1 min-h-0 flex justify-center items-center mx-4 mt-5 mb-[53px] overflow-hidden">
-        <div className="relative w-auto h-auto max-w-full max-h-full aspect-[3/4] overflow-hidden bg-gray-500 flex justify-center items-center">
+      <div className="mx-4 mt-5 mb-[53px] flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+        <div className="relative flex aspect-[3/4] h-auto max-h-full w-auto max-w-full items-center justify-center overflow-hidden bg-gray-500">
           {/* Dummy Image for Layout Sizing */}
           <img
             src={previewUrl!}
             alt=""
-            className="w-auto h-auto max-w-full max-h-full object-contain opacity-0 pointer-events-none aspect-[3/4]"
+            className="pointer-events-none aspect-[3/4] h-auto max-h-full w-auto max-w-full object-contain opacity-0"
             aria-hidden="true"
           />
 
-          <div className="absolute inset-0 w-full h-full">
+          <div className="absolute inset-0 h-full w-full">
             <CropperView
               image={previewUrl!}
               crop={editState.crop}
