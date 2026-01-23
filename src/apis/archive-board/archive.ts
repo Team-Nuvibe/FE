@@ -1,11 +1,11 @@
 import type {
   ArchiveBoardDetail,
   ArchiveBoardItem,
+  ArchiveImagesResponse,
   CreatedArchiveBoard,
-  RecapImagesResponse,
   VibeToneTagsResponse,
 } from "@/types/archive";
-import { axiosInstance } from "./axios";
+import { axiosInstance } from "../axios";
 import type { ApiResponse } from "@/types/common";
 
 // 아카이브 목록 조회
@@ -99,12 +99,12 @@ export const getArchiveBoardDetail = async (
   return data;
 };
 
-// 아카이브 메인 상단 Recap 조회
-export const getArchiveRecapImages = async (
+// 아카이브 메인 상단에 표시할 전체 이미지 조회
+export const getArchiveImages = async (
   page: number = 0,
   size: number = 20,
-): Promise<ApiResponse<RecapImagesResponse>> => {
-  const { data } = await axiosInstance.get<ApiResponse<RecapImagesResponse>>(
+): Promise<ApiResponse<ArchiveImagesResponse>> => {
+  const { data } = await axiosInstance.get<ApiResponse<ArchiveImagesResponse>>(
     "/api/archive/images",
     {
       params: {
