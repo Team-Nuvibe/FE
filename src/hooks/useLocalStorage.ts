@@ -30,5 +30,3 @@ export const useLocalStorage = (key: string) => {
     removeItem,
   };
 };
-
-export default useLocalStorage;
