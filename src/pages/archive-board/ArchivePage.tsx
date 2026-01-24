@@ -15,6 +15,7 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { ImageDetailModal } from "@/components/archive-board/ImageDetailModal";
 import { AnimatePresence } from "framer-motion";
 import { ProfileImageDisplay } from "@/components/common/ProfileImageDisplay";
+import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import {
   getArchiveImages,
   getVibeToneTags,
@@ -162,6 +163,9 @@ const ArchivePage = () => {
   // Board 삭제 Modal 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  // Board 생성 Modal 상태
+  const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
+
   // Detail Modal State
   const [selectedItem, setSelectedItem] = useState<ResentDrops | null>(null);
 
@@ -171,14 +175,16 @@ const ArchivePage = () => {
   };
 
   // Board 생성 함수 (createArchiveBoard API 이용)
-  const handleCreateBoard = async () => {
-    // TODO: Replace prompt with a proper modal/input component
-    const boardName = prompt("새 보드 이름을 입력하세요");
+  const handleCreateBoard = () => {
+    setIsCreateBoardModalOpen(true);
+  };
+
+  const handleCreateBoardSave = async (boardName: string) => {
     if (!boardName || boardName.trim() === "") return;
 
     try {
       const response = await createArchiveBoard(boardName.trim());
-      if (response.code === "string" && response.data) {
+      if (response.data) {
         const newBoard: ArchiveBoard = {
           id: response.data.boardId.toString(),
           title: response.data.name,
@@ -191,6 +197,8 @@ const ArchivePage = () => {
     } catch (error) {
       console.error("Failed to create archive board:", error);
       // TODO: Show error toast to user
+    } finally {
+      setIsCreateBoardModalOpen(false);
     }
   };
 
@@ -224,10 +232,11 @@ const ArchivePage = () => {
   // Navbar 상태 관리
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
-    const shouldHideNavbar = isSelectMode || !!selectedItem;
+    const shouldHideNavbar =
+      isSelectMode || isCreateBoardModalOpen || !!selectedItem;
     setNavbarVisible(!shouldHideNavbar);
     return () => setNavbarVisible(true);
-  }, [isSelectMode, selectedItem, setNavbarVisible]);
+  }, [isSelectMode, isCreateBoardModalOpen, selectedItem, setNavbarVisible]);
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
@@ -485,6 +494,16 @@ const ArchivePage = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Board 생성 Bottom Sheet */}
+      <BoardBottomSheet
+        isOpen={isCreateBoardModalOpen}
+        initialTitle=""
+        toptext="아카이브 보드 추가"
+        buttontext="추가하기"
+        onClose={() => setIsCreateBoardModalOpen(false)}
+        onClick={handleCreateBoardSave}
+      />
     </div>
   );
 };
