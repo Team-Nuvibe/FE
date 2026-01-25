@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Img_3 from "@/assets/images/img_3.png";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
@@ -8,6 +8,7 @@ import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -18,19 +19,17 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const categories = [
-    {
-      name: "Mood",
-      items: ["blur", "grain", "blur", "grain", "blur", "grain"],
-    },
-    { name: "Light", items: ["el1", "el2", "el3"] },
-    { name: "Color", items: ["el1", "el2", "el3"] },
-    { name: "Texture", items: ["el1", "el2", "el3"] },
-    { name: "Object", items: ["el1", "el2", "el3"] },
-    { name: "Daily", items: ["el1", "el2", "el3"] },
-    { name: "Fashion", items: ["el1", "el2", "el3"] },
-    { name: "Media", items: ["el1", "el2", "el3"] },
-  ];
+  const { categories, categoryQueries } = useGetAllCategoriesTags();
+
+  const isLoading = categoryQueries.some((query) => query.isLoading);
+  const isSuccess = categoryQueries.every((query) => query.isSuccess);
+
+  useEffect(() => {
+    if (isSuccess && swiperRef.current) {
+      swiperRef.current.update();
+      swiperRef.current.updateAutoHeight(150);
+    }
+  }, [isSuccess]);
 
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
@@ -90,7 +89,7 @@ const HomePage = () => {
               <p className="text-[24px] leading-4">Drop</p>
               <p className="text-[24px]">your vibe</p>
             </div>
-            <div className="H1 z-10 px-4 pb-4">
+            <div className="H1 z-10 px-4 pt-[10px] pb-4">
               <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] text-transparent">
                 #Minimal
               </h1>
@@ -183,21 +182,32 @@ const HomePage = () => {
             setActiveIndex(swiper.activeIndex);
             scrollToTab(swiper.activeIndex);
           }}
-          className="mt-1 w-full"
+          className="w-full"
         >
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-4 px-[16px]">
+              <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px] bg-gray-400"
-                    onClick={() => navigate(`/tag/${item}`)}
+                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
+                    onClick={() =>
+                      navigate(`/tag/${item.tag}`, {
+                        state: { imageUrl: item.imageUrl },
+                      })
+                    }
                     // 임시로 태그 id 대신 이름 사용
+                    style={{
+                      backgroundImage: item.imageUrl
+                        ? `url(${item.imageUrl})`
+                        : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
                   >
                     <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
                       <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 text-transparent">
-                        #{item}
+                        #{item.tag}
                       </p>
                     </div>
                   </div>
