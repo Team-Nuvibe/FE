@@ -8,7 +8,11 @@ import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import useGetTagsByCategory from "@/hooks/queries/useGetTagsByCategory";
+import useGetTagsByCategory from "@/hooks/queries/useGetAllCategoriesTags";
+import type { CategoryTagResponse, TagCategory } from "@/types/home";
+import { getTagsByCategory } from "@/apis/home";
+import { categoriesList } from "@/constants/categoriesList";
+import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -19,27 +23,27 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const categories = [
-    {
-      name: "Mood",
-      items: ["blur", "grain", "blur", "grain", "blur", "grain"],
-    },
-    { name: "Light", items: ["el1", "el2", "el3"] },
-    { name: "Color", items: ["el1", "el2", "el3"] },
-    { name: "Texture", items: ["el1", "el2", "el3"] },
-    { name: "Object", items: ["el1", "el2", "el3"] },
-    { name: "Daily", items: ["el1", "el2", "el3"] },
-    { name: "Fashion", items: ["el1", "el2", "el3"] },
-    { name: "Media", items: ["el1", "el2", "el3"] },
-  ];
+  // const categories = [
+  //   {
+  //     name: "Mood",
+  //     items: ["blur", "grain", "blur", "grain", "blur", "grain"],
+  //   },
+  //   { name: "Light", items: ["el1", "el2", "el3"] },
+  //   { name: "Color", items: ["el1", "el2", "el3"] },
+  //   { name: "Texture", items: ["el1", "el2", "el3"] },
+  //   { name: "Object", items: ["el1", "el2", "el3"] },
+  //   { name: "Daily", items: ["el1", "el2", "el3"] },
+  //   { name: "Fashion", items: ["el1", "el2", "el3"] },
+  //   { name: "Media", items: ["el1", "el2", "el3"] },
+  // ];
 
-  const { data } = useGetTagsByCategory("MOOD");
-  console.log(data);
-
+  const { categories } = useGetAllCategoriesTags();
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
     scrollToTab(index);
   };
+
+  console.log(categories);
 
   const scrollToTab = (index: number) => {
     const container = tabsContainerRef.current;
@@ -195,13 +199,24 @@ const HomePage = () => {
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px] bg-gray-400"
-                    onClick={() => navigate(`/tag/${item}`)}
+                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
+                    onClick={() =>
+                      navigate(`/tag/${item.tag}`, {
+                        state: { imageUrl: item.imageUrl },
+                      })
+                    }
                     // 임시로 태그 id 대신 이름 사용
+                    style={{
+                      backgroundImage: item.imageUrl
+                        ? `url(${item.imageUrl})`
+                        : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
                   >
                     <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
                       <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 text-transparent">
-                        #{item}
+                        #{item.tag}
                       </p>
                     </div>
                   </div>

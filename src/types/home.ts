@@ -14,3 +14,12 @@ export interface CategoryTagResponse {
   tag: string;
   imageUrl: string | null;
 }
+
+export interface TagDetailResponse {
+  tag: string;
+  description: string;
+  category: TagCategory;
+  tribeImageUrls: string[];
+  hasImages: boolean;
+  tribeId: number;
+}
