@@ -40,7 +40,7 @@ interface ImageEditorProps {
       temperature: number;
       saturation: number;
       exposure: number;
-    }
+    },
   ) => void;
 }
 
@@ -50,27 +50,27 @@ export const ImageEditor = ({
   onNext,
 }: ImageEditorProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [editState, setEditState] = useState({
-    adjustment: {
-      brightness: 0,
-      contrast: 0,
-      structure: 0,
-      temperature: 0,
-      saturation: 0,
-      exposure: 0,
-    },
-    crop: {
-      x: 0,
-      y: 0,
-      zoom: 1,
-      croppedAreaPixels: null,
-    },
-    rotation: {
-      angle: 0,
-      flipHorizontal: false,
-      flipVertical: false,
-    },
-  });
+  // const [editState, setEditState] = useState({
+  //   adjustment: {
+  //     brightness: 0,
+  //     contrast: 0,
+  //     structure: 0,
+  //     temperature: 0,
+  //     saturation: 0,
+  //     exposure: 0,
+  //   },
+  //   crop: {
+  //     x: 0,
+  //     y: 0,
+  //     zoom: 1,
+  //     croppedAreaPixels: null,
+  //   },
+  //   rotation: {
+  //     angle: 0,
+  //     flipHorizontal: false,
+  //     flipVertical: false,
+  //   },
+  // });
   const [activeTool, setActiveTool] = useState("adjustment");
   const [activeAdjustmentTool, setActiveAdjustmentTool] =
     useState("brightness");
@@ -237,7 +237,7 @@ export const ImageEditor = ({
           }
         },
         exportType,
-        0.9
+        0.9,
       );
     }
   };
@@ -257,17 +257,17 @@ export const ImageEditor = ({
   }, [initialState]);
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex h-dvh flex-col">
       {/* 헤더 & 툴바 */}
       <div className="flex-none">
-        <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
+        <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
           <IconXbuttonGray3
             className="cursor-pointer"
             onClick={() => navigate(-1)}
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className="ST2 text-white cursor-pointer"
+            className="ST2 cursor-pointer text-white"
             onClick={() => handleExportImage()}
           >
             다음
@@ -282,20 +282,20 @@ export const ImageEditor = ({
         </div>
       </div>
       {/* 이미지 */}
-      <div className="flex-1 min-h-0 flex justify-center items-center px-4 pb-[53px]">
+      <div className="flex min-h-0 flex-1 items-center justify-center px-4 pb-[53px]">
         {activeTool === "adjustment" && (
           <img
             src={previewUrl!}
             ref={imageRef}
             alt="Preview"
-            className="max-w-full max-h-full aspect-[3/4] object-cover object-center"
+            className="aspect-[3/4] max-h-full max-w-full object-cover object-center"
             style={{ filter: getFilterStyle(adjustmentLevels) }}
           />
         )}
       </div>
       {/* 세부 조정 툴바 */}
-      <div className="flex flex-col z-10 pb-11">
-        <div className="relative h-[15px] flex justify-center items-center">
+      <div className="z-10 flex flex-col pb-11">
+        <div className="relative flex h-[15px] items-center justify-center">
           <input
             type="range"
             min={-50}
@@ -311,15 +311,14 @@ export const ImageEditor = ({
                 [activeAdjustmentTool]: Number(e.target.value),
               })
             }
-            className="w-[345px] h-[1px] appearance-none bg-gray-700 rounded-[10px] accent-white cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100
-          [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 cursor-pointer z-10"
+            className="z-10 h-[1px] w-[345px] cursor-pointer appearance-none rounded-[10px] bg-gray-700 accent-white [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100"
           />
-          <div className="absolute top-[4.5px] w-[6px] h-[6px] bg-gray-700 rounded-full" />
+          <div className="absolute top-[4.5px] h-[6px] w-[6px] rounded-full bg-gray-700" />
         </div>
-        <div className="flex gap-5 pt-[21px] overflow-x-auto scrollbar-hide">
+        <div className="scrollbar-hide flex gap-5 overflow-x-auto pt-[21px]">
           {adjustmentTools.map((tool) => (
             <div
-              className={`flex flex-col gap-[10px] items-center ST2 ${
+              className={`ST2 flex flex-col items-center gap-[10px] ${
                 tool.id === "brightness" && `pl-6`
               } ${tool.id === "exposure" && `pr-6`}`}
             >
@@ -335,7 +334,7 @@ export const ImageEditor = ({
                 )}
               </button>
               <div
-                className={`w-[8px] h-[8px] rounded-full ${
+                className={`h-[8px] w-[8px] rounded-full ${
                   adjustmentLevels[tool.id as keyof typeof adjustmentLevels] ===
                   0
                     ? `opacity-0`

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import Img_3 from "@/assets/images/Img_3.png";
+import Img_3 from "@/assets/images/img_3.png";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import Icon_notification from "@/assets/icons/icon_notification.svg?react";
