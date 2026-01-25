@@ -40,20 +40,28 @@ export const TagDetailPage = () => {
         </div>
         <div className="flex w-full items-end justify-between">
           <div className="flex flex-col px-4">
-            <div className="ST0 z-10 mb-2">
-              <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] text-transparent">
+            <div className="z-10 mb-2">
+              <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] font-medium tracking-tight text-transparent">
                 #{tagDetails?.data.tag}
               </h1>
             </div>
             <div className="z-10">
-              <p className="B2 text-gray-200">{tagDetails?.data.description}</p>
+              <p className="B2 tracking-tight text-gray-200">
+                {tagDetails?.data.description}
+              </p>
             </div>
           </div>
         </div>
       </section>
       <section className="flex flex-col gap-4 px-4 py-6">
-        <h2 className="H2 text-gray-200">Image in Tribe Chat</h2>
-        <div className="flex"></div>
+        <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
+        {tagDetails?.data.hasImages && <div className="flex gap-2"></div>}
+        {!tagDetails?.data.hasImages && (
+          <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
+            <p>아직 드랍된 이미지가 없어요.</p>
+            <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
+          </div>
+        )}
       </section>
     </div>
   );

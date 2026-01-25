@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Img_3 from "@/assets/images/img_3.png";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
@@ -8,10 +8,6 @@ import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import useGetTagsByCategory from "@/hooks/queries/useGetAllCategoriesTags";
-import type { CategoryTagResponse, TagCategory } from "@/types/home";
-import { getTagsByCategory } from "@/apis/home";
-import { categoriesList } from "@/constants/categoriesList";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 
 const HomePage = () => {
@@ -23,27 +19,22 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  // const categories = [
-  //   {
-  //     name: "Mood",
-  //     items: ["blur", "grain", "blur", "grain", "blur", "grain"],
-  //   },
-  //   { name: "Light", items: ["el1", "el2", "el3"] },
-  //   { name: "Color", items: ["el1", "el2", "el3"] },
-  //   { name: "Texture", items: ["el1", "el2", "el3"] },
-  //   { name: "Object", items: ["el1", "el2", "el3"] },
-  //   { name: "Daily", items: ["el1", "el2", "el3"] },
-  //   { name: "Fashion", items: ["el1", "el2", "el3"] },
-  //   { name: "Media", items: ["el1", "el2", "el3"] },
-  // ];
+  const { categories, categoryQueries } = useGetAllCategoriesTags();
 
-  const { categories } = useGetAllCategoriesTags();
+  const isLoading = categoryQueries.some((query) => query.isLoading);
+  const isSuccess = categoryQueries.every((query) => query.isSuccess);
+
+  useEffect(() => {
+    if (isSuccess && swiperRef.current) {
+      swiperRef.current.update();
+      swiperRef.current.updateAutoHeight(150);
+    }
+  }, [isSuccess]);
+
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
     scrollToTab(index);
   };
-
-  console.log(categories);
 
   const scrollToTab = (index: number) => {
     const container = tabsContainerRef.current;
