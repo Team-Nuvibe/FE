@@ -103,12 +103,10 @@ const ArchivePage = () => {
     const fetchBoards = async () => {
       try {
         const response = await getArchiveList();
-        console.log("📂 Archive Board API Response:", response);
+        console.log(response);
 
         if (response.data) {
-          console.log("✅ Board data received:", response.data);
-          console.log("📊 Number of boards:", response.data.length);
-
+          console.log(response.data);
           const mappedBoards: ArchiveBoard[] = response.data.map((board) => ({
             id: board.boardId.toString(),
             title: board.name,
@@ -116,7 +114,6 @@ const ArchivePage = () => {
             image: board.thumbnailUrl,
           }));
 
-          console.log("Mapped boards:", mappedBoards);
           setAllArchiveBoards(mappedBoards);
           setArciveboard(mappedBoards);
         } else {
@@ -408,7 +405,7 @@ const ArchivePage = () => {
                       if (isSelectMode) {
                         toggleSelection(board.id);
                       } else {
-                        navigate(`/archive-board/${board.title}`);
+                        navigate(`/archive-board/${board.id}`);
                       }
                     }}
                     className={`flex cursor-pointer flex-col items-center gap-2 transition-all ${isSelectMode ? "active:scale-95" : ""} `}
