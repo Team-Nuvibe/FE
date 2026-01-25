@@ -59,7 +59,9 @@ export const CropToolbar = ({ onReset }: CropToolbarProps) => {
               <IconFixedratio />
             )}
           </button>
-          <div className={`h-[8px] w-[8px] rounded-full bg-white`} />
+          <div className="flex h-[18px] items-center justify-center">
+            <div className={`h-[8px] w-[8px] rounded-full bg-white`} />
+          </div>
         </div>
       </div>
     </div>
