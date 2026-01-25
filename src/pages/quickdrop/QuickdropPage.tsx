@@ -10,6 +10,7 @@ import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
 import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
+import { useNavbarActions } from "@/hooks/useNavbarStore";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
@@ -23,9 +24,16 @@ interface Board {
 export const QuickdropPage = () => {
   const location = useLocation();
   const { file } = location.state || {};
+  const { setNavbarVisible } = useNavbarActions();
+  useEffect(() => {
+    setNavbarVisible(false);
+    return () => {
+      setNavbarVisible(true);
+    };
+  }, [setNavbarVisible]);
 
   const [step, setStep] = useState<"edit" | "tag" | "board" | "uploaded">(
-    "edit"
+    "edit",
   );
   const [imageData, setImageData] = useState<{
     image: Blob | null;
@@ -67,7 +75,7 @@ export const QuickdropPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col w-full h-dvh">
+    <div className="flex h-dvh w-full flex-col">
       {step === "edit" && (
         <ImageEditor
           file={file}
@@ -108,8 +116,8 @@ export const QuickdropPage = () => {
         />
       )}
       {step === "uploaded" && (
-        <div className="flex h-full justify-center items-center">
-          <div className="flex flex-col justify-center items-center gap-4">
+        <div className="flex h-full items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-4">
             <p
               className={`B2 text-white transition-opacity duration-200 ${
                 activeIndex === 0 ? "opacity-100" : "opacity-0"
@@ -119,7 +127,7 @@ export const QuickdropPage = () => {
             </p>
             <Swiper
               modules={[Pagination]}
-              className="w-[291px] h-[388px]"
+              className="h-[388px] w-[291px]"
               pagination={{
                 clickable: true,
                 el: paginationEl,
@@ -130,7 +138,7 @@ export const QuickdropPage = () => {
               onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
             >
               <SwiperSlide>
-                <div className="relative w-full h-full rounded-[15px] overflow-hidden">
+                <div className="relative h-full w-full overflow-hidden rounded-[15px]">
                   {/* 선명한 이미지 레이어 (상단) */}
                   <div
                     className="absolute inset-0"
@@ -166,15 +174,15 @@ export const QuickdropPage = () => {
                         "linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.8) 100%)",
                     }}
                   />
-                  <div className="relative z-10 flex flex-col justify-end h-full px-4 pb-4">
+                  <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-4">
                     <div className="flex items-center">
-                      <p className="font-normal text-[10px] text-white tracking-tight">
+                      <p className="text-[10px] font-normal tracking-tight text-white">
                         {imageData.board?.name}
                       </p>
                       <IconChevronRightWhiteSquare className="w-4" />
                     </div>
                     {/* TODO: 그라데이션 안되는 버그 픽스 */}
-                    <p className="ST0 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent tracking-tight mb-3">
+                    <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text tracking-tight text-transparent">
                       #{imageData.tag}
                     </p>
                     <p className="text-[10px]">
@@ -184,24 +192,24 @@ export const QuickdropPage = () => {
                 </div>
               </SwiperSlide>
               <SwiperSlide>
-                <div className="relative w-full h-full rounded-[15px] overflow-hidden bg-gray-900">
-                  <div className="relative z-10 flex flex-col justify-between h-full px-5 py-6 tracking-tight">
-                    <div className="flex flex-col justify-center items-center">
+                <div className="relative h-full w-full overflow-hidden rounded-[15px] bg-gray-900">
+                  <div className="relative z-10 flex h-full flex-col justify-between px-5 py-6 tracking-tight">
+                    <div className="flex flex-col items-center justify-center">
                       <IconRectangleGray3 />
-                      <p className="B0 text-gray-300 mb-2">
+                      <p className="B0 mb-2 text-gray-300">
                         #{imageData.tag} 트라이브챗
                       </p>
-                      <p className="font-medium text-[12px] text-gray-500 mb-8">
+                      <p className="mb-8 text-[12px] font-medium text-gray-500">
                         더 많은 사람들과 바이브를 나눌 수 있어요
                       </p>
                       <ImgTempUploaded />
                     </div>
                     <div className="flex justify-center gap-2">
-                      <button className="bg-gray-800 w-30 py-[6px] rounded-[5px] cursor-pointer">
+                      <button className="w-30 cursor-pointer rounded-[5px] bg-gray-800 py-[6px]">
                         <p className="B2 text-gray-300">나중에 입장하기</p>
                       </button>
                       <button
-                        className="bg-gray-300 w-30 py-[6px] rounded-[5px] cursor-pointer"
+                        className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px]"
                         onClick={() => navigate("/home")}
                       >
                         <p className="B2 text-gray-800">입장하기</p>
@@ -213,7 +221,7 @@ export const QuickdropPage = () => {
             </Swiper>
             <div
               ref={setPaginationEl}
-              className="quickdrop-pagination w-full flex justify-center items-center gap-[6px] z-10"
+              className="quickdrop-pagination z-10 flex w-full items-center justify-center gap-[6px]"
             />
           </div>
         </div>

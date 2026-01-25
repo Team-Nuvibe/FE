@@ -90,7 +90,7 @@ const HomePage = () => {
               <p className="text-[24px]">your vibe</p>
             </div>
             <div className="H1 z-10 px-4 pt-[10px] pb-4">
-              <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] text-transparent">
+              <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] tracking-tight text-transparent">
                 #Minimal
               </h1>
             </div>
@@ -109,7 +109,7 @@ const HomePage = () => {
       </header>
       {/* My Trace */}
       <section className="flex flex-col gap-4 px-4 pt-4 pb-4">
-        <h2 className="H2 text-gray-200">나의 기록</h2>
+        <h2 className="H2 tracking-tight text-gray-200">나의 기록</h2>
         <div className="flex">
           <div className="flex h-[116px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
             <Icon_plus className="h-[16px]" />
@@ -141,7 +141,7 @@ const HomePage = () => {
                   className={`relative flex shrink-0 cursor-pointer flex-col items-center pb-2 transition-colors`}
                 >
                   <p
-                    className={`ST2 transition-colors duration-200 ${
+                    className={`ST2 tracking-tight transition-colors duration-200 ${
                       activeIndex === index
                         ? "B2 text-white"
                         : "B2 text-gray-400"
@@ -196,7 +196,6 @@ const HomePage = () => {
                         state: { imageUrl: item.imageUrl },
                       })
                     }
-                    // 임시로 태그 id 대신 이름 사용
                     style={{
                       backgroundImage: item.imageUrl
                         ? `url(${item.imageUrl})`
@@ -206,7 +205,7 @@ const HomePage = () => {
                     }}
                   >
                     <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
-                      <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 text-transparent">
+                      <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
                         #{item.tag}
                       </p>
                     </div>
