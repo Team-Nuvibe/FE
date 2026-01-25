@@ -8,6 +8,7 @@ import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import useGetTagsByCategory from "@/hooks/queries/useGetTagsByCategory";
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -31,6 +32,9 @@ const HomePage = () => {
     { name: "Fashion", items: ["el1", "el2", "el3"] },
     { name: "Media", items: ["el1", "el2", "el3"] },
   ];
+
+  const { data } = useGetTagsByCategory("MOOD");
+  console.log(data);
 
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
