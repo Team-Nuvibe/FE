@@ -1,4 +1,5 @@
 import WarningIcon from '@/assets/icons/icon_warning.svg?react'
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -10,48 +11,63 @@ interface DeleteModalProps {
 }
 
 export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext, subtext }: DeleteModalProps) => {
-  if (!isOpen) return null;
-
   return (
-    // 1. 배경 blur
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 px-4">
-      
-      {/* 모달 컨텐츠 박스 */}
-      <div className="w-[296px] h-[167px] max-w-[335px] bg-gray-900/85 backdrop-blur-[22px] rounded-[10px] p-[16px] flex flex-col items-center text-center">
-        
-        {/* 아이콘 */}
-        <WarningIcon className="w-[32px] h-[32px] mb-2"/>
-        <div className="mb-4">
-          <div className="text-[17.38px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
-          {maintext}
-          </div>
-          {/* 서브 텍스트 */}
-          <p className="text-[10.43px] font-medium text-gray-300 leading-[150%] tracking-[-0.025em]">
-            {subtext}
-          </p>
-        </div>
-        
-
-        {/* 버튼 영역 */}
-        <div className="flex w-full gap-2">
-          <button
-            onClick={onConfirm}
-            className=" 
-              w-[130px] h-[36px] rounded-[5px] bg-gray-700 flex items-center justify-center
-              text-gray-300 B2"
-          >
-            네 삭제할래요
-          </button>
-          <button
-            onClick={onClose}
+    <AnimatePresence>
+      {isOpen && (
+        // 1. 배경 blur 및 전체 컨테이너
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4"
+        >
+          {/* 모달 컨텐츠 박스 */}
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, y: -12 }}
+            animate={{ scale: 1, opacity: 1, y: -12 }} // -translate-y-3 corresponds to -12px
+            exit={{ scale: 0.9, opacity: 0, y: -12 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="
-              w-[130px] h-[36px] rounded-[5px] bg-gray-300
-              text-gray-800 B2"
+            w-[304px] h-[174px] max-w-[335px] p-[16px]
+            bg-gray-900/85 backdrop-blur-[22px] rounded-[10px]  
+            flex flex-col items-center justify-center text-center"
           >
-            돌아가기
-          </button>
-        </div>
-      </div>
-    </div>
+            
+            {/* 아이콘 */}
+            <WarningIcon className="w-[32px] h-[32px] mb-3"/>
+            <div className="mb-4">
+              <div className="text-[17.38px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
+                {count}{maintext}
+              </div>
+              {/* 서브 텍스트 */}
+              <p className="text-[10.43px] font-medium text-gray-300 leading-[150%] tracking-[-0.025em]">
+                {subtext}
+              </p>
+            </div>
+            
+
+            {/* 버튼 영역 */}
+            <div className="flex w-full gap-2">
+              <button
+                onClick={onConfirm}
+                className=" 
+                  w-[130px] h-[36px] rounded-[5px] bg-gray-700 flex items-center justify-center
+                  text-gray-300 ST3"
+              >
+                삭제하기
+              </button>
+              <button
+                onClick={onClose}
+                className="
+                  w-[130px] h-[36px] rounded-[5px] bg-gray-300
+                  text-gray-800 ST3"
+              >
+                돌아가기
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

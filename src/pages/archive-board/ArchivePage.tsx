@@ -5,15 +5,24 @@ import SearchIcon from '@/assets/icons/icon_search.svg?react'
 import Plusbutton from '@/assets/icons/icon_plusbutton.svg?react'
 import SelectedImageIcon from '@/assets/icons/icon_select_image.svg?react'
 import ChevronRightIcon from '@/assets/icons/icon_chevron_right.svg?react'
+import Icon_folder from '@/assets/icons/icon_folder2.svg?react'
+import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
 import { useNavigate } from 'react-router';
-import { useNavbarActions } from '../../hooks/useNavbarStore';
-import { DeleteConfirmModal } from '../../components/archive-board/DeleteCofirmModal';
-import { DeleteBottomSheet } from '../../components/archive-board/DeleteBottomSheet';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
+import { DeleteConfirmModal } from '@/components/archive-board/DeleteCofirmModal';
+import { CountBottomSheet } from '@/components/archive-board/CountBottomSheet';
+import { useUserStore } from '@/hooks/useUserStore';
+import { ImageDetailModal } from '@/components/archive-board/ImageDetailModal';
+import { AnimatePresence } from 'framer-motion';
+import { ProfileImageDisplay } from '@/components/common/ProfileImageDisplay';
+
+
 
 interface ArchiveBoard {
   id: string;
   title: string;
   thumbnail?: string;
+  image?: string;
 }
 
 interface ResentDrops {
@@ -23,7 +32,7 @@ interface ResentDrops {
   thumbnail: string;
 }
 
-const ArchivePage  = () => {
+const ArchivePage = () => {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,22 +41,23 @@ const ArchivePage  = () => {
     navigate('/archive-board/vibetone')
   }
 
-  const resentDrops: ResentDrops[] = [
-    { id: '1', tag: '#Start', time: '12m', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '2', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '3', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '4', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '5', tag: '#Minimal', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
-    { id: '6', tag: '#End', time: '01h', thumbnail: '../../src/assets/images/img_7.svg' },
+  const { nickname, profileImage } = useUserStore();
 
-  ];
+  const [resentDrops, setResentDrops] = useState<ResentDrops[]>([
+    { id: '1', tag: '#Color', time: '12m', thumbnail: 'https://drive.google.com/thumbnail?id=1dMIEDAhlbkxIezdzyffcYZX7srUXuz0k&sz=w1000' },
+    { id: '2', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1vHWPQpWoQQ5PgN6f97YeEXaHFLbZYJCA&sz=w1000' },
+    { id: '3', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1k5uqmKAqCjYy-Bq49TWDFrzJn_Y0TsuK&sz=w1000' },
+    { id: '4', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=16wOYnBu0VJotnd2YEimT7gNuQSiJNNG1&sz=w1000' },
+    { id: '5', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1Xz60hNsv3o-eQREjtYKhvliSCQUDbg8B&sz=w1000' },
+    { id: '6', tag: '#Color', time: '01h', thumbnail: 'https://drive.google.com/thumbnail?id=1yEtGoWgsvy05wHWgrvHtv6FTeCgnCFkF&sz=w1000' },
+  ]);
 
   const tags = ['#Minimal', '#Warm', '#Object', '#Moody'];
 
   const [archiveboard, setArciveboard] = useState<ArchiveBoard[]>([
-    { id: '1', title: '2026 추구미' },
-    { id: '2', title: '보드명' },
-    { id: '3', title: '' },
+    { id: '1', title: '2026 추구미', image: '../../src/assets/images/img_7.svg' },
+    { id: '2', title: '보드명', image: '../../src/assets/images/img_7.svg' },
+    { id: '3', title: '', image: '' },
     { id: '4', title: '' },
     { id: '5', title: '' },
     { id: '6', title: '' },
@@ -70,9 +80,9 @@ const ArchivePage  = () => {
 
   // 아이템 선택/해제 토글
   const toggleSelection = (id: string) => {
-    setSelectedIds((prev) => 
-      prev.includes(id) 
-          ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
+    setSelectedIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id) // 이미 있으면 제거
         : [...prev, id] // 없으면 추가
     );
   };
@@ -80,50 +90,54 @@ const ArchivePage  = () => {
   // Board 삭제 Modal 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  // Detail Modal State
+  const [selectedItem, setSelectedItem] = useState<ResentDrops | null>(null);
+
   const handleTrashClick = () => {
     if (selectedIds.length === 0) return;
     setIsDeleteModalOpen(true);
   };
-  
+
   // Board 삭제 함수
   const executeDelete = () => {
     setArciveboard((prev) => prev.filter((board) => !selectedIds.includes(board.id)));
     setIsSelectMode(false);
     setSelectedIds([]);
-    setIsDeleteModalOpen(false); 
+    setIsDeleteModalOpen(false);
   };
 
 
   // Navbar 상태 관리
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
-    setNavbarVisible(!isSelectMode);
+    const shouldHideNavbar = isSelectMode || !!selectedItem;
+    setNavbarVisible(!shouldHideNavbar);
     return () => setNavbarVisible(true);
-  }, [isSelectMode, setNavbarVisible]);
+  }, [isSelectMode, selectedItem, setNavbarVisible]);
 
-  
+
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {/* Main Content - Scrollable */}
       <div className="flex-1 overflow-y-auto pb-24 touch-auto">
         {/* Video Posts Section with Overlay */}
-        <div className="relative mb-37 mt-2">
+        <div className="relative mb-[134px] mt-2">
           {/* Background Video Posts */}
           <Swiper
             modules={[Autoplay]}
-            spaceBetween={12} 
-            slidesPerView={'auto'} 
-            slidesOffsetBefore={16} 
-            slidesOffsetAfter={16} 
-            className="pb-2 [&>.swiper-wrapper]:!ease-linear" 
+            spaceBetween={12}
+            slidesPerView={'auto'}
+            slidesOffsetBefore={16}
+            slidesOffsetAfter={16}
+            className="pb-2 [&>.swiper-wrapper]:!ease-linear"
             speed={10000} // 이동 속도 
             resistanceRatio={0}
-            freeMode={{ 
+            freeMode={{
               enabled: true,
               momentum: false, // 관성 
-              sticky: false,  
-            }} 
+              sticky: false,
+            }}
             loop={false}
             allowTouchMove={true} // 사용자가 손가락으로 스와이프 가능
             autoplay={{
@@ -134,15 +148,19 @@ const ArchivePage  = () => {
             }}
           >
             {resentDrops.map((post) => (
-              <SwiperSlide 
-                key={post.id} 
+              <SwiperSlide
+                key={post.id}
                 className="!w-[165px]"
               >
-                <div className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px]">
-                  <img 
-                    src={post.thumbnail} 
+                <div 
+                  className="relative w-full h-[220px] rounded-[10px] overflow-hidden backdrop-blur-[2px] cursor-pointer"
+                  onClick={() => setSelectedItem(post)}
+                >
+                  <img
+                    src={post.thumbnail}
                     alt={post.tag}
-                    className="w-full h-full object-cover "
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black pointer-events-none" />
                   <div className="absolute top-1 left-1 px-2 py-1 rounded-lg ST1">
@@ -166,46 +184,53 @@ const ArchivePage  = () => {
           </Swiper>
           <div className="absolute top-[260px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
             {/* 프로필 이미지 */}
-            <div className="w-[76.14px] h-[76.14px] rounded-full bg-black overflow-hidden border border-white/10 pointer-events-auto"> {/* 클릭 필요하면 pointer-events-auto */}
-            <img 
-              src="../../src/assets/logos/Subtract.svg" 
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
-            </div>
-            <div className="mt-5 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
+            {profileImage === DefaultProfileImage ? (
+              <div className="w-[76.14px] h-[76.14px] pointer-events-auto">
+                <img
+                  src={profileImage}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <ProfileImageDisplay
+                src={profileImage}
+                className="w-[76.14px] h-[76.14px] pointer-events-auto"
+              />
+            )}
+            <div className="mt-1 font-[500] text-[28.42px] text-[#F7F7F7] leading-[140%] tracking-[-0.03em]">
               {/* user.nickname */}
-              Vibers
+              {nickname}
             </div>
           </div>
         </div>
 
         {/* Vibe Tone */}
         <div className="px-4">
-          <div className="flex items-center justify-between mb-4">
-            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">Vibers's 바이브 톤</p>
-            <button 
+          <div className="flex items-center justify-between mb-3">
+            <p className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">{nickname}'s 바이브 톤</p>
+            <button
               onClick={handleVibeTone}
               className="flex items-center gap-[12px]" // flex(가로 정렬) + 세로 중앙 + 간격 12px
             >
               <span className="B2 text-gray-500 leading-[150%] tracking-[-0.025em]">더보기</span>
               <ChevronRightIcon />
             </button>
-            
+
           </div>
-          
+
           {/* Tags */}
           <div className="w-full">
             <Swiper
               spaceBetween={8}
               slidesPerView={'auto'}
               className="px-4"
-              freeMode={true} 
+              freeMode={true}
             >
               {tags.map((tag) => (
                 <SwiperSlide key={tag} className="!w-auto">
-                  <div className="px-3 py-1.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
-                    <span 
+                  <div className="px-3 py-1.5 mb-7.5 bg-gray-900 rounded-[5px] ST2 whitespace-nowrap">
+                    <span
                       className="
                         bg-clip-text 
                         text-transparent 
@@ -225,8 +250,8 @@ const ArchivePage  = () => {
         {/* Archive Section */}
         <div className="flex-1 flex flex-col">
           {/* Fixed Header */}
-          <div className="px-4 p-6 bg-black sticky top-0 z-10 pb-4">
-            <div className="flex items-center justify-between mb-4">
+          <div className="px-4 p-5 bg-black sticky top-0 z-50 pb-4">
+            <div className="flex items-center justify-between mb-3">
               <div className="H2 text-gray-200 leading-[150%] tracking-[-0.025em]">아카이브 보드</div>
               <div className="flex gap-[24px]">
                 <button
@@ -235,9 +260,9 @@ const ArchivePage  = () => {
                 >
                   {isSelectMode ? '취소' : '선택'}
                 </button>
-                <button 
+                <button
                 >
-                  <Plusbutton className="w-[24px] h-[24px]"/>
+                  <Plusbutton className="w-[24px] h-[24px]" />
                 </button>
               </div>
             </div>
@@ -259,44 +284,62 @@ const ArchivePage  = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            <div className="grid grid-cols-3 gap-4 pb-6">
-              {archiveboard.map((board) => {
-                // 현재 아이템이 선택되었는지 확인
-                const isSelected = selectedIds.includes(board.id);
 
+            <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
+              {archiveboard.map((board) => {
+                const isSelected = selectedIds.includes(board.id);
                 return (
-                  <div 
+                  <div
                     key={board.id}
                     onClick={() => {
                       if (isSelectMode) {
                         toggleSelection(board.id);
                       } else {
-                        // 상세 페이지로 이동
-                        // navigate(`/archive-board/${board.id}`)
-                        // 임시로 boardtitle로 적용
-                        navigate(`/archive-board/${board.title}`)
+                        navigate(`/archive-board/${board.title}`);
                       }
                     }}
                     className={`
-                      relative w-[110px] h-[110px] bg-gray-900 rounded-[5px] flex items-center justify-center cursor-pointer overflow-hidden transition-all
+                      flex flex-col items-center gap-2 cursor-pointer transition-all
                       ${isSelectMode ? 'active:scale-95' : ''} 
                     `}
                   >
-                    {board.title && (
-                      <span className="ST2">{board.title}</span>
-                    )}
+                    {/* 폴더 컨테이너 */}
+                    <div className="relative w-full aspect-square max-w-[110px] shrink-0 rounded-[5px] bg-[#212224]/80 overflow-hidden">
+                      {/* 내부 이미지 (썸네일) */}
+                      {board.image ? (
+                        <img
+                          src={board.image}
+                          alt="thumbnail"
+                          className="absolute w-[66%] h-[88%] top-[3%] left-[16%] py-2"
+                        />
+                      ) : (
+                        <div className="absolute w-[66%] h-[88%] top-[3%] left-[16%] bg-gray-800" />
+                      )}
 
-                    {/* 체크 표시 오버레이 */}
-                    {isSelectMode && (
-                      <>
-                        {/* 선택되었을 때 보여질 체크마크 오버레이 */}
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-white/30 flex items-center justify-center rounded-[10px]">
-                            <SelectedImageIcon className="w-[42px] h-[42px]" />
-                          </div>
-                        )}
-                      </>
-                    )}
+                      {/* 폴더 오버레이 아이콘 */}
+                      <Icon_folder className="absolute bottom-0 left-0 w-full h-auto z-10 pointer-events-none" />
+
+                      {/* 폴더 제목 (하단) */}
+                      <div className="absolute flex justify-between bottom-[9.5px] left-[6.39px] right-[6px] z-20">
+                        <p className="text-gray-200 text-[10px] font-normal leading-[150%] tracking-[-0.025em] line-clamp-2 text-white">
+                          {board.title}
+                        </p>
+                        {/* 보드 내의 태그 갯수 */}
+                        <p className='flex items-end text-[7px] font-normal text-gray-300'>12tag</p>
+                      </div>
+                      
+                      {/* 체크표시 */}
+                      {isSelectMode && (
+                        <div
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? 'bg-white/30' : 'bg-transparent'
+                            }`}
+                        >
+                          {isSelected && (
+                            <SelectedImageIcon className="w-[32px] h-[32px]" />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -305,20 +348,35 @@ const ArchivePage  = () => {
         </div>
       </div>
       {isSelectMode && (
-        <DeleteBottomSheet 
-          count={selectedIds.length} 
-          onDelete={handleTrashClick} 
+        <CountBottomSheet
+          count={selectedIds.length}
+          onDelete={handleTrashClick}
           maintext="개의 아카이브 보드 선택됨"
         />
       )}
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         count={selectedIds.length}
-        maintext="정말 해당 보드를 삭제하시겠습니까?"
+        maintext="개의 보드를 삭제하시겠습니까?"
         subtext="삭제하면 보드 안의 모든 이미지가 사라져요"
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={executeDelete}
       />
+      
+      {/* Image Detail Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <ImageDetailModal
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+            onTagUpdate={(newTag) => {
+              const updatedItem = { ...selectedItem, tag: newTag };
+              setSelectedItem(updatedItem);
+              setResentDrops(prev => prev.map(item => item.id === selectedItem.id ? updatedItem : item));
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

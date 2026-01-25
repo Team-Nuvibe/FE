@@ -1,160 +1,115 @@
 import { useState } from 'react';
 import { BackButton } from '../../components/onboarding/BackButton';
-// Swiper 관련 임포트 추가
+import RecapFirstSlide from '../../components/archive-board/vibetone/RecapFirstSlide';
+import RecapSecondSlide from '../../components/archive-board/vibetone/RecapSecondSlide';
+import RecapThirdSlide from '../../components/archive-board/vibetone/RecapThirdSlide';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules'; 
-import type { Swiper as SwiperType } from 'swiper';
+import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { CalendarModal } from '../../components/archive-board/CalendarModal';
-
-interface TagRanking {
-  rank: number;
-  tag: string;
-  drops: number;
-  status?: string;
-}
+import { useNavigate } from 'react-router';
+import ClockIcon from '@/assets/icons/icon_clock.svg?react';
+import RefreshIcon from '@/assets/icons/icon_refreshbutton.svg?react';
+import SaveIcon from '@/assets/icons/icon_imagesave.svg?react';
 
 const VibeTonePage = () => {
-  // 탭 상태와 스와이퍼 인스턴스 상태 관리
+  const navigate = useNavigate();
+
+  // 상태 관리: 탭, 활성 슬라이드 인덱스
   const [activeTab, setActiveTab] = useState<'weekly' | 'all'>('weekly');
-  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
-
-  const weeklyRankings: TagRanking[] = [
-    { rank: 1, tag: '#Minimal', drops: 5, status: '3 weeks in a row !' },
-    { rank: 2, tag: '#Minimal', drops: 4, status: 'New this week !' },
-    { rank: 3, tag: '#Minimal', drops: 3, status: 'Back again !' },
-    { rank: 4, tag: '#Minimal', drops: 1, status: 'Back again !' },
-  ];
-
-  // 탭 클릭 핸들러 (탭 변경 + 스와이퍼 이동)
-  const handleTabClick = (tab: 'weekly' | 'all', index: number) => {
-    setActiveTab(tab);
-    swiperInstance?.slideTo(index);
-  };
-
-  // 캘린더 모달 상태 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   return (
     <div className="w-full h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-4 pt-6 pb-4 flex items-center justify-between shrink-0">
         <BackButton className="w-6 h-6" />
-        <h1 className="H2 text-gray-200">Viber's Vibe Tone</h1>
-        <button className="w-6 h-6 flex items-center justify-center" onClick={() => setIsCalendarOpen(true)}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
+        <h1 className="H2 text-gray-200">바이브 톤</h1>
+        <button
+          className="w-6 h-6 flex items-center justify-center"
+          onClick={() => navigate('/archive-board/vibecalendar')}
+        >
+          <ClockIcon />
         </button>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="px-4 flex gap-6 mb-2 shrink-0">
+      {/* Tab Navigation (필터 역할로 변경) */}
+      <div className="px-4 flex gap-4 shrink-0 items-end h-[27px]">
         <button
-          onClick={() => handleTabClick('weekly', 0)}
-          className={`pb-2 ST1 relative transition-colors ${
-            activeTab === 'weekly' ? 'text-gray-200' : 'text-gray-500'
+          onClick={() => setActiveTab('weekly')}
+          className={`relative transition-all duration-200 w-16 flex justify-center ${
+            activeTab === 'weekly' ? 'ST2 text-gray-200' : 'B2 text-gray-600'
           }`}
         >
-          Weekly
+          주간
           {activeTab === 'weekly' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-[2px] bg-gray-200" />
           )}
         </button>
         <button
-          onClick={() => handleTabClick('all', 1)}
-          className={`pb-2 ST1 relative transition-colors ${
-            activeTab === 'all' ? 'text-gray-200' : 'text-gray-500'
+          onClick={() => setActiveTab('all')}
+          className={`relative transition-all duration-200 w-16 flex justify-center ${
+            activeTab === 'all' ? 'ST2 text-gray-200' : 'B2 text-gray-600'
           }`}
         >
-          All
+          전체
           {activeTab === 'all' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-[2px] bg-gray-200" />
           )}
         </button>
-        <div className="flex-1" />
-        <span className="B2 text-gray-500 self-end pb-2">since : 2025.03</span>
       </div>
 
-      {/* Swiper Area */}
-      {/* flex-1을 주어 남은 영역을 모두 차지하게 함 */}
-      <div className="flex-1 min-h-0 relative"> 
+      {/* Main Content Area */}
+      <div className="flex-1 min-h-0 flex flex-col relative pt-5">
         <Swiper
           modules={[Pagination]}
-          onSwiper={setSwiperInstance} // 스와이퍼 제어권 획득
-          onSlideChange={(swiper) => {
-            // 스와이프 시 탭 상태 동기화
-            setActiveTab(swiper.activeIndex === 0 ? 'weekly' : 'all');
-          }}
+          onSlideChange={(swiper) => setActiveSlideIndex(swiper.activeIndex)}
           pagination={{
-            el: '.onboarding-pagination',
+            el: '.bottom-card-pagination',
             clickable: true,
             type: 'bullets',
           }}
-          className="w-full h-full"
+          className="w-full flex-1"
         >
-          {/* Slide 1: Weekly */}
-          <SwiperSlide className="overflow-y-auto">
-            <div className="px-4 pt-4 pb-24"> {/* 스크롤 패딩 확보 */}
-              
-              {/* My Top Tag Card */}
-              <div className="bg-gray-900 rounded-[10px] p-6 mb-6">
-                <h2 className="H3 text-gray-200 mb-2">My Top Tage</h2>
-                <p className="B2 text-gray-400 mb-6">This Week 34 drops</p>
-
-                {/* Rankings */}
-                <div className="space-y-4">
-                  {weeklyRankings.map((item) => (
-                    <div key={item.rank} className="flex items-center gap-4">
-                      <span className="H2 text-gray-200 w-8">{item.rank}.</span>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="B2 text-gray-400">{item.drops} Drops</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="ST1 text-gray-200 bg-gray-800 px-3 py-1 rounded-[5px]">
-                            {item.tag}
-                          </span>
-                          {item.status && (
-                            <span className="B2 text-gray-500 italic">{item.status}</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Save Button  */}
-              
-            </div>
+          {/* Slide 1: 물리 엔진 기반 태그 애니메이션 (RecapFirstSlide) */}
+          <SwiperSlide className="overflow-y-auto flex items-center justify-center px-4">
+            <RecapFirstSlide isActive={activeSlideIndex === 0} activeTab={activeTab} />
           </SwiperSlide>
 
-          {/* Slide 2 */}
-          <SwiperSlide className="overflow-y-auto">
-            <div>
-              123123
-            </div>
+          {/* Slide 2: 폴더 팝업 애니메이션 (RecapSecondSlide) */}
+          <SwiperSlide className="overflow-y-auto flex items-center justify-center px-4">
+            <RecapSecondSlide isActive={activeSlideIndex === 1} activeTab={activeTab} />
           </SwiperSlide>
 
-          {/* Pagination Container */}
-          <div className="onboarding-pagination !absolute !bottom-4 !left-0 !w-full flex justify-center gap-2 z-10" />
+          {/* Slide 3: 패턴 분석 (RecapThirdSlide) */}
+          <SwiperSlide className="overflow-y-auto flex items-center justify-center px-4">
+            <RecapThirdSlide isActive={activeSlideIndex === 2} activeTab={activeTab} />
+          </SwiperSlide>
         </Swiper>
-        <button className="w-full h-[56px] bg-transparent border border-gray-700 rounded-[10px] flex items-center justify-center gap-2 ST1 text-gray-200 hover:bg-gray-900 transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Save My Week
-        </button>
       </div>
-      <CalendarModal 
-        isOpen={isCalendarOpen} 
-        onClose={() => setIsCalendarOpen(false)} 
-      />
+      {/* Pagination dots */}
+      <div className="bottom-card-pagination flex justify-center gap-2 pt-3" />
+      {/* Footer / Action Buttons - Figma Design */}
+      <div className="px-4 py-4 shrink-0 bg-black mb-25">
+        <div className="flex gap-3 items-center">
+          {/* Redo Button (왼쪽) */}
+          <button 
+            className="w-11 h-11 border border-gray-800 rounded-[10px] flex items-center justify-center shrink-0"
+            aria-label="Redo"
+          >
+            <RefreshIcon />
+          </button>
+          
+          {/* Save Card Button (오른쪽) */}
+          <button className="
+            flex-1 h-11 border border-gray-800 rounded-[10px] 
+            flex items-center justify-center gap-4 hover:bg-gray-900 transition-colors
+            mx-auto">
+            <SaveIcon />
+            <span className="ST2 text-gray-200 tracking-[-0.4px]">이 카드 저장하기</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

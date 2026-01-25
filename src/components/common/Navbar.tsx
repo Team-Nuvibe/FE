@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import IconHome from "../../assets/icons/icon_navbar_home.svg?react";
 import IconHomeActive from "../../assets/icons/icon_navbar_home_active.svg?react";
 import IconArchive from "../../assets/icons/icon_navbar_archive.svg?react";
@@ -36,15 +36,20 @@ const Navbar = () => {
     },
   ];
 
+  // 임시: quickdrop에서 숨기기
+  const location = useLocation();
+  if (location.pathname === "/quickdrop") {
+    return null;
+  }
+
   return (
-    <nav className="w-[282px] h-[65px] bg-[var(--color-gray-900)]/90 rounded-[40px] flex items-center justify-between px-6 z-50">
+    <nav className="w-[282px] h-[65px] bg-[var(--color-gray-900)]/90 backdrop-blur-[20px] rounded-[40px] flex items-center justify-between px-6 z-50">
       {navItems.map((item) => (
         <NavLink
           key={item.path}
           to={item.path}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-1 transition-colors ${
-              isActive ? "text-white" : "text-[#8A8A8A]"
+            `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? "text-white" : "text-[#8A8A8A]"
             }`
           }
         >
