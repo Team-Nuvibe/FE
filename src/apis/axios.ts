@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
     ) {
       //refresh 엔드포인트에서 401 에러가 발생한 경우(UnAuthorized)
       // 중복 재시도 방지를 위해 로그아웃 처리.
-      if (originalRequest.url === "/v1/auth/refresh") {
+      if (originalRequest.url === "/v1/auth/reissue") {
         // 토큰 모두 삭제
         const { removeItem: removeAccessToken } = useLocalStorage(
           LOCAL_STORAGE_KEY.accessToken,
@@ -84,9 +84,15 @@ axiosInstance.interceptors.response.use(
 
           const refreshToken = getRefreshToken();
 
-          const { data } = await axiosInstance.post("/v1/auth/refresh", {
-            refresh: refreshToken,
-          });
+          const { data } = await axiosInstance.post(
+            "/v1/auth/reissue",
+            {}, // body는 비움
+            {
+              headers: {
+                Authorization: `Bearer ${refreshToken}`, // Header에 refreshToken 전송
+              },
+            },
+          );
 
           // 데이터 안에 새 토큰이 반환
           const { setItem: setAccessToken } = useLocalStorage(
