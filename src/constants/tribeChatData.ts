@@ -8,6 +8,7 @@ export const MY_ROOMS: ChatRoom[] = [
         lastMessageTime: '9:15 p.m',
         unreadCount: 3,
         isPinned: true,
+        isMuted: true,
         tags: ['#Soft']
     },
     {
@@ -15,26 +16,7 @@ export const MY_ROOMS: ChatRoom[] = [
         title: '#Soft',
         memberCount: 94,
         lastMessageTime: '9:15 p.m',
-        unreadCount: 3,
-        isPinned: true,
-        tags: ['#Soft']
-    },
-    {
-        id: '3',
-        title: '#Soft',
-        memberCount: 94,
-        lastMessageTime: '9:15 p.m',
-        unreadCount: 3,
-        isPinned: true,
-        tags: ['#Soft']
-    },
-    {
-        id: '4',
-        title: '#Soft',
-        memberCount: 94,
-        lastMessageTime: '9:15 p.m',
-        unreadCount: 3,
-        isPinned: true,
+        unreadCount: 0,
         tags: ['#Soft']
     }
 ];

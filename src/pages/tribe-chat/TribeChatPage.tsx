@@ -111,7 +111,7 @@ const TribechatPage = () => {
             exit={{ opacity: 0, y: 20, x: "-50%" }}
             className="fixed bottom-[100px] left-1/2 w-[344px] h-[48px] bg-[#D0D3D7]/85 backdrop-blur-[30px] rounded-[5px] flex items-center justify-center py-[10px] z-50 pointer-events-none shadow-[0_4px_4px_0_rgba(0,0,0,0.25),0_1px_3px_0_rgba(18,18,18,0.3)]"
           >
-            <span className="text-[#121212] text-[14px] font-[400] leading-[150%] tracking-[-0.025em] text-center">
+            <span className="text-black B2 leading-[150%] tracking-[-0.025em] text-center">
               {toastMessage}
             </span>
           </motion.div>

@@ -2,19 +2,17 @@ import { useState, useEffect } from 'react';
 import { ChatListItem } from '@/components/tribe-chat/ChatListItem';
 import type { ChatRoom } from '@/types/tribeChat';
 import { MY_ROOMS, WAITING_ROOMS } from '@/constants/tribeChatData';
-import IconChatActive from '@/assets/icons/icon_chat_active.svg?react';
-import IconChatInactive from '@/assets/icons/icon_chat_inactive.svg?react';
 import IconChatScrap from '@/assets/icons/icon_chat_scrap.svg?react';
+import IconNavbarTribe from '@/assets/icons/icon_navbar_tribe.svg?react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { TribeChatExitModal } from '@/components/tribe-chat/TribeChatExitModal';
 
 const TribechatPage = () => {
-  // 탭 상태: 'ing' (참여중) | 'waiting' (대기중)
   const [activeTab, setActiveTab] = useState<'ing' | 'waiting'>('ing');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (message: string) => {
     setToastMessage(message);
-    // Clear existing timer if any (simple implementation)
   };
 
   useEffect(() => {
@@ -27,36 +25,71 @@ const TribechatPage = () => {
   }, [toastMessage]);
 
   // 더미 데이터 사용 (Constants)
-  const [myRooms] = useState<ChatRoom[]>(MY_ROOMS);
+  const [myRooms, setMyRooms] = useState<ChatRoom[]>(MY_ROOMS);
   const [waitingRooms] = useState<ChatRoom[]>(WAITING_ROOMS);
 
+  const [selectedRoomForExit, setSelectedRoomForExit] = useState<string | null>(null);
+
+  const handleConfirmExit = () => {
+    if (selectedRoomForExit) {
+      setMyRooms(prev => prev.filter(r => r.id !== selectedRoomForExit));
+      setSelectedRoomForExit(null);
+    }
+  };
+
+  // 룸 액션 핸들러
+  const handleRoomAction = (roomId: string, action: 'mute' | 'pin' | 'read' | 'exit' | 'enter') => {
+    if (action === 'mute') {
+      setMyRooms(prev => prev.map(r => r.id === roomId ? { ...r, isMuted: !r.isMuted } : r));
+    } else if (action === 'pin') {
+      setMyRooms(prev => prev.map(r => r.id === roomId ? { ...r, isPinned: !r.isPinned } : r));
+    } else if (action === 'read') {
+      setMyRooms(prev => prev.map(r => r.id === roomId ? { ...r, unreadCount: 0 } : r));
+    } else if (action === 'exit') {
+      setSelectedRoomForExit(roomId);
+    }
+  };
+
   return (
-    <div className="w-full h-full min-h-screen bg-[#121212] text-white flex flex-col relative">
-      {/* 헤더 영역 */}
-      {/* Top: 70px explicitly requested for content start. 
-          Scrap Icon: Top 73px absolute.
-      */}
-      {/* 헤더 영역 - 리스트의 위치를 정확하게 잡기 위해 absolute 사용 */}
-      <div className="absolute top-0 left-0 w-full px-4 pt-[70px] pb-6 flex items-center justify-center z-10 bg-[#121212]">
+    <div className="w-full h-full min-h-screen bg-black text-white flex flex-col relative">
+      <div className="absolute top-0 left-0 w-full px-4 pt-[70px] pb-6 flex items-center justify-center z-10 bg-black">
 
-        {/* 탭 전환 (중앙 정렬, 122px width) */}
-        <div className="relative w-[122px] h-[29px] select-none cursor-pointer">
-          {activeTab === 'ing' ? (
-            <IconChatActive className="w-full h-full" />
-          ) : (
-            <IconChatInactive className="w-full h-full" />
-          )}
+        {/* 탭 전환 */}
+        <div className="flex items-center justify-center">
+          {/* 활성화 탭 */}
+          <div
+            className={`w-[79px] h-[32px] flex items-center justify-center cursor-pointer select-none transition-all duration-200 ${activeTab === 'ing'
+              ? 'border-b-[2px] border-gray-200'
+              : 'border-b-[1px] border-gray-700'
+              }`}
+            onClick={() => setActiveTab('ing')}
+          >
+            <span
+              className={`ST2 leading-[150%] tracking-[-0.025em] ${activeTab === 'ing'
+                ? 'text-gray-200'
+                : 'text-gray-600'
+                }`}
+            >
+              활성화
+            </span>
+          </div>
 
-          {/* 숨겨진 클릭 영역 */}
-          <div className="absolute inset-0 flex">
-            <div
-              className="flex-1"
-              onClick={() => setActiveTab('ing')}
-            />
-            <div
-              className="flex-1"
-              onClick={() => setActiveTab('waiting')}
-            />
+          {/* 비활성화 탭 */}
+          <div
+            className={`w-[79px] h-[32px] flex items-center justify-center cursor-pointer select-none transition-all duration-200 ${activeTab === 'waiting'
+              ? 'border-b-[2px] border-gray-200'
+              : 'border-b-[1px] border-gray-700'
+              }`}
+            onClick={() => setActiveTab('waiting')}
+          >
+            <span
+              className={`ST2 leading-[150%] tracking-[-0.025em] ${activeTab === 'waiting'
+                ? 'text-gray-200'
+                : 'text-gray-600'
+                }`}
+            >
+              비활성화
+            </span>
           </div>
         </div>
 
@@ -69,19 +102,27 @@ const TribechatPage = () => {
 
       {/* 리스트 콘텐츠 */}
       <div className="flex-1 overflow-y-auto px-[14px] pt-[115px] pb-24 touch-auto">
-        {/* 참고: 컨테이너의 상단 패딩 115px 설정 */}
         {activeTab === 'ing' ? (
-          <div className="flex flex-col w-[365px] mx-auto">
-            {myRooms.map(room => (
-              <ChatListItem
-                key={room.id}
-                room={room}
-                isActiveTab={true}
-                onAction={(action) => console.log(`Action: ${action} on room ${room.id}`)}
-                onClick={() => console.log(`Clicked room ${room.id}`)}
-              />
-            ))}
-          </div>
+          myRooms.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <IconNavbarTribe className="w-[48px] h-[48px] text-gray-500" />
+              <p className="mt-[12px] text-gray-500 ST2 leading-[150%] tracking-[-0.025em]">
+                아직 트라이브 챗이 없어요.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col w-[365px] mx-auto">
+              {myRooms.map(room => (
+                <ChatListItem
+                  key={room.id}
+                  room={room}
+                  isActiveTab={true}
+                  onAction={(action) => handleRoomAction(room.id, action)}
+                  onClick={() => console.log(`Clicked room ${room.id}`)}
+                />
+              ))}
+            </div>
+          )
         ) : (
           <div className="flex flex-col w-[365px] mx-auto">
             {waitingRooms.map(room => (
@@ -109,15 +150,26 @@ const TribechatPage = () => {
             initial={{ opacity: 0, y: 20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-[100px] left-1/2 w-[344px] h-[48px] bg-[#D0D3D7]/85 backdrop-blur-[30px] rounded-[5px] flex items-center justify-center py-[10px] z-50 pointer-events-none shadow-[0_4px_4px_0_rgba(0,0,0,0.25),0_1px_3px_0_rgba(18,18,18,0.3)]"
+            className="fixed bottom-[100px] left-1/2 w-[344px] h-[48px] bg-gray-200/85 backdrop-blur-[30px] rounded-[5px] flex items-center justify-center py-[10px] z-50 pointer-events-none shadow-[0_4px_4px_0_rgba(0,0,0,0.25),0_1px_3px_0_rgba(18,18,18,0.3)]"
           >
-            <span className="text-[#121212] text-[14px] font-[400] leading-[150%] tracking-[-0.025em] text-center">
+            <span className="text-black B2 leading-[150%] tracking-[-0.025em] text-center">
               {toastMessage}
             </span>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+
+      {/* 나가기 확인 모달 */}
+      {
+        selectedRoomForExit && (
+          <TribeChatExitModal
+            roomTitle={myRooms.find(r => r.id === selectedRoomForExit)?.title ?? ''}
+            onConfirm={handleConfirmExit}
+            onCancel={() => setSelectedRoomForExit(null)}
+          />
+        )
+      }
+    </div >
   );
 }
 
