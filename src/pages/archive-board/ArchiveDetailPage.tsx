@@ -18,8 +18,12 @@ import {
 } from "@/components/archive-board/BoardSelector";
 import { ImageDetailModal } from "@/components/archive-board/ImageDetailModal";
 
-// Data
-import { tagItems } from "@/constants/TagItems";
+// APIs
+import {
+  getArchiveBoardDetail,
+  deleteArchiveBoardImages,
+  updateArchiveBoardName,
+} from "@/apis/archive-board/archive";
 
 // Swiper styles
 import "swiper/css";
@@ -42,7 +46,7 @@ const ArchiveDetailPage = () => {
   }, [boardid]);
 
   const [selectedFilter, setSelectedFilter] = useState<string>("최신순");
-  const filters = ["최신순", "Mood", "Light", "Color"];
+  const [filters, setFilters] = useState<string[]>(["최신순"]);
 
   // State Management
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,14 +62,50 @@ const ArchiveDetailPage = () => {
   // Detail Modal State
   const [selectedItem, setSelectedItem] = useState<ModelItem | null>(null);
 
-  // Convert tagItems to ModelItem format and add to state
-  const [allModelItems, setAllModelItems] = useState<ModelItem[]>(
-    tagItems.map((item) => ({
-      id: item.id,
-      tag: item.tag.replace("#", ""), // Remove # from tag
-      thumbnail: item.thumbnail,
-    })),
-  );
+  // Board detail state
+  const [allModelItems, setAllModelItems] = useState<ModelItem[]>([]);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(true);
+
+  // Fetch board detail on mount and filter change
+  useEffect(() => {
+    const fetchBoardDetail = async () => {
+      if (!boardid) return;
+
+      try {
+        setIsLoadingDetail(true);
+        const response = await getArchiveBoardDetail(
+          parseInt(boardid),
+          selectedFilter !== "최신순" ? selectedFilter : undefined,
+        );
+
+        if (response.data) {
+          console.log("📋 Board detail loaded:", response.data);
+
+          // Map ArchiveBoardImage[] to ModelItem[]
+          const mappedItems: ModelItem[] = response.data.images.map((img) => ({
+            id: img.boardImageId.toString(),
+            tag: img.imageTag,
+            thumbnail: img.imageUrl,
+          }));
+
+          // Extract unique tags for filters
+          const uniqueTags = Array.from(
+            new Set(response.data.images.map((img) => img.imageTag)),
+          );
+          setFilters(["최신순", ...uniqueTags]);
+
+          setAllModelItems(mappedItems);
+          setBoardTitle(response.data.name);
+        }
+      } catch (error) {
+        console.error("Failed to fetch board detail:", error);
+      } finally {
+        setIsLoadingDetail(false);
+      }
+    };
+
+    fetchBoardDetail();
+  }, [boardid, selectedFilter]);
 
   // Filter Logic
   const modelItems = (() => {
@@ -83,13 +123,25 @@ const ArchiveDetailPage = () => {
   };
 
   // Delete Logic
-  const handleDelete = () => {
-    setAllModelItems((prev) =>
-      prev.filter((item) => !selectedIds.includes(item.id)),
-    );
-    setIsSelectMode(false);
-    setSelectedIds([]);
-    setIsDeleteModalOpen(false);
+  const handleDelete = async () => {
+    if (!boardid) return;
+
+    try {
+      const boardImageIds = selectedIds.map((id) => parseInt(id));
+      await deleteArchiveBoardImages(parseInt(boardid), boardImageIds);
+
+      // Update local state after successful deletion
+      setAllModelItems((prev) =>
+        prev.filter((item) => !selectedIds.includes(item.id)),
+      );
+      setIsSelectMode(false);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error("Failed to delete images:", error);
+      // TODO: Show error toast to user
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
   };
 
   // Move Logic
@@ -119,10 +171,17 @@ const ArchiveDetailPage = () => {
   };
 
   // Rename Logic
-  const handleEditNameSave = (newTitle: string) => {
-    setBoardTitle(newTitle);
-    // TODO: Add API call here to update the name on the server
-    console.log("Board name updated to:", newTitle);
+  const handleEditNameSave = async (newTitle: string) => {
+    if (!boardid) return;
+
+    try {
+      await updateArchiveBoardName(parseInt(boardid), newTitle);
+      setBoardTitle(newTitle);
+      console.log("Board name updated to:", newTitle);
+    } catch (error) {
+      console.error("Failed to update board name:", error);
+      // TODO: Show error toast to user
+    }
   };
 
   const { setNavbarVisible } = useNavbarActions();

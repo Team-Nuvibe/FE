@@ -73,7 +73,7 @@ export const getVibeToneTags = async (): Promise<
   return data;
 };
 
-// ------- ArchiveDetailPage에서 필요 ----------
+// -------- 퀵드랍(이미지 업로드 시) 이용 --------
 // 아카이브 보드에 이미지 추가
 export const addImageToArchiveBoard = async (
   boardId: number,
@@ -85,7 +85,9 @@ export const addImageToArchiveBoard = async (
   );
   return data;
 };
+// ----------------------------------------------
 
+// ------- ArchiveDetailPage에서 필요 ----------
 // 아카이브 보드 내 이미지 삭제
 export const deleteArchiveBoardImages = async (
   boardId: number,
