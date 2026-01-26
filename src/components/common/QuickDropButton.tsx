@@ -13,7 +13,6 @@ const QuickDropButton = () => {
       alert("파일을 선택하지 않았습니다.");
       return;
     }
-    console.log("Selected file:", file);
     navigate("/quickdrop", { state: { file } });
   };
 

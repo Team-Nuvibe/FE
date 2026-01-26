@@ -4,7 +4,6 @@ import {
   RouterProvider,
   type RouteObject,
 } from "react-router-dom";
-import { SplashLayout } from "./layouts/SplashLayout";
 import { OnboardingPage } from "./pages/onboarding/OnboardingPage";
 import LoginPage from "./pages/onboarding/LoginPage";
 import SignUpPage from "./pages/onboarding/SignUpPage";
@@ -20,13 +19,18 @@ import { VibeCalandarPage } from "./pages/archive-board/VibeCalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
+import RevealImagePage from "./pages/archive-board/RevealImagePage";
+import { AuthProvider } from "./context/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TribechatPage from "./pages/tribe-chat/TribechatPage";
+import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
+import { SplashLayout } from "./layouts/SplashLayout";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
   {
     path: "/",
-    // errorElement : <NotFoundPage/>,
+    element: <SplashLayout />,
     children: [
       { index: true, element: <OnboardingPage /> },
       { path: "login", element: <LoginPage /> },
@@ -51,8 +55,11 @@ const protectedRoutes: RouteObject[] = [
         children: [
           { index: true, element: <ArchivePage /> },
           { path: "/archive-board/vibetone", element: <VibetonePage /> },
-          { path: "/archive-board/vibecalendar", element: <VibeCalandarPage /> },
-          // {path: "/archive-board/blur", element: </> },
+          {
+            path: "/archive-board/vibecalendar",
+            element: <VibeCalandarPage />,
+          },
+          { path: "/archive-board/reveal", element: <RevealImagePage /> },
           { path: "/archive-board/:boardid", element: <ArchiveDetailPage /> },
         ],
       },
@@ -60,7 +67,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tribe-chat",
         children: [
           { index: true, element: <TribechatPage /> },
-          // {path: "/tribe-chat:tagid", element: </> },
+          { path: "/tribe-chat:tagid", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
       },
@@ -79,9 +86,7 @@ const protectedRoutes: RouteObject[] = [
       },
       {
         path: "notification",
-        children: [
-          { index: true, element: <NotificationPage /> },
-        ],
+        children: [{ index: true, element: <NotificationPage /> }],
       },
       {
         path: "tag",
@@ -94,19 +99,17 @@ const protectedRoutes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter([
-  {
-    // 최상위에서 스플래시 레이아웃으로 감싸줍니다.
-    element: <SplashLayout />,
-    children: [...publicRoutes, ...protectedRoutes],
-  },
-]);
+const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    //  <AuthProvider>
-    <RouterProvider router={router} />
-    // </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -50,6 +50,27 @@ export const ImageEditor = ({
   onNext,
 }: ImageEditorProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [editState, setEditState] = useState({
+    adjustment: {
+      brightness: 0,
+      contrast: 0,
+      structure: 0,
+      temperature: 0,
+      saturation: 0,
+      exposure: 0,
+    },
+    crop: {
+      x: 0,
+      y: 0,
+      zoom: 1,
+      croppedAreaPixels: null,
+    },
+    rotation: {
+      angle: 0,
+      flipHorizontal: false,
+      flipVertical: false,
+    },
+  });
   const [activeTool, setActiveTool] = useState("adjustment");
   const [activeAdjustmentTool, setActiveAdjustmentTool] =
     useState("brightness");
@@ -141,13 +162,15 @@ export const ImageEditor = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `
-      brightness(${finalBrightness}%)
-      contrast(${100 + levels.contrast / 2 + levels.structure / 2}%)
-      sepia(${levels.temperature > 0 ? levels.temperature : 0}%)
-      hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0}deg)
-      saturate(${100 + levels.saturation * 2}%)
-    `.trim();
+    return `brightness(${
+      finalBrightness > 100
+        ? (finalBrightness - 100) * 2 + 100
+        : (finalBrightness - 100) * 4 + 100
+    }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
+      levels.temperature > 0 ? levels.temperature : 0
+    }%) hue-rotate(${
+      levels.temperature < 0 ? levels.temperature * -0.8 : 0
+    }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   const handleExportImage = () => {
@@ -159,6 +182,8 @@ export const ImageEditor = ({
 
     const imgWidth = img.naturalWidth;
     const imgHeight = img.naturalHeight;
+
+    const MAX_SIZE = 1280;
 
     const targetRatio = 3 / 4;
     const imgRatio = imgWidth / imgHeight;
@@ -179,29 +204,41 @@ export const ImageEditor = ({
       sy = (imgHeight - sHeight) / 2;
     }
 
-    canvas.width = sWidth;
-    canvas.height = sHeight;
+    // 크기 최적화
+    // 출력 캔버스 크기 계산 (리사이징 적용)
+    let dWidth = sWidth;
+    let dHeight = sHeight;
+
+    if (dWidth > MAX_SIZE || dHeight > MAX_SIZE) {
+      if (dWidth > dHeight) {
+        // 가로가 긴 경우 (비율상 여기에 걸릴 일은 적지만 안전장치)
+        dHeight = (dHeight * MAX_SIZE) / dWidth;
+        dWidth = MAX_SIZE;
+      } else {
+        // 세로가 긴 경우 (3:4 비율이므로 주로 여기에 해당)
+        dWidth = (dWidth * MAX_SIZE) / dHeight;
+        dHeight = MAX_SIZE;
+      }
+    }
+
+    canvas.width = dWidth;
+    canvas.height = dHeight;
 
     if (ctx) {
       ctx.filter = getFilterStyle(adjustmentLevels);
-      ctx.drawImage(
-        img,
-        sx,
-        sy,
-        sWidth,
-        sHeight,
-        0,
-        0,
-        canvas.width,
-        canvas.height
+      ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, dWidth, dHeight);
+      const exportType = file.type === "image/heic" ? "image/jpeg" : file.type;
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            onNext(blob, adjustmentLevels);
+          } else {
+            console.error("이미지 내보내기 실패");
+          }
+        },
+        exportType,
+        0.9
       );
-      canvas.toBlob((blob) => {
-        if (blob) {
-          onNext(blob, adjustmentLevels);
-        } else {
-          console.error("이미지 내보내기 실패");
-        }
-      }, file.type);
     }
   };
 
@@ -245,16 +282,16 @@ export const ImageEditor = ({
         </div>
       </div>
       {/* 이미지 */}
-      <div className="flex-1 min-h-0 px-4 flex justify-center items-center pb-[53px]">
-        {previewUrl ? (
+      <div className="flex-1 min-h-0 flex justify-center items-center px-4 pb-[53px]">
+        {activeTool === "adjustment" && (
           <img
-            src={previewUrl}
+            src={previewUrl!}
             ref={imageRef}
             alt="Preview"
             className="max-w-full max-h-full aspect-[3/4] object-cover object-center"
             style={{ filter: getFilterStyle(adjustmentLevels) }}
           />
-        ) : null}
+        )}
       </div>
       {/* 세부 조정 툴바 */}
       <div className="flex flex-col z-10 pb-11">
