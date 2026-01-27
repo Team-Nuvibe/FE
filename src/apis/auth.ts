@@ -38,13 +38,28 @@ export const deleteUser = async (): Promise<ApiResponse<string>> => {
   return data;
 };
 
-// 이메일 인증 발송
+// 회원가입 인증 코드 발송
 export const sendVerificationEmail = async (
   email: string,
 ): Promise<ApiResponse<string>> => {
   const { data } = await axiosInstance.post<ApiResponse<string>>(
-    "/api/auth/verify-email",
+    "/api/auth/verify-code/send",
     { email },
+  );
+  return data;
+};
+
+// 회원가입 인증 코드 검증
+export const confirmVerificationCode = async (
+  email: string,
+  code: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/verify-code/confirm",
+    {
+      email,
+      code,
+    },
   );
   return data;
 };
@@ -56,19 +71,6 @@ export const checkPassword = async (
   const { data } = await axiosInstance.post<ApiResponse<string>>(
     "/api/auth/check-password",
     { password },
-  );
-  return data;
-};
-
-// 이메일 인증 완료
-export const verifyEmail = async (
-  token: string,
-): Promise<ApiResponse<string>> => {
-  const { data } = await axiosInstance.get<ApiResponse<string>>(
-    "/api/auth/verify",
-    {
-      params: { token },
-    },
   );
   return data;
 };
