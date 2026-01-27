@@ -92,7 +92,7 @@ const ProfilePage = () => {
       title: "계정관리",
       items: [
         {
-          label: "닉네임",
+          label: "닉네임 변경",
           onClick: () => navigate("/profile/edit/nickname"),
           hasArrow: true,
         },

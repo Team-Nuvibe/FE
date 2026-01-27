@@ -77,11 +77,12 @@ const TribechatPage = () => {
                 key={room.id}
                 room={room}
                 isActiveTab={true}
-                onAction={(action) => console.log(`Action: ${action} on room ${room.id}`)}
+                  onAction={(action) => handleRoomAction(room.id, action)}
                 onClick={() => console.log(`Clicked room ${room.id}`)}
               />
             ))}
           </div>
+          )
         ) : (
           <div className="flex flex-col w-[365px] mx-auto">
             {waitingRooms.map(room => (
