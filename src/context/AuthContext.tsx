@@ -12,7 +12,7 @@ import { logIn, logOut } from "@/apis/auth";
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
-  login: (singinData: LogInRequest) => Promise<void>;
+  login: (signinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
   clearSession: () => void;
 }
@@ -20,9 +20,9 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  login: async () => {},
-  logout: async () => {},
-  clearSession: () => {},
+  login: async () => { },
+  logout: async () => { },
+  clearSession: () => { },
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -50,13 +50,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const { data } = await logIn(signinData);
 
     if (data) {
-      const newAccressToken = data.accessToken;
+      const newAccessToken = data.accessToken;
       const newRefreshToken = data.refreshToken;
 
-      setAccessTokenInStorage(newAccressToken);
+      setAccessTokenInStorage(newAccessToken);
       setRefreshTokenInStorage(newRefreshToken);
 
-      setAccessToken(newAccressToken);
+      setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
     }
   };

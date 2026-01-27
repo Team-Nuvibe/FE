@@ -6,5 +6,6 @@ export interface ChatRoom {
     unreadCount?: number;
     isPinned?: boolean;
     isMuted?: boolean;
-    tags?: string[]; // e.g., #Soft, #Warm
+    thumbnailUrl?: string;
+    tags?: string[];
 }
