@@ -42,16 +42,47 @@ interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 // 전역 변수로 refresh 요청의 Promise를 저장
 let refreshPromise: Promise<string> | null = null;
 
-// 응답 인터셉터 : 401 에러 발생 -> refresh 토큰을 통한 토큰 갱신 처리
+// 토큰 만료 여부를 확인하는 헬퍼 함수
+const isTokenExpiredError = (error: unknown): boolean => {
+  // Type guard: error가 response 속성을 가진 객체인지 확인
+  if (
+    !error ||
+    typeof error !== "object" ||
+    !("response" in error) ||
+    !error.response
+  ) {
+    return false;
+  }
+
+  const response = error.response as {
+    status?: number;
+    data?: { message?: string };
+  };
+
+  const status = response.status;
+  const message = response.data?.message || "";
+
+  // 401 에러는 항상 토큰 만료로 간주
+  if (status === 401) return true;
+
+  // 400 에러 중 "만료된 jwt 토큰입니다." 메시지가 있는 경우
+  if (status === 400 && message.includes("만료된 jwt 토큰")) {
+    return true;
+  }
+
+  return false;
+};
+
+// 응답 인터셉터 : 401/400 에러 발생 -> refresh 토큰을 통한 토큰 갱신 처리
 axiosInstance.interceptors.response.use(
   (response) => response, // 정상 응답 그대로 반환
   async (error) => {
     const originalRequest: CustomInternalAxiosRequestConfig = error.config;
 
-    // 401 에러면서 아직 재시도 하지 않은 요청 경우 처리
+    // 토큰 만료 에러이고 아직 재시도하지 않은 요청인 경우 처리
     if (
       error.response &&
-      error.response.status === 401 &&
+      isTokenExpiredError(error) &&
       !originalRequest._retry
     ) {
       //refresh 엔드포인트에서 401 에러가 발생한 경우(UnAuthorized)
@@ -140,7 +171,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance.request(originalRequest);
       });
     }
-    // 401 에러가 아닌 경우에 그대로 오류를 반환
+    // 401/400 에러가 아닌 경우에 그대로 오류를 반환
     return Promise.reject(error);
   },
 );
