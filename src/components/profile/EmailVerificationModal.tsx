@@ -13,13 +13,13 @@ export const EmailVerificationModal = ({ isOpen, title, message, onClose }: Aler
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 px-4">
             <div className="
-                w-[304px] h-[178px] p-[20px] -translate-y-3
+                w-[304px] p-[20px] -translate-y-3
                 bg-gray-900/80 backdrop-blur-[20px] rounded-[10px]
                 flex flex-col items-center justify-center text-center
             ">
                 <WarningIcon className="w-[32px] h-[32px] mb-[8px]" />
 
-                <div className="mb-[24px] flex flex-col items-center w-full">
+                <div className="mb-[20px] flex flex-col items-center w-full">
                     <div className="text-[17px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
                         {title}
                     </div>
@@ -32,7 +32,7 @@ export const EmailVerificationModal = ({ isOpen, title, message, onClose }: Aler
                     onClick={onClose}
                     className="
                         w-full h-[36px] rounded-[5px] bg-gray-300
-                        text-gray-800 text-[14px] font-medium leading-[150%] tracking-[-0.025em]
+                        text-[14px] font-medium text-gray-800 leading-[150%] tracking-[-0.025em]
                         flex items-center justify-center transition-colors
                     "
                 >

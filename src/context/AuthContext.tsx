@@ -58,8 +58,36 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
       setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
+
+      // 로그인 성공 후 사용자 프로필 정보 가져오기
+      try {
+        const { getUserNickname, getUserProfileImage } = await import("@/apis/user");
+        const { useUserStore } = await import("@/hooks/useUserStore");
+
+        const [nicknameData, profileImageData] = await Promise.all([
+          getUserNickname(),
+          getUserProfileImage(),
+        ]);
+
+        const { setNickname, setEmail, setProfileImage } = useUserStore.getState();
+
+        if (nicknameData.data?.nickname) {
+          setNickname(nicknameData.data.nickname);
+        }
+
+        if (profileImageData.data?.profileImage) {
+          setProfileImage(profileImageData.data.profileImage);
+        }
+
+        // 이메일은 로그인 시 입력한 값 저장
+        setEmail(signinData.email);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        // 프로필 가져오기 실패해도 로그인은 성공으로 처리
+      }
     }
   };
+
 
   const clearSession = () => {
     removeAccessTokenFromStorage();
@@ -70,8 +98,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const logout = async () => {
-    await logOut();
-    clearSession();
+    try {
+      await logOut();
+    } finally {
+      clearSession();
+    }
   };
 
   return (

@@ -17,19 +17,19 @@ interface UserState {
 export const useUserStore = create<UserState>()(
     persist(
         (set) => ({
-            nickname: 'Viber',
+            nickname: '',
             profileImage: DefaultProfileImage,
-            email: 'nuvibe_test@google.com',
-            password: 'password123!',
+            email: '',
+            password: '',
             setNickname: (nickname) => set({ nickname }),
             setProfileImage: (image) => set({ profileImage: image }),
             setEmail: (email) => set({ email }),
             setPassword: (password) => set({ password }),
             reset: () => set({
-                nickname: 'Viber',
+                nickname: '',
                 profileImage: DefaultProfileImage,
-                email: 'nuvibe_test@google.com',
-                password: 'password123!'
+                email: '',
+                password: ''
             }),
         }),
         {

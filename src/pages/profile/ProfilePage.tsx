@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { LogoutModal } from "@/components/profile/LogoutModal";
 import useLogout from "@/hooks/mutation/auth/useLogout";
 import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
+import { useUserProfileImage } from "@/hooks/queries/useUserProfileImage";
+import { useUpdateProfileImage } from "@/hooks/mutation/user/useUpdateProfileImage";
 
 import { DeleteAccountModal } from "@/components/profile/DeleteAccountModal";
 
@@ -21,6 +23,17 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const { mutate: logout } = useLogout();
   const { mutate: deleteUser } = useDeleteUser();
+
+  // 프로필 이미지 조회
+  const { data: profileData } = useUserProfileImage();
+  const { mutate: updateImage } = useUpdateProfileImage();
+
+  // API로부터 프로필 이미지 동기화
+  useEffect(() => {
+    if (profileData?.data?.profileImage) {
+      setProfileImage(profileData.data.profileImage);
+    }
+  }, [profileData, setProfileImage]);
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -36,6 +49,20 @@ const ProfilePage = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // API로 이미지 업로드
+      updateImage(file, {
+        onSuccess: () => {
+          setToastMessage("프로필 이미지가 변경되었습니다.");
+          setTimeout(() => setToastMessage(null), 3000);
+        },
+        onError: (error) => {
+          console.error("프로필 이미지 업로드 실패:", error);
+          setToastMessage("이미지 업로드에 실패했습니다.");
+          setTimeout(() => setToastMessage(null), 3000);
+        },
+      });
+
+      // 미리보기용 로컬 업데이트
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result as string);
@@ -110,7 +137,7 @@ const ProfilePage = () => {
           hasArrow: true,
         },
         {
-          label: "개인정보 수집 및 이용 동의",
+          label: "개인정보 수집·이용 동의서",
           onClick: () => navigate("/profile/info/privacy-collection"),
           hasArrow: true,
         },
