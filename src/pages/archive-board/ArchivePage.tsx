@@ -260,7 +260,7 @@ const ArchivePage = () => {
             allowTouchMove={true} // 사용자가 손가락으로 스와이프 가능
             autoplay={{
               delay: 0, // 딜레이 없이 부드럽게 계속 흐르게 설정
-              disableOnInteraction: true, // 사용자가 건드려도 자동 재생이 꺼지지 않음
+              disableOnInteraction: true, // 사용자가 건드려도 자동 재생이 꺼짐
               stopOnLastSlide: true,
               waitForTransition: false,
             }}

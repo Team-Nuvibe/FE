@@ -63,8 +63,7 @@ export interface TagUsageRankingResponse {
   startDate: string;
   endDate: string;
   totalDropCount: number;
-  rank: TagRankItem[];
-  timestamp: string;
+  ranks: TagRankItem[];
 }
 
 // 캘린더 이미지 아이템 타입
@@ -99,11 +98,11 @@ export interface UserUsagePatternResponse {
   period: string;
   startDate: string;
   endDate: string;
-  dayOfWeek: string;
-  preferredMealtimes: string;
+  dayMessage: string;
+  preferenceMessage: string;
+  timeMessage: string;
   totalBoardCount: number;
   totalTagCount: number;
-  mostUsedTag: string;
-  weeklyDropCount: number;
+  maxDailyDropCount: number;
 }
 // ------------------------------------------------

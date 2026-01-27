@@ -24,6 +24,7 @@ export const getTagUsageRanking = async (
   return data;
 };
 
+// ------- vibeCalendarPage에서 사용 ------------
 // 날짜 별 업로드한 이미지 조회
 export const getCalendarImages = async (
   date: string,
@@ -54,6 +55,8 @@ export const getMonthlyUploadDates = async (
   });
   return data;
 };
+
+// -----------------------------------------------
 
 // 가장 많이 사용한 보드 조회
 export const getMostUsedBoard = async (
