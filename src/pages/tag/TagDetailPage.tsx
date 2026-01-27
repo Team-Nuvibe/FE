@@ -54,7 +54,11 @@ export const TagDetailPage = () => {
             <div className="flex flex-col px-4">
               <div className="z-10 mb-2">
                 <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] font-medium tracking-tight text-transparent">
-                  #{tagDetails?.data.tag}
+                  #
+                  {tagDetails?.data.tag
+                    ? tagDetails.data.tag[0] +
+                      tagDetails.data.tag.slice(1).toLowerCase()
+                    : ""}
                 </h1>
               </div>
               <div className="z-10">
@@ -73,7 +77,14 @@ export const TagDetailPage = () => {
           {!tagDetails?.data.hasImages && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
-              <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
+              <p>
+                첫 번째 #
+                {tagDetails?.data.tag
+                  ? tagDetails.data.tag[0] +
+                    tagDetails.data.tag.slice(1).toLowerCase()
+                  : ""}
+                을 드랍해보세요!
+              </p>
             </div>
           )}
         </section>

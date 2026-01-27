@@ -147,7 +147,10 @@ const HomePage = () => {
                         : "B2 text-gray-400"
                     }`}
                   >
-                    {"\u00A0" + category.name + "\u00A0"}
+                    {"\u00A0" +
+                      category.name[0] +
+                      category.name.slice(1).toLowerCase() +
+                      "\u00A0"}
                   </p>
                   {activeIndex === index && (
                     <motion.div
@@ -206,7 +209,7 @@ const HomePage = () => {
                   >
                     <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
                       <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
-                        #{item.tag}
+                        #{item.tag[0] + item.tag.slice(1).toLowerCase()}
                       </p>
                     </div>
                   </div>
