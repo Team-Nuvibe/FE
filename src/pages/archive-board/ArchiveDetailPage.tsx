@@ -66,22 +66,17 @@ const ArchiveDetailPage = () => {
   const [allModelItems, setAllModelItems] = useState<ModelItem[]>([]);
   const [isLoadingDetail, setIsLoadingDetail] = useState(true);
 
-  // Fetch board detail on mount and filter change
   useEffect(() => {
     const fetchBoardDetail = async () => {
       if (!boardid) return;
 
       try {
         setIsLoadingDetail(true);
-        const response = await getArchiveBoardDetail(
-          parseInt(boardid),
-          selectedFilter !== "최신순" ? selectedFilter : undefined,
-        );
+        const response = await getArchiveBoardDetail(parseInt(boardid));
 
         if (response.data) {
           console.log("📋 Board detail loaded:", response.data);
 
-          // Map ArchiveBoardImage[] to ModelItem[]
           const mappedItems: ModelItem[] = response.data.images.map((img) => ({
             id: img.boardImageId.toString(),
             tag: img.imageTag,
@@ -105,7 +100,7 @@ const ArchiveDetailPage = () => {
     };
 
     fetchBoardDetail();
-  }, [boardid, selectedFilter]);
+  }, [boardid]);
 
   // Filter Logic
   const modelItems = (() => {
@@ -187,7 +182,7 @@ const ArchiveDetailPage = () => {
   const { setNavbarVisible } = useNavbarActions();
 
   useEffect(() => {
-    // 선택 모드이거나(OR) 수정 모달이 열려있거나(OR) 상세 모달이 열려있으면 네비바를 숨깁니다.
+    // 선택 모드이거나(OR) 수정 모달이 열려있거나(OR) 상세 모달이 열려있으면 네비바를 숨김.
     const shouldHideNavbar =
       isSelectMode || isEditNameModalOpen || !!selectedItem;
     setNavbarVisible(!shouldHideNavbar);
