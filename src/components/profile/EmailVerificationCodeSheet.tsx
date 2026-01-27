@@ -8,6 +8,8 @@ interface EmailVerificationCodeSheetProps {
     onConfirm: (code: string) => void;
     onResend: () => void;
     isVerifying: boolean;
+    errorMessage?: string | null;
+    onInputChange?: () => void;
 }
 
 export const EmailVerificationCodeSheet = ({
@@ -15,7 +17,9 @@ export const EmailVerificationCodeSheet = ({
     onClose,
     onConfirm,
     onResend,
-    isVerifying
+    isVerifying,
+    errorMessage,
+    onInputChange
 }: EmailVerificationCodeSheetProps) => {
     const [codes, setCodes] = useState<string[]>(Array(6).fill(''));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -36,9 +40,13 @@ export const EmailVerificationCodeSheet = ({
         newCodes[index] = value.slice(-1);
         setCodes(newCodes);
 
-        // Move to next input if value is entered
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus();
+        }
+
+        // Trigger input change callback to clear errors
+        if (onInputChange) {
+            onInputChange();
         }
     };
 
@@ -98,7 +106,7 @@ export const EmailVerificationCodeSheet = ({
                         </label>
 
                         {/* OTP Inputs */}
-                        <div className="flex justify-center mb-[22px]">
+                        <div className={`flex justify-center ${errorMessage ? '' : 'mb-[20px]'}`}>
                             {codes.map((code, index) => (
                                 <div
                                     key={index}
@@ -118,8 +126,9 @@ export const EmailVerificationCodeSheet = ({
                                         className={`
                                             w-full h-full bg-gray-800 rounded-[5px] 
                                             text-white text-[24px] font-medium text-center
-                                            outline-none border border-transparent
-                                            focus:border-gray-600 focus:bg-gray-700
+                                            outline-none border
+                                            ${errorMessage ? 'border-gray-300' : 'border-transparent focus:border-gray-600'}
+                                            focus:bg-gray-700
                                             caret-transparent
                                             selection:bg-transparent
                                         `}
@@ -128,6 +137,15 @@ export const EmailVerificationCodeSheet = ({
                                 </div>
                             ))}
                         </div>
+
+                        {/* Error Message */}
+                        {errorMessage && (
+                            <div className="mb-[20px]">
+                                <p className="text-left text-[12px] font-normal text-gray-300 leading-[150%] tracking-[-0.025em]">
+                                    {errorMessage}
+                                </p>
+                            </div>
+                        )}
 
                         {/* Resend Link */}
                         <div className="flex justify-center items-center gap-[8px] mb-[6px]">

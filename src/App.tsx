@@ -22,7 +22,7 @@ import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TribeChatPage from "./pages/tribe-chat/TribeChatPage";
+import TribeChatPage from "./pages/tribe-chat/TribechatPage";
 import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 import { SplashLayout } from "./layouts/SplashLayout";
 
@@ -30,6 +30,7 @@ import { SplashLayout } from "./layouts/SplashLayout";
 const publicRoutes: RouteObject[] = [
   {
     path: "/",
+    // errorElement : <NotFoundPage/>,
     element: <SplashLayout />,
     children: [
       { index: true, element: <OnboardingPage /> },

@@ -1,8 +1,6 @@
-import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconXbuttonQuickdropTag from "@/assets/icons/icon_xbutton_quickdrop_tag.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
-import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
@@ -20,8 +18,6 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const [selectedTag, setSelectedTag] = useState<string>("");
 
   const swiperRef = useRef<SwiperType | null>(null);
-
-  const navigate = useNavigate();
 
   const handleTabClick = (index: number) => {
     setActiveIndex(index);
@@ -66,25 +62,24 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   return (
     <div>
       <div className="flex flex-col">
-        <header className="flex justify-between items-center pt-2 pb-6 px-4 tracking-tight">
+        <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
           <IconChevronLeft
             className="cursor-pointer"
             onClick={() => onPrevious()}
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className={`ST2 ${
-              selectedTag
-                ? "text-white cursor-pointer"
-                : "text-gray-700 cursor-not-allowed"
-            }`}
+            className={`ST2 ${selectedTag
+                ? "cursor-pointer text-white"
+                : "cursor-not-allowed text-gray-700"
+              }`}
             onClick={() => onNext(selectedTag)}
           >
             다음
           </p>
         </header>
-        <div className="flex items-center mx-4 mb-5 h-12 rounded-[5px] bg-gray-900">
-          <IconSearch className="ml-4 mr-3" />
+        <div className="mx-4 mb-5 flex h-12 items-center rounded-[5px] bg-gray-900">
+          <IconSearch className="mr-3 ml-4" />
           <input
             type="text"
             placeholder="검색어를 입력하세요."
@@ -93,45 +88,42 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
         </div>
       </div>
 
-      <div className="relative flex justify-between items-center mx-4 mb-4 tracking-tight">
-        <div className="absolute bottom-[0.5px] left-0 w-[206px] h-[0.5px] bg-gray-400" />
+      <div className="relative mx-4 mb-4 flex items-center justify-between tracking-tight">
+        <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-[206px] bg-gray-400" />
         <div className="flex">
           <button onClick={() => handleTabClick(0)} className="relative">
             <p
-              className={`transition-all duration-200 ease-in-out ${
-                activeIndex === 0 ? "ST2 text-gray-200" : "B2 text-gray-600"
-              } px-[22px] pb-[2px]`}
+              className={`transition-all duration-200 ease-in-out ${activeIndex === 0 ? "ST2 text-gray-200" : "B2 text-gray-600"
+                } px-[22px] pb-[2px]`}
             >
               최근 검색어
             </p>
             {activeIndex === 0 && (
               <motion.div
                 layoutId="activeTabIndicator"
-                className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
+                className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
               />
             )}
           </button>
           <button onClick={() => handleTabClick(1)} className="relative">
             <p
-              className={`transition-all duration-200 ease-in-out ${
-                activeIndex === 1 ? "ST2 text-gray-200" : "B2 text-gray-600"
-              } px-[22px] pb-[2px]`}
+              className={`transition-all duration-200 ease-in-out ${activeIndex === 1 ? "ST2 text-gray-200" : "B2 text-gray-600"
+                } px-[22px] pb-[2px]`}
             >
               태그 찾기
             </p>
             {activeIndex === 1 && (
               <motion.div
                 layoutId="activeTabIndicator"
-                className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
+                className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
                 transition={{ stiffness: 500, damping: 30 }}
               />
             )}
           </button>
         </div>
         <p
-          className={`${
-            activeIndex === 0 ? "opacity-100" : "opacity-0"
-          } B2 text-gray-600 cursor-pointer`}
+          className={`${activeIndex === 0 ? "opacity-100" : "opacity-0"
+            } B2 cursor-pointer text-gray-600`}
         >
           전체 삭제
         </p>
@@ -153,38 +145,36 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
         }}
       >
         <SwiperSlide>
-          <div className="flex flex-wrap px-4 gap-3">
+          <div className="flex flex-wrap gap-3 px-4">
             {recentSearches.map((tag) => (
               <div
-                className="flex justify-between items-center gap-3 bg-gray-900 rounded-[5px] px-2 py-[3px] cursor-pointer"
+                className="flex cursor-pointer items-center justify-between gap-3 rounded-[5px] bg-gray-900 px-2 py-[3px]"
                 key={tag}
                 onClick={() => onNext(tag)}
               >
-                <p className="ST1 text-gray-200 tracking-tight">#{tag}</p>
-                <IconXbuttonQuickdropTag className="cursor-pointer w-[8px]" />
+                <p className="ST1 tracking-tight text-gray-200">#{tag}</p>
+                <IconXbuttonQuickdropTag className="w-[8px] cursor-pointer" />
               </div>
             ))}
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="flex flex-col tracking-tight px-4">
-            <p className="ST1 text-gray-200 mb-3">카테고리</p>
+          <div className="flex flex-col px-4 tracking-tight">
+            <p className="ST1 mb-3 text-gray-200">카테고리</p>
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`relative px-2 py-[3px] cursor-pointer rounded-[5px] border-[1px] border-gray-900 ${
-                    selectedCategory === category
+                  className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedCategory === category
                       ? "bg-gray-900 text-gray-200"
                       : "bg-black text-gray-500"
-                  }`}
+                    }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   <span className="ST1 invisible block">{category}</span>
                   <span
-                    className={`absolute inset-0 flex justify-center items-center ${
-                      selectedCategory === category ? "ST1" : "B0"
-                    }`}
+                    className={`absolute inset-0 flex items-center justify-center ${selectedCategory === category ? "ST1" : "B0"
+                      }`}
                   >
                     {category}
                   </span>
@@ -193,23 +183,21 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
             </div>
             {selectedCategory === "Mood" && (
               <>
-                <p className="ST1 text-gray-200 mt-4 mb-3">태그</p>
+                <p className="ST1 mt-4 mb-3 text-gray-200">태그</p>
                 <div className="flex flex-wrap gap-2">
                   {moodTags.map((tag) => (
                     <button
                       key={tag}
-                      className={`relative px-2 py-[3px] cursor-pointer rounded-[5px] border-[1px] border-gray-900 ${
-                        selectedTag === tag
+                      className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedTag === tag
                           ? "bg-gray-900 text-gray-200"
                           : "bg-black text-gray-500"
-                      }`}
+                        }`}
                       onClick={() => setSelectedTag(tag)}
                     >
                       <span className="ST1 invisible block">#{tag}</span>
                       <span
-                        className={`absolute inset-0 flex justify-center items-center ${
-                          selectedTag === tag ? "ST1" : "B0"
-                        }`}
+                        className={`absolute inset-0 flex items-center justify-center ${selectedTag === tag ? "ST1" : "B0"
+                          }`}
                       >
                         #{tag}
                       </span>

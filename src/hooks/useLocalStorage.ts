@@ -31,4 +31,3 @@ export const useLocalStorage = (key: string) => {
   };
 };
 
-export default useLocalStorage;

@@ -26,17 +26,28 @@ export interface ArchiveBoardDetail {
   images: ArchiveBoardImage[];
 }
 
+<<<<<<< HEAD
 // Recap 이미지 아이템 타입
 export interface RecapImageItem {
+=======
+// 아카이브 메인 상단에 표시할 전체 이미지 아이템 타입
+export interface ArchiveImageItem {
+>>>>>>> origin/feat/apis-archive
   imageId: number;
   imageUrl: string;
   tag: string;
   uploadedAt: string;
 }
 
+<<<<<<< HEAD
 // Recap 이미지 목록 응답 타입
 export interface RecapImagesResponse {
   content: RecapImageItem[];
+=======
+// 아카이브 메인 상단에 표시할 전체 이미지 목록 응답 타입
+export interface ArchiveImagesResponse {
+  content: ArchiveImageItem[];
+>>>>>>> origin/feat/apis-archive
   totalElements: number;
   totalPages: number;
   size: number;
@@ -48,3 +59,64 @@ export interface VibeToneTagsResponse {
   nickname: string;
   topTags: string[];
 }
+<<<<<<< HEAD
+=======
+
+// ----- 바이브톤 리캡 -----
+
+// 태그 순위 아이템 타입
+export interface TagRankItem {
+  rank: number;
+  tag: string;
+}
+
+// 사용 태그 순위 조회 응답 타입
+export interface TagUsageRankingResponse {
+  period: string;
+  startDate: string;
+  endDate: string;
+  totalDropCount: number;
+  ranks: TagRankItem[];
+}
+
+// 캘린더 이미지 아이템 타입
+export interface CalendarImageItem {
+  imageId: number;
+  tag: string;
+  imageUrl: string;
+}
+
+// 날짜 별 업로드한 이미지 조회 응답 타입
+export interface CalendarImagesResponse {
+  listOfWithImages: CalendarImageItem[];
+  todayImages: CalendarImageItem[];
+}
+
+// 월별 업로드 날짜 조회 응답 타입 (날짜 문자열 배열)
+export type MonthlyUploadDatesResponse = string[];
+
+// 가장 많이 사용한 보드 조회 응답 타입
+export interface MostUsedBoardResponse {
+  period: string;
+  startDate: string;
+  endDate: string;
+  totalDropCount: number;
+  boardId: number;
+  boardName: string;
+  boardImages: string[];
+}
+
+// 사용자 이용 패턴 조회 응답 타입
+export interface UserUsagePatternResponse {
+  period: string;
+  startDate: string;
+  endDate: string;
+  dayMessage: string;
+  preferenceMessage: string;
+  timeMessage: string;
+  totalBoardCount: number;
+  totalTagCount: number;
+  maxDailyDropCount: number;
+}
+// ------------------------------------------------
+>>>>>>> origin/feat/apis-archive

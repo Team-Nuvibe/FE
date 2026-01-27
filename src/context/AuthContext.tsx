@@ -87,8 +87,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       }
     }
   };
-
-
   const clearSession = () => {
     removeAccessTokenFromStorage();
     removeRefreshTokenFromStorage();

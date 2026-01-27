@@ -4,6 +4,7 @@ import ChevronRightIcon2 from '@/assets/icons/icon_chevron_right2.svg?react';
 import { useState, useEffect } from 'react';
 import { EmailVerificationModal } from '@/components/profile/EmailVerificationModal';
 import { EmailVerificationCodeSheet } from '@/components/profile/EmailVerificationCodeSheet';
+import { BaseModal } from '@/components/onboarding/BaseModal';
 import PwChangeProcess1 from '@/assets/icons/icon_pwchange_process1.svg?react';
 import PwChangeProcess2 from '@/assets/icons/icon_pwchange_process2.svg?react';
 import { useUpdateNickname } from '@/hooks/mutation/user/useUpdateNickname';
@@ -37,7 +38,9 @@ const ProfileEditPage = () => {
     const [verificationCode, setVerificationCode] = useState('');
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [verificationError, setVerificationError] = useState<string | null>(null);
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail);
 
     const [passwordStep, setPasswordStep] = useState<'verify' | 'change'>('verify');
@@ -94,7 +97,8 @@ const ProfileEditPage = () => {
                         let message = error.response?.data?.message || error.message;
                         // 14일 제한 에러 메시지 커스텀
                         if (message.includes('14일')) {
-                            message = '닉네임은 변경 후, 14일 뒤에 다시 변경할 수 있어요.';
+                            setIsNicknameModalOpen(true);
+                            return;
                         }
                         setToastMessage(message);
                         setTimeout(() => setToastMessage(null), 3000);
@@ -178,8 +182,7 @@ const ProfileEditPage = () => {
                 },
                 onError: (error: any) => {
                     console.error('이메일 인증 코드 검증 실패:', error.response?.data?.message || error.message);
-                    setToastMessage('인증 코드가 올바르지 않습니다.');
-                    setTimeout(() => setToastMessage(null), 3000);
+                    setVerificationError('인증 코드가 일치하지 않아요.');
                 },
             }
         );
@@ -211,7 +214,7 @@ const ProfileEditPage = () => {
                 setPasswordStep('change');
                 setPasswordError('');
             } catch (error: any) {
-                setPasswordError('비밀번호가 일치하지 않습니다.');
+                setPasswordError('비밀번호가 일치하지 않아요.');
                 console.error('비밀번호 확인 실패:', error.response?.data?.message || error.message);
             } finally {
                 setIsVerifyingPassword(false);
@@ -233,7 +236,15 @@ const ProfileEditPage = () => {
             <div className="w-full max-w-[393px] h-full flex flex-col px-[16px]">
                 <header className="flex items-center justify-center relative mt-[8.06px]">
                     <button
-                        onClick={() => navigate(-1)}
+                        onClick={() => {
+                            if (type === 'password' && passwordStep === 'change') {
+                                setPasswordStep('verify');
+                                setNewPassword('');
+                                setConfirmPassword('');
+                                return;
+                            }
+                            navigate(-1);
+                        }}
                         className="absolute left-0 rotate-180 p-2 -ml-2"
                     >
                         <ChevronRightIcon2 className="text-white w-6 h-6" />
@@ -300,7 +311,7 @@ const ProfileEditPage = () => {
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
                                     새로운 이메일
                                 </label>
-                                <div className="relative w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[6px] h-[48px] flex items-center justify-between">
+                                <div className={`relative w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[6px] h-[48px] flex items-center justify-between border ${newEmail === email && newEmail.length > 0 && !isEmailVerified ? 'border-gray-300' : 'border-transparent'}`}>
                                     <input
                                         type="text"
                                         value={newEmail}
@@ -361,7 +372,7 @@ const ProfileEditPage = () => {
                         <>
                             <div className="flex-1 overflow-y-auto">
                                 {/* Progress Bar */}
-                                <div className="w-full mb-[20px]">
+                                <div className="w-full mt-[23.5px] mb-[20px]">
                                     {passwordStep === 'verify' ? (
                                         <PwChangeProcess1 className="w-full h-auto" />
                                     ) : (
@@ -371,30 +382,33 @@ const ProfileEditPage = () => {
 
                                 {passwordStep === 'verify' ? (
                                     <>
-                                        <label className="text-gray-400 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
+                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
                                             현재 비밀번호
                                         </label>
-                                        <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center">
+                                        <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center border ${passwordError ? 'border-gray-300' : 'border-transparent'}`}>
                                             <input
                                                 type="password"
                                                 value={currentPassword}
-                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                                onChange={(e) => {
+                                                    setCurrentPassword(e.target.value);
+                                                    if (passwordError) setPasswordError('');
+                                                }}
                                                 placeholder="현재 비밀번호를 입력해주세요."
                                                 className="w-full bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0"
                                             />
                                         </div>
                                         {passwordError && (
-                                            <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
+                                            <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
                                                 {passwordError}
                                             </p>
                                         )}
                                     </>
                                 ) : (
                                     <>
-                                        <label className="text-gray-400 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
+                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
                                             새 비밀번호
                                         </label>
-                                        <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[12px]">
+                                        <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[16px]">
                                             <input
                                                 type="password"
                                                 value={newPassword}
@@ -404,12 +418,12 @@ const ProfileEditPage = () => {
                                             />
                                         </div>
                                         {isSameAsCurrent && newPassword.length > 0 && !isSaving && (
-                                            <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                            <p className="text-red-500 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
                                                 새로운 비밀번호를 입력해주세요.
                                             </p>
                                         )}
 
-                                        <label className="text-gray-400 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
+                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
                                             새 비밀번호 확인
                                         </label>
                                         <div className="w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px]">
@@ -433,19 +447,19 @@ const ProfileEditPage = () => {
                             </div>
 
                             {/* Fixed Bottom Button */}
-                            <div className="fixed bottom-0 left-0 right-0 w-full max-w-[393px] mx-auto pb-[env(safe-area-inset-bottom)] px-[16px] bg-black">
+                            <div className="fixed bottom-0 left-0 right-0 w-full max-w-[393px] mx-auto pb-[calc(32px+env(safe-area-inset-bottom))] px-[16px] bg-black">
                                 <button
                                     onClick={passwordStep === 'verify' ? handleNextStep : handleSave}
                                     disabled={
                                         passwordStep === 'verify'
-                                            ? currentPassword.length < 8
+                                            ? currentPassword.length < 8 || !!passwordError
                                             : !isValidPassword || !isPasswordMatch || isSameAsCurrent || isSaving
                                     }
                                     className={`
                                         w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
                                         ${(
                                             passwordStep === 'verify'
-                                                ? currentPassword.length >= 8
+                                                ? currentPassword.length >= 8 && !passwordError
                                                 : isValidPassword && isPasswordMatch && !isSameAsCurrent
                                         )
                                             ? 'bg-gray-200 text-gray-900'
@@ -457,6 +471,26 @@ const ProfileEditPage = () => {
                             </div>
                         </>
                     )}
+
+                    {/* Nickname Restriction Modal */}
+                    {(() => {
+                        // TODO: 백엔드에서 마지막 변경일(nicknameUpdatedAt)을 받아오면 이 부분을 수정해야 합니다.
+                        // 현재는 테스트를 위해 '오늘'을 마지막 변경일로 가정합니다.
+                        const nicknameUpdatedAt = new Date();
+                        const availableDate = new Date(nicknameUpdatedAt);
+                        availableDate.setDate(availableDate.getDate() + 14);
+
+                        const formattedDate = `${availableDate.getMonth() + 1}월 ${availableDate.getDate()}일`;
+
+                        return (
+                            <BaseModal
+                                isOpen={isNicknameModalOpen}
+                                onClose={() => setIsNicknameModalOpen(false)}
+                                maintext="아직 닉네임을 변경할 수 없어요"
+                                subtext={`${formattedDate}부터 다시 변경 가능해요.`}
+                            />
+                        );
+                    })()}
                 </div>
 
                 {/* Email Verification Modal & Sheet */}
@@ -468,10 +502,15 @@ const ProfileEditPage = () => {
                 />
                 <EmailVerificationCodeSheet
                     isOpen={isSheetOpen}
-                    onClose={() => setIsSheetOpen(false)}
+                    onClose={() => {
+                        setIsSheetOpen(false);
+                        setVerificationError(null);
+                    }}
                     onConfirm={handleSheetConfirm}
                     onResend={handleResendCode}
                     isVerifying={isVerifyingCode}
+                    errorMessage={verificationError}
+                    onInputChange={() => setVerificationError(null)}
                 />
 
                 {

@@ -38,7 +38,7 @@ export const deleteUser = async (): Promise<ApiResponse<string>> => {
   return data;
 };
 
-// 이메일 인증 발송 (feat/apis-auth에서 추가)
+// 이메일 인증 발송
 export const sendVerificationEmail = async (
   email: string,
 ): Promise<ApiResponse<string>> => {
@@ -49,7 +49,7 @@ export const sendVerificationEmail = async (
   return data;
 };
 
-// 비밀번호 확인 (feat/apis-auth에서 추가)
+// 비밀번호 확인
 export const checkPassword = async (
   password: string,
 ): Promise<ApiResponse<string>> => {
@@ -60,7 +60,7 @@ export const checkPassword = async (
   return data;
 };
 
-// 이메일 인증 완료 (feat/apis-auth에서 추가)
+// 이메일 인증 완료
 export const verifyEmail = async (
   token: string,
 ): Promise<ApiResponse<string>> => {

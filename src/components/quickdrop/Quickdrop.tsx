@@ -1,11 +1,5 @@
-import React from 'react'
-
 const Quickdrop = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default Quickdrop
+export default Quickdrop;
