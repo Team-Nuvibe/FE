@@ -4,12 +4,15 @@ import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetTagDetails from "@/hooks/queries/useGetTagDetails";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
+import { VibeDropModal } from "@/components/home/VibeDropModal";
 
 export const TagDetailPage = () => {
   const { tagid } = useParams<{ tagid: string }>();
   const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const location = useLocation();
   const { categories } = useGetAllCategoriesTags();
@@ -69,12 +72,12 @@ export const TagDetailPage = () => {
             </div>
           </div>
         </section>
-        <section className="flex flex-col gap-4 px-4 py-6">
+        <section className="flex flex-col gap-4 py-6 pl-4">
           <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
           {tagDetails?.data.hasImages && (
             <div className="mt-3 flex gap-2"></div>
           )}
-          {!tagDetails?.data.hasImages && (
+          {tagDetails?.data.hasImages && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
               <p>
@@ -87,11 +90,31 @@ export const TagDetailPage = () => {
               </p>
             </div>
           )}
+          {!tagDetails?.data.hasImages && (
+            <div className="flex gap-2 overflow-x-auto">
+              <div
+                className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"
+                onClick={() => setIsModalOpen(true)}
+              ></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+            </div>
+          )}
         </section>
       </main>
       <footer className="flex flex-col items-center justify-center pb-7">
         <DropYourVibe />
       </footer>
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <VibeDropModal
+            tag={tagDetails?.data.tag || ""}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </div>
+      )}
     </div>
   );
 };
