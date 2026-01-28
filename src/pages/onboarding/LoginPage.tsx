@@ -2,6 +2,8 @@ import { NavLink, useLocation, useNavigate } from "react-router";
 import Google_G_logo from "@/assets/logos/Google_logo.svg?react";
 import Naver_logo from "@/assets/logos/Naver_logo.svg?react";
 import KakaoTalk_logo from "@/assets/logos/KakaoTalk_logo.svg?react";
+import EyeOnIcon from "@/assets/icons/icon_eye_on.svg?react";
+import EyeOffIcon from "@/assets/icons/icon_eye_off.svg?react";
 import {
   validateSignin,
   type UserSigninInformation,
@@ -17,6 +19,7 @@ const LoginPage = () => {
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorModalContent, setErrorModalContent] = useState({
     maintext: "",
     subtext: "",
@@ -111,8 +114,16 @@ const LoginPage = () => {
           />
           <InputBox
             {...getInputProps("password")}
-            type="password"
+            type={isPasswordVisible ? "text" : "password"}
             placeholder="비밀번호"
+            rightElement={
+              <button
+                type="button"
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              >
+                {isPasswordVisible ? <EyeOnIcon /> : <EyeOffIcon />}
+              </button>
+            }
           />
           <div className="mb-4 flex items-center justify-between text-[12px]">
             <div className="flex items-center gap-1">

@@ -1,11 +1,9 @@
-interface InputBoxProps {
-  type: string;
+interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;
   hasError?: boolean;
-  className?: string;
   errorMessage?: string;
   guideText?: string;
-  rightElement?: React.ReactNode; // 오른쪽에 표시할 요소 (예: 인증 버튼)
+  rightElement?: React.ReactNode;
 }
 
 const InputBox = ({
@@ -21,7 +19,7 @@ const InputBox = ({
   return (
     <div className="relative flex flex-col gap-1">
       <div
-        className={`relative flex h-[48px] w-full max-w-[339px] items-center justify-between rounded-[5px] border bg-gray-800 px-4 py-2 transition-colors ${
+        className={`relative flex h-[48px] w-full max-w-[393px] items-center justify-between rounded-[5px] border bg-gray-900 p-3 transition-colors ${
           hasError
             ? "border-gray-300"
             : "border-transparent focus-within:border-gray-300"
@@ -39,9 +37,11 @@ const InputBox = ({
 
         {/* Placeholder with guide text */}
         {!hasError && (
-          <div className="pointer-events-none absolute top-1/2 left-[16px] hidden -translate-y-1/2 items-center gap-2 text-gray-500 peer-placeholder-shown:flex peer-focus:hidden">
+          <div className="pointer-events-none absolute top-1/2 left-3 hidden -translate-y-1/2 items-center gap-2 text-gray-500 peer-placeholder-shown:flex peer-focus:hidden">
             {/* 메인 Placeholder */}
-            <span className="text-[16px] text-gray-500">{placeholder}</span>
+            <span className="B1 leading-[150%] tracking-[-0.4px] text-gray-600">
+              {placeholder}
+            </span>
 
             {/* 보조 가이드 텍스트 */}
             {guideText && (

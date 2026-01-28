@@ -74,9 +74,9 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
   };
 
   return (
-    <div className="flex justify-center gap-1.5">
+    <div className="flex justify-center gap-2">
       {otp.map((_, index) => (
-        <div key={index} className="relative">
+        <div key={index} className={`relative ${index === 2 ? "mr-2" : ""}`}>
           <input
             ref={(el) => {
               inputRefs.current[index] = el;
