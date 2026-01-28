@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BackButton } from "../../components/onboarding/BackButton";
 import RecapFirstSlide from "../../components/archive-board/vibetone/RecapFirstSlide";
 import RecapSecondSlide from "../../components/archive-board/vibetone/RecapSecondSlide";
 import RecapThirdSlide from "../../components/archive-board/vibetone/RecapThirdSlide";
+import EmptyState from "../../components/archive-board/vibetone/EmptyState";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
@@ -11,6 +12,7 @@ import { useNavigate } from "react-router";
 import ClockIcon from "@/assets/icons/icon_clock.svg?react";
 import RefreshIcon from "@/assets/icons/icon_refreshbutton.svg?react";
 import SaveIcon from "@/assets/icons/icon_imagesave.svg?react";
+import DropIcon from "@/assets/logos/Subtract.svg?react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getTagUsageRanking,
@@ -29,23 +31,60 @@ const VibeTonePage = () => {
   const period = activeTab === "weekly" ? "WEEK" : "TOTAL";
 
   // 3개의 슬라이드 데이터를 병렬로 fetch
-  const { data: tagRankingData, isLoading: tagLoading } = useQuery({
+  const {
+    data: tagRankingData,
+    isLoading: tagLoading,
+    isError: tagError,
+  } = useQuery({
     queryKey: ["tagRanking", period],
     queryFn: () => getTagUsageRanking(period),
   });
 
-  const { data: mostUsedBoardData, isLoading: boardLoading } = useQuery({
+  const {
+    data: mostUsedBoardData,
+    isLoading: boardLoading,
+    isError: boardError,
+  } = useQuery({
     queryKey: ["mostUsedBoard", period],
     queryFn: () => getMostUsedBoard(period),
   });
 
-  const { data: usagePatternData, isLoading: patternLoading } = useQuery({
+  const {
+    data: usagePatternData,
+    isLoading: patternLoading,
+    isError: patternError,
+  } = useQuery({
     queryKey: ["usagePattern", period],
     queryFn: () => getUserUsagePattern(period),
   });
 
   // 전체 로딩 상태
   const isLoading = tagLoading || boardLoading || patternLoading;
+
+  // 빈 데이터 체크 (에러 또는 데이터 없음)
+  const isEmpty = useMemo(() => {
+    const hasTagData =
+      !tagError &&
+      tagRankingData?.data?.ranks &&
+      tagRankingData.data.ranks.length > 0;
+    const hasBoardData =
+      !boardError &&
+      mostUsedBoardData?.data?.boardImages &&
+      mostUsedBoardData.data.boardImages.length > 0;
+    const hasPatternData =
+      !patternError &&
+      usagePatternData?.data?.totalBoardCount &&
+      usagePatternData.data.totalBoardCount > 0;
+
+    return !hasTagData && !hasBoardData && !hasPatternData;
+  }, [
+    tagError,
+    tagRankingData,
+    boardError,
+    mostUsedBoardData,
+    patternError,
+    usagePatternData,
+  ]);
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
@@ -94,66 +133,91 @@ const VibeTonePage = () => {
             <p className="B1 text-gray-400">로딩 중...</p>
           </div>
         ) : (
-          <Swiper
-            modules={[Pagination]}
-            onSlideChange={(swiper) => setActiveSlideIndex(swiper.activeIndex)}
-            pagination={{
-              el: ".bottom-card-pagination",
-              clickable: true,
-              type: "bullets",
-            }}
-            className="w-full flex-1"
-          >
-            {/* Slide 1: 물리 엔진 기반 태그 애니메이션 (RecapFirstSlide) */}
-            <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
-              <RecapFirstSlide
-                isActive={activeSlideIndex === 0}
-                activeTab={activeTab}
-                data={tagRankingData?.data}
-              />
-            </SwiperSlide>
+          <>
+            {/* Check if there's no data to display */}
+            {isEmpty ? (
+              <div className="flex flex-1 items-center justify-center px-4">
+                <EmptyState />
+              </div>
+            ) : (
+              <Swiper
+                modules={[Pagination]}
+                onSlideChange={(swiper) =>
+                  setActiveSlideIndex(swiper.activeIndex)
+                }
+                pagination={{
+                  el: ".bottom-card-pagination",
+                  clickable: true,
+                  type: "bullets",
+                }}
+                className="w-full flex-1"
+              >
+                {/* Slide 1: 물리 엔진 기반 태그 애니메이션 (RecapFirstSlide) */}
+                <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
+                  <RecapFirstSlide
+                    isActive={activeSlideIndex === 0}
+                    activeTab={activeTab}
+                    data={tagRankingData?.data}
+                  />
+                </SwiperSlide>
 
-            {/* Slide 2: 폴더 팝업 애니메이션 (RecapSecondSlide) */}
-            <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
-              <RecapSecondSlide
-                isActive={activeSlideIndex === 1}
-                activeTab={activeTab}
-                data={mostUsedBoardData?.data}
-              />
-            </SwiperSlide>
+                {/* Slide 2: 폴더 팝업 애니메이션 (RecapSecondSlide) */}
+                <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
+                  <RecapSecondSlide
+                    isActive={activeSlideIndex === 1}
+                    activeTab={activeTab}
+                    data={mostUsedBoardData?.data}
+                  />
+                </SwiperSlide>
 
-            {/* Slide 3: 패턴 분석 (RecapThirdSlide) */}
-            <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
-              <RecapThirdSlide
-                isActive={activeSlideIndex === 2}
-                activeTab={activeTab}
-                data={usagePatternData?.data}
-              />
-            </SwiperSlide>
-          </Swiper>
+                {/* Slide 3: 패턴 분석 (RecapThirdSlide) */}
+                <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
+                  <RecapThirdSlide
+                    isActive={activeSlideIndex === 2}
+                    activeTab={activeTab}
+                    data={usagePatternData?.data}
+                  />
+                </SwiperSlide>
+              </Swiper>
+            )}
+          </>
         )}
       </div>
       {/* Pagination dots */}
       <div className="bottom-card-pagination flex justify-center gap-2 pt-3" />
-      {/* Footer / Action Buttons - Figma Design */}
+      {/* Footer / Action Buttons */}
       <div className="mb-25 shrink-0 bg-black px-4 py-4">
-        <div className="flex items-center gap-3">
-          {/* Redo Button (왼쪽) */}
-          <button
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-gray-800"
-            aria-label="Redo"
-          >
-            <RefreshIcon />
-          </button>
-
-          {/* Save Card Button (오른쪽) */}
-          <button className="mx-auto flex h-11 flex-1 items-center justify-center gap-4 rounded-[10px] border border-gray-800 transition-colors hover:bg-gray-900">
-            <SaveIcon />
-            <span className="ST2 tracking-[-0.4px] text-gray-200">
-              이 카드 저장하기
+        {isEmpty ? (
+          /* Drop Your Vibe 버튼 */
+          <button className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]">
+            <DropIcon className="h-5.25 w-5.25" />
+            <span
+              className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
+              style={{ WebkitTextFillColor: "transparent" }}
+            >
+              Drop Your Vibe
             </span>
           </button>
-        </div>
+        ) : (
+          /* 재생성 & 카드 저장 버튼 */
+          <div className="flex items-center gap-3">
+            {/* Redo Button (왼쪽) */}
+            <button
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-gray-800"
+              aria-label="Redo"
+            >
+              <RefreshIcon />
+            </button>
+
+            {/* Save Card Button (오른쪽) */}
+            <button className="mx-auto flex h-11 flex-1 items-center justify-center gap-4 rounded-[10px] border border-gray-800 transition-colors hover:bg-gray-900">
+              <SaveIcon />
+              <span className="ST2 tracking-[-0.4px] text-gray-200">
+                이 카드 저장하기
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
