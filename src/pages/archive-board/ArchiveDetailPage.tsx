@@ -354,6 +354,7 @@ const ArchiveDetailPage = () => {
         initialTitle={boardTitle} // Pass current title
         toptext="아카이브 보드명 수정"
         buttontext="저장하기"
+        placeholderText="수정할 보드명을 입력해주세요."
         onClose={() => setIsEditNameModalOpen(false)}
         onClick={handleEditNameSave} // Handle save
       />

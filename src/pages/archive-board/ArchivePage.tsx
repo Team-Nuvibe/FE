@@ -498,6 +498,7 @@ const ArchivePage = () => {
         initialTitle=""
         toptext="아카이브 보드 추가"
         buttontext="추가하기"
+        placeholderText="추가할 보드명을 입력해주세요."
         onClose={() => setIsCreateBoardModalOpen(false)}
         onClick={handleCreateBoardSave}
       />

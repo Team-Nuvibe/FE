@@ -7,6 +7,7 @@ interface EditBottomSheetProps {
   initialTitle?: string;
   toptext: string;
   buttontext: string;
+  placeholderText: string;
   onClose: () => void;
   onClick: (newTitle: string) => void;
 }
@@ -16,6 +17,7 @@ export const BoardBottomSheet = ({
   initialTitle = "",
   toptext,
   buttontext,
+  placeholderText,
   onClose,
   onClick,
 }: EditBottomSheetProps) => {
@@ -93,7 +95,7 @@ export const BoardBottomSheet = ({
                 type="text"
                 value={text}
                 onChange={handleChange}
-                placeholder="수정할 보드명을 입력해주세요."
+                placeholder={placeholderText}
                 className="H3 h-full w-full bg-transparent px-4 pr-[60px] text-gray-100 placeholder:text-[16px] placeholder:font-normal placeholder:text-gray-400 focus:outline-none"
               />
 
