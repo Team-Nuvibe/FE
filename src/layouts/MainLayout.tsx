@@ -7,11 +7,11 @@ import { useAuth } from "@/context/AuthContext";
 const MainLayout = () => {
   const isNavbarVisible = useNavbarInfo();
 
-  const { accessToken } = useAuth();
+  const { accessToken, refreshToken } = useAuth();
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-  if (!accessToken) {
-    // alert("로그인이 필요한 서비스 입니다. 로그인을 해주세요!");
+  // AccessToken이 없더라도 RefreshToken이 있다면 갱신 시도를 위해 리다이렉트 보류
+  if (!accessToken && !refreshToken) {
     return <Navigate to="/login" replace />;
   }
 
