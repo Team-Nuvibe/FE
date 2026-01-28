@@ -95,7 +95,6 @@ body {}
   display: none;
 }
 
-input,
 textarea {
   user-select: text;
   -webkit-user-select: text;
@@ -135,7 +134,6 @@ button {
 .bottom-card-pagination .swiper-pagination-bullet-active {
   background-color: rgba(255, 255, 255, 1) !important;
 }
-
 
 
 /* 보드 이름 변경 바텀시트 애니메이션 */

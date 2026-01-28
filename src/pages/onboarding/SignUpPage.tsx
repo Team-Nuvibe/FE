@@ -8,11 +8,11 @@ import { useSearchParams } from "react-router-dom";
 import { BackButton } from "../../components/onboarding/BackButton";
 import InputBox from "../../components/onboarding/InputBox";
 import { BaseModal } from "@/components/onboarding/BaseModal";
+import { OTPBottomSheet } from "@/components/onboarding/OTPBottomSheet";
 import VerifiedIcon from "@/assets/icons/icon_select_image_white.svg?react";
 import useSignup from "@/hooks/mutation/auth/useSignup";
 import WelcomeSplash from "@/components/onboarding/WelcomeSplash";
-import { sendVerificationEmail, verifyEmail } from "@/apis/auth";
-import OTPInput from "@/components/onboarding/OTPInput";
+import { sendVerificationEmail, confirmVerificationCode } from "@/apis/auth";
 
 const schema = z
   .object({
@@ -80,26 +80,16 @@ const SignUpPage = () => {
   const passwordValue = watch("password");
   const passwordCheckValue = watch("passwordCheck");
 
-  const [verificationCode, setVerificationCode] = useState("");
-  // 코드 입력이 완료되었을 때 실행될 함수
-  const handleCodeComplete = (code: string) => {
-    setVerificationCode(code);
-    console.log("입력된 코드:", code);
-  };
-
-  // 코드 검증 함수 (버튼 클릭 시 실행)
-  const handleVerifyCode = async () => {
-    if (verificationCode.length < 6 || isVerifying) return;
-
+  // 코드 검증 함수 (OTPBottomSheet에서 호출)
+  const handleVerifyCode = async (code: string) => {
     setIsVerifying(true);
     try {
-      const response = await verifyEmail(verificationCode);
+      const response = await confirmVerificationCode(emailValue, code);
       console.log("인증 성공:", response.message);
 
       // 성공 시
       setIsEmailVerified(true);
       setIsModalOpen(false);
-      setVerificationCode(""); // 코드 초기화
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "인증 코드가 유효하지 않습니다.";
@@ -108,7 +98,7 @@ const SignUpPage = () => {
         subtext: errorMessage,
       });
       setIsErrorModalOpen(true);
-      setVerificationCode(""); // 실패 시도 코드 초기화
+      throw error; // OTPBottomSheet에서 에러 처리를 위해 throw
     } finally {
       setIsVerifying(false);
     }
@@ -151,7 +141,7 @@ const SignUpPage = () => {
       const response = await sendVerificationEmail(emailValue);
       console.log("이메일 발송 성공:", response.message);
 
-      // 성공 시 모달 열기
+      // 성공 시 바텀시트 열기
       setIsModalOpen(true);
     } catch (error: any) {
       const errorMessage =
@@ -229,10 +219,10 @@ const SignUpPage = () => {
                 onClick={handleEmailVerification}
                 disabled={!isEmailValid() || isEmailVerified || isEmailSending}
                 className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${isEmailVerified
-                    ? "cursor-not-allowed bg-gray-700 text-gray-300"
-                    : isEmailValid()
-                      ? "bg-[#b9bdc2] text-[#212224]"
-                      : "cursor-not-allowed bg-gray-700 text-gray-300"
+                  ? "cursor-not-allowed bg-gray-700 text-gray-300"
+                  : isEmailValid()
+                    ? "bg-[#b9bdc2] text-[#212224]"
+                    : "cursor-not-allowed bg-gray-700 text-gray-300"
                   }`}
               >
                 {isEmailVerified
@@ -284,29 +274,15 @@ const SignUpPage = () => {
         </button>
       </div>
 
-      {/* 디자인 나오면 수정 예정 */}
-      <BaseModal
+      {/* OTP 인증 바텀시트 */}
+      <OTPBottomSheet
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        maintext="인증번호 입력"
-        subtext="이메일로 전송된 숫자 6자리를 입력해주세요."
-      >
-        <div className="mt-6 flex flex-col items-center gap-4">
-          {/* ✨ 여기에 OTP Input 배치 ✨ */}
-          <OTPInput length={6} onComplete={handleCodeComplete} />
-
-          {/* 확인 버튼 */}
-          <button
-            onClick={handleVerifyCode}
-            disabled={verificationCode.length < 6 || isVerifying}
-            className="mt-4 h-[48px] w-full rounded bg-white font-bold text-black disabled:cursor-not-allowed disabled:bg-gray-500"
-          >
-            {isVerifying ? "인증 중..." : "인증하기"}
-          </button>
-
-          {/* 타이머나 재전송 버튼 등이 여기에 들어감 */}
-        </div>
-      </BaseModal>
+        onVerify={handleVerifyCode}
+        onResend={handleEmailVerification}
+        isVerifying={isVerifying}
+        isResending={isEmailSending}
+      />
 
       {/* 에러 모달 */}
       <BaseModal

@@ -23,7 +23,7 @@ import { useNavbarActions } from '@/hooks/useNavbarStore';
 const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
-    const { nickname, email, setEmail } = useUserStore();
+    const { email } = useUserStore();
     console.log('Current Email in State:', email);
     const { setNavbarVisible } = useNavbarActions();
 
@@ -39,7 +39,6 @@ const ProfileEditPage = () => {
     const [newNickname, setNewNickname] = useState('');
 
     const [newEmail, setNewEmail] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -57,7 +56,6 @@ const ProfileEditPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const [isVerifyingPassword, setIsVerifyingPassword] = useState(false);
     const [isConfirmBlurred, setIsConfirmBlurred] = useState(false);
     const [isNewPwFocused, setIsNewPwFocused] = useState(false);
     const [isNewPwBlurred, setIsNewPwBlurred] = useState(false);
@@ -213,7 +211,7 @@ const ProfileEditPage = () => {
                     setToastMessage('인증 코드가 재전송되었습니다.');
                     setTimeout(() => setToastMessage(null), 3000);
                 },
-                onError: (error: any) => {
+                onError: () => {
                     setToastMessage('인증 코드 재전송 실패');
                     setTimeout(() => setToastMessage(null), 3000);
                 }
@@ -223,18 +221,14 @@ const ProfileEditPage = () => {
 
     const handleNextStep = async () => {
         if (type === 'password' && currentPassword.length >= 8) {
-            setIsVerifyingPassword(true);
             setPasswordError('');
-
             try {
                 await checkPassword(currentPassword);
                 setPasswordStep('change');
                 setPasswordError('');
             } catch (error: any) {
-                setPasswordError('비밀번호가 일치하지 않아요.');
+                setPasswordError('비밀번호가 일치하지 않습니다.');
                 console.error('비밀번호 확인 실패:', error.response?.data?.message || error.message);
-            } finally {
-                setIsVerifyingPassword(false);
             }
         }
     };
@@ -283,7 +277,7 @@ const ProfileEditPage = () => {
                                         placeholder="닉네임을 입력해주세요."
                                         className="w-full bg-transparent text-white placeholder:text-gray-600 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0"
                                     />
-                                    <span className={`absolute right-[12px] text-[10px] leading-[150%] tracking-[-0.025em] ${newNickname.length > 0 ? 'text-gray-100' : 'text-gray-400'} `}>
+                                    <span className={`absolute right-[12px] text-[10px] leading-[150%] tracking-[-0.025em] ${newNickname.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
                                         ({newNickname.length}/15)
                                     </span>
                                 </div>
@@ -468,7 +462,7 @@ const ProfileEditPage = () => {
                                                             "영문, 숫자, 특수문자를 모두 포함해 주세요."}
                                             </p>
                                         )}
-                                        {/* Spacer for when no error */}
+                                        {/* Spacer */}
                                         {!(newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred) ? <div className="mb-[16px]"></div> : null}
 
                                         <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">

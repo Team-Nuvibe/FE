@@ -74,10 +74,9 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
   };
 
   return (
-    <div className="flex justify-center gap-2">
+    <div className="flex justify-center gap-1.5">
       {otp.map((_, index) => (
         <div key={index} className="relative">
-          {/* 3번째와 4번째 사이 간격을 조금 더 벌리고 싶다면 여기에 조건부 마진 추가 */}
           <input
             ref={(el) => {
               inputRefs.current[index] = el;
@@ -89,7 +88,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             onPaste={handlePaste}
-            className="h-14 w-12 rounded border border-gray-600 bg-black text-center text-xl font-bold text-white transition-colors focus:border-blue-500 focus:outline-none"
+            className="focus:bg-gray-750 h-[50px] w-[45px] rounded-lg border border-gray-700 bg-gray-800 text-center text-[24px] font-semibold text-white transition-all focus:border-gray-500 focus:outline-none"
           />
         </div>
       ))}

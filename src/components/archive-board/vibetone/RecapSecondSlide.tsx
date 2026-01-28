@@ -79,8 +79,8 @@ const RecapSecondSlide = ({
         stiffness: 200,
         damping: 18,
         delay: index * 0.1,
-      }
-    })
+      },
+    }),
   };
 
   return (

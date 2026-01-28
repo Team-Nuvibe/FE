@@ -26,28 +26,17 @@ export interface ArchiveBoardDetail {
   images: ArchiveBoardImage[];
 }
 
-<<<<<<< HEAD
-// Recap 이미지 아이템 타입
-export interface RecapImageItem {
-=======
 // 아카이브 메인 상단에 표시할 전체 이미지 아이템 타입
 export interface ArchiveImageItem {
->>>>>>> origin/feat/apis-archive
   imageId: number;
   imageUrl: string;
   tag: string;
   uploadedAt: string;
 }
 
-<<<<<<< HEAD
-// Recap 이미지 목록 응답 타입
-export interface RecapImagesResponse {
-  content: RecapImageItem[];
-=======
 // 아카이브 메인 상단에 표시할 전체 이미지 목록 응답 타입
 export interface ArchiveImagesResponse {
   content: ArchiveImageItem[];
->>>>>>> origin/feat/apis-archive
   totalElements: number;
   totalPages: number;
   size: number;
@@ -59,8 +48,6 @@ export interface VibeToneTagsResponse {
   nickname: string;
   topTags: string[];
 }
-<<<<<<< HEAD
-=======
 
 // ----- 바이브톤 리캡 -----
 
@@ -119,4 +106,3 @@ export interface UserUsagePatternResponse {
   maxDailyDropCount: number;
 }
 // ------------------------------------------------
->>>>>>> origin/feat/apis-archive

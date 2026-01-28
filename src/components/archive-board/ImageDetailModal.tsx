@@ -91,12 +91,12 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
         exit={{ opacity: 0 }}
         className="absolute inset-0 z-50 bg-black/90 selection:bg-none" // z-50 to stay above everything else except TagSelector
       >
-        <div 
+        <div
           ref={captureRef}
           className="relative w-full h-full flex flex-col"
         >
           {/* Background Blur */}
-          <div 
+          <div
             className="absolute inset-0 z-0 overflow-hidden"
             onClick={onClose}
           >
@@ -108,7 +108,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                 referrerPolicy="no-referrer"
               />
             )}
-            <div 
+            <div
               className="absolute inset-0"
               style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
             />
@@ -119,7 +119,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
             <button onClick={onClose} className="p-2 -ml-2 text-white">
               <Xbutton24 />
             </button>
-            <button 
+            <button
               className="p-2 -mr-2 text-white disabled:opacity-50"
               onClick={handleDownload}
               disabled={isDownloading}
@@ -133,7 +133,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
           </div>
           <div className="flex flex-col gap-5 p-5 flex-1 min-h-0 ">
             {/* Main Image Container */}
-            <div 
+            <div
               className="relative z-10 w-full flex flex-col items-center justify-center min-h-0">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -141,16 +141,15 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 className="flex flex-col items-start gap-5 p-5 bg-transparent"
               >
-                  {/* Image Frame */}
+                {/* Image Frame */}
                 <div className="bg-white overflow-hidden relative rounded-[10px] w-72.75 h-97 shrink-0">
                   {item.thumbnail ? (
                     <>
                       <img
                         src={item.thumbnail}
                         alt={item.tag}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 transform ${
-                          isLoaded ? 'opacity-100' : 'opacity-0'
-                        }`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 transform ${isLoaded ? 'opacity-100' : 'opacity-0'
+                          }`}
                         referrerPolicy="no-referrer"
                         onLoad={() => setIsLoaded(true)}
                       />
@@ -172,7 +171,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                     <ChevronRightIcon />
                   </p>
                   <div className="flex items-center gap-2">
-                    <h2 
+                    <h2
                       className="font-pretendard H2 leading-[150%] tracking-[-0.6px] text-[#f7f7f7]"
                     >
                       #{item.tag}
@@ -181,10 +180,10 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
                       className="text-gray-300 hover:text-white transition-colors"
                       onClick={() => setIsTagSelectorOpen(true)}
                     >
-                      <Xbutton className='w-6 h-6'/>
+                      <Xbutton className='w-6 h-6' />
                     </button>
                   </div>
-                  <p 
+                  <p
                     className="font-montserrat pt-1 font-light italic text-[10px] leading-[9.3px] text-[#FAFAFA]"
                     style={{ opacity: 0.8 }}
                   >
@@ -200,7 +199,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
       {/* Tag Selector */}
       <AnimatePresence>
         {isTagSelectorOpen && (
-          <motion.div 
+          <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

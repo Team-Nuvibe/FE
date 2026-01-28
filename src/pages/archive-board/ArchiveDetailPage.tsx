@@ -63,38 +63,35 @@ const ArchiveDetailPage = () => {
 
   // Board detail state
   const [allModelItems, setAllModelItems] = useState<ModelItem[]>([]);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(true);
 
   useEffect(() => {
     const fetchBoardDetail = async () => {
       if (!boardid) return;
 
       try {
-        setIsLoadingDetail(true);
-        const response = await getArchiveBoardDetail(parseInt(boardid));
+        const response = await getArchiveBoardDetail(Number(boardid));
 
         if (response.data) {
           console.log("📋 Board detail loaded:", response.data);
+          const detail = response.data;
 
-          const mappedItems: ModelItem[] = response.data.images.map((img) => ({
-            id: img.boardImageId.toString(),
+          const mappedItems: ModelItem[] = detail.images.map((img) => ({
+            id: String(img.boardImageId),
             tag: img.imageTag,
-            thumbnail: img.imageUrl,
+            thumbnail: img.imageUrl
           }));
 
           // Extract unique tags for filters
           const uniqueTags = Array.from(
-            new Set(response.data.images.map((img) => img.imageTag)),
+            new Set(detail.images.map((img) => img.imageTag)),
           );
           setFilters(["최신순", ...uniqueTags]);
 
           setAllModelItems(mappedItems);
-          setBoardTitle(response.data.name);
+          setBoardTitle(detail.name);
         }
       } catch (error) {
         console.error("Failed to fetch board detail:", error);
-      } finally {
-        setIsLoadingDetail(false);
       }
     };
 
@@ -261,8 +258,8 @@ const ArchiveDetailPage = () => {
                   )
                 }
                 className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${selectedFilter === filter
-                    ? "bg-gray-200 text-black"
-                    : "bg-gray-900 text-gray-200"
+                  ? "bg-gray-200 text-black"
+                  : "bg-gray-900 text-gray-200"
                   }`}
               >
                 {filter === "최신순" ? filter : `#${filter}`}

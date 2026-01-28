@@ -162,6 +162,7 @@ const ArchivePage = () => {
 
   // Board 생성 Modal 상태
   const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
+
   // Detail Modal State
   const [selectedItem, setSelectedItem] = useState<ResentDrops | null>(null);
 
@@ -199,10 +200,8 @@ const ArchivePage = () => {
   };
 
   // Board 삭제 함수 (deleteArchiveBoard API 이용)
-  const [isDeleting, setIsDeleting] = useState(false);
   const executeDelete = async () => {
     try {
-      setIsDeleting(true);
       // Convert string IDs to numbers for API
       const boardIds = selectedIds.map((id) => parseInt(id, 10));
       await deleteArchiveBoard(boardIds);
@@ -220,7 +219,6 @@ const ArchivePage = () => {
       console.error("Failed to delete archive boards:", error);
       // TODO: Show error toast to user
     } finally {
-      setIsDeleting(false);
       setIsDeleteModalOpen(false);
     }
   };
@@ -264,6 +262,7 @@ const ArchivePage = () => {
               waitForTransition: false,
             }}
           >
+            {/* 데이터가 없을 때 투명 컨테이너 하나만 표시 */}
             {resentDrops.length === 0 ? (
               <SwiperSlide key="placeholder-empty" className="!w-[165px]">
                 <div className="relative h-[220px] w-full overflow-hidden rounded-[10px] bg-transparent" />
@@ -355,106 +354,105 @@ const ArchivePage = () => {
             </Swiper>
           </div>
         </div>
-      </div>
 
-      {/* Archive Section */}
-      <div className="flex flex-1 flex-col">
-        {/* Fixed Header */}
-        <div className="sticky top-0 z-50 bg-black p-5 px-4 pb-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="H2 leading-[150%] tracking-[-0.025em] text-gray-200">
-              아카이브 보드
-            </div>
-            <div className="flex gap-[24px]">
-              <button
-                className={`B2 ${isSelectMode ? "text-gray-200" : "text-gray-200"}`}
-                onClick={toggleSelectMode}
-              >
-                {isSelectMode ? "취소" : "선택"}
-              </button>
-              {/* TODO: 아카이브 보드 생성 API 연결 함수로 분리 필요*/}
-              <button onClick={handleCreateBoard}>
-                <Plusbutton className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative">
-            <SearchIcon className="absolute top-1/2 left-3 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="아카이브 보드명을 입력하세요"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[48px] w-full rounded-[5px] bg-gray-900 py-3 pr-4 pl-10 placeholder:text-[16px] placeholder:leading-[150%] placeholder:font-normal placeholder:tracking-[-0.025em] placeholder:text-gray-600 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Scrollable Grid */}
-        <div className="px-4">
-          <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
-            {archiveboard.map((board) => {
-              const isSelected = selectedIds.includes(board.id);
-              return (
-                <div
-                  key={board.id}
-                  onClick={() => {
-                    if (isSelectMode) {
-                      toggleSelection(board.id);
-                    } else {
-                      navigate(`/archive-board/${board.id}`);
-                    }
-                  }}
-                  className={`flex cursor-pointer flex-col items-center gap-2 transition-all ${isSelectMode ? "active:scale-95" : ""} `}
+        {/* Archive Section */}
+        <div className="flex flex-1 flex-col">
+          {/* Fixed Header */}
+          <div className="sticky top-0 z-50 bg-black p-5 px-4 pb-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="H2 leading-[150%] tracking-[-0.025em] text-gray-200">
+                아카이브 보드
+              </div>
+              <div className="flex gap-[24px]">
+                <button
+                  className={`B2 ${isSelectMode ? "text-gray-200" : "text-gray-200"}`}
+                  onClick={toggleSelectMode}
                 >
-                  {/* 폴더 컨테이너 */}
-                  <div className="relative aspect-square w-full max-w-[110px] shrink-0 overflow-hidden rounded-[5px] bg-[#212224]/80">
-                    {/* 내부 이미지 (썸네일) */}
-                    {board.image ? (
-                      <img
-                        src={board.image}
-                        alt="thumbnail"
-                        className="absolute top-[3%] left-[16%] h-[88%] w-[66%] py-2"
-                      />
-                    ) : (
-                      <div className="absolute top-[3%] left-[16%] h-[88%] w-[66%] bg-gray-800" />
-                    )}
+                  {isSelectMode ? "취소" : "선택"}
+                </button>
+                {/* TODO: 아카이브 보드 생성 API 연결 함수로 분리 필요*/}
+                <button onClick={handleCreateBoard}>
+                  <Plusbutton className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
 
-                    {/* 폴더 오버레이 아이콘 */}
-                    <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+            {/* Search Bar */}
+            <div className="relative">
+              <SearchIcon className="absolute top-1/2 left-3 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="아카이브 보드명을 입력하세요"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-[48px] w-full rounded-[5px] bg-gray-900 py-3 pr-4 pl-10 placeholder:text-[16px] placeholder:leading-[150%] placeholder:font-normal placeholder:tracking-[-0.025em] placeholder:text-gray-600 focus:outline-none"
+              />
+            </div>
+          </div>
 
-                    {/* 폴더 제목 (하단) */}
-                    <div className="absolute right-[6px] bottom-[9.5px] left-[6.39px] z-20 flex justify-between">
-                      <p className="line-clamp-2 text-[10px] leading-[150%] font-normal tracking-[-0.025em] text-gray-200 text-white">
-                        {board.title}
-                      </p>
-                      {/* 보드 내의 태그 갯수 */}
-                      <p className="flex items-end text-[7px] font-normal text-gray-300">
-                        12tag
-                      </p>
-                    </div>
+          {/* Scrollable Grid */}
+          <div className="px-4">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
+              {archiveboard.map((board) => {
+                const isSelected = selectedIds.includes(board.id);
+                return (
+                  <div
+                    key={board.id}
+                    onClick={() => {
+                      if (isSelectMode) {
+                        toggleSelection(board.id);
+                      } else {
+                        navigate(`/archive-board/${board.id}`);
+                      }
+                    }}
+                    className={`flex cursor-pointer flex-col items-center gap-2 transition-all ${isSelectMode ? "active:scale-95" : ""} `}
+                  >
+                    {/* 폴더 컨테이너 */}
+                    <div className="relative aspect-square w-full max-w-[110px] shrink-0 overflow-hidden rounded-[5px] bg-[#212224]/80">
+                      {/* 내부 이미지 (썸네일) */}
+                      {board.image ? (
+                        <img
+                          src={board.image}
+                          alt="thumbnail"
+                          className="absolute top-[3%] left-[16%] h-[88%] w-[66%] py-2"
+                        />
+                      ) : (
+                        <div className="absolute top-[3%] left-[16%] h-[88%] w-[66%] bg-gray-800" />
+                      )}
 
-                    {/* 체크표시 */}
-                    {isSelectMode && (
-                      <div
-                        className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? "bg-white/30" : "bg-transparent"
-                          }`}
-                      >
-                        {isSelected && (
-                          <SelectedImageIcon className="h-[32px] w-[32px]" />
-                        )}
+                      {/* 폴더 오버레이 아이콘 */}
+                      <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+
+                      {/* 폴더 제목 (하단) */}
+                      <div className="absolute right-[6px] bottom-[9.5px] left-[6.39px] z-20 flex justify-between">
+                        <p className="line-clamp-2 text-[10px] leading-[150%] font-normal tracking-[-0.025em] text-gray-200 text-white">
+                          {board.title}
+                        </p>
+                        {/* 보드 내의 태그 갯수 */}
+                        <p className="flex items-end text-[7px] font-normal text-gray-300">
+                          12tag
+                        </p>
                       </div>
-                    )}
+
+                      {/* 체크표시 */}
+                      {isSelectMode && (
+                        <div
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? "bg-white/30" : "bg-transparent"
+                            }`}
+                        >
+                          {isSelected && (
+                            <SelectedImageIcon className="h-[32px] w-[32px]" />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-
       {isSelectMode && (
         <CountBottomSheet
           count={selectedIds.length}
@@ -489,6 +487,7 @@ const ArchivePage = () => {
           />
         )}
       </AnimatePresence>
+
       {/* Board 생성 Bottom Sheet */}
       <BoardBottomSheet
         isOpen={isCreateBoardModalOpen}
