@@ -129,8 +129,16 @@ axiosInstance.interceptors.response.use(
 
           const refreshToken = getRefreshToken();
 
-          const { data } = await axiosInstance.post(
-            "/api/auth/reissue",
+          if (!refreshToken) {
+            throw new Error("No refresh token available");
+          }
+
+          // [핵심 변경] 인터셉터 간섭을 피하기 위해 axios 직접 사용
+          // baseURL 수동 지정 필요: import.meta.env.PROD 체크 유지
+          const baseURL = import.meta.env.PROD ? "" : "http://43.200.96.34";
+
+          const { data } = await axios.post(
+            `${baseURL}/api/auth/reissue`,
             {}, // body는 비움
             {
               headers: {
