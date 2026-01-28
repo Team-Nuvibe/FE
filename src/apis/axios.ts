@@ -13,7 +13,11 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 인증이 필요 없는 공개 엔드포인트 목록
-    const publicEndpoints = ["/api/auth/login", "/api/auth/sign-up"];
+    const publicEndpoints = [
+      "/api/auth/login",
+      "/api/auth/sign-up",
+      "/api/auth/reissue",
+    ];
     const isPublicEndpoint = publicEndpoints.some((endpoint) =>
       config.url?.includes(endpoint),
     );
