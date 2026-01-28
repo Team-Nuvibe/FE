@@ -13,11 +13,11 @@ const MovingDotAnimation = () => {
       </div>
 
       {/* GIF 애니메이션 */}
-      <div className="relative z-10 flex h-full w-full items-center justify-center">
+      <div className="relative z-10 flex w-full flex-1 items-center justify-center">
         <img
           src={drawingGuideMotion}
           alt="Drawing guide animation"
-          className="relative z-10 h-full w-full object-contain mix-blend-multiply"
+          className="relative z-10 h-full w-full object-contain mix-blend-screen invert"
         />
       </div>
     </div>
