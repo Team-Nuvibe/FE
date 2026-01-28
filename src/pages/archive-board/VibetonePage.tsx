@@ -189,6 +189,7 @@ const VibeTonePage = () => {
       <div className="mb-25 shrink-0 bg-black px-4 py-4">
         {isEmpty ? (
           /* Drop Your Vibe 버튼 */
+          // TODO : onClick에 Dropvibe 연동
           <button className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]">
             <DropIcon className="h-5.25 w-5.25" />
             <span
