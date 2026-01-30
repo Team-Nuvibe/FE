@@ -18,7 +18,9 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
 
-  const { data: tagsData } = useGetFindTags(selectedCategory || "");
+  const { data: tagsData, isPending: isPendingTags } = useGetFindTags(
+    selectedCategory || "",
+  );
   const tags = tagsData?.data || [];
 
   const swiperRef = useRef<SwiperType | null>(null);
@@ -178,28 +180,30 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
               <>
                 <p className="ST1 mt-4 mb-3 text-gray-200">태그</p>
                 <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
-                        selectedTag === tag
-                          ? "bg-gray-900 text-gray-200"
-                          : "bg-black text-gray-500"
-                      }`}
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      <span className="ST1 invisible block">
-                        #{tag[0] + tag.slice(1).toLowerCase()}
-                      </span>
-                      <span
-                        className={`absolute inset-0 flex items-center justify-center ${
-                          selectedTag === tag ? "ST1" : "B0"
+                  {!isPendingTags &&
+                    tags.length > 0 &&
+                    tags.map((tag) => (
+                      <button
+                        key={tag}
+                        className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
+                          selectedTag === tag
+                            ? "bg-gray-900 text-gray-200"
+                            : "bg-black text-gray-500"
                         }`}
+                        onClick={() => setSelectedTag(tag)}
                       >
-                        #{tag[0] + tag.slice(1).toLowerCase()}
-                      </span>
-                    </button>
-                  ))}
+                        <span className="ST1 invisible block">
+                          #{tag[0] + tag.slice(1).toLowerCase()}
+                        </span>
+                        <span
+                          className={`absolute inset-0 flex items-center justify-center ${
+                            selectedTag === tag ? "ST1" : "B0"
+                          }`}
+                        >
+                          #{tag[0] + tag.slice(1).toLowerCase()}
+                        </span>
+                      </button>
+                    ))}
                 </div>
               </>
             )}

@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 
 function useGetFindTags(category: string) {
   return useQuery({
-    queryKey: ["tags", category],
+    queryKey: ["findTags", category],
     queryFn: () => getFindTags(category),
     enabled: !!category,
+    placeholderData: undefined,
+    staleTime: 0,
   });
 }
 

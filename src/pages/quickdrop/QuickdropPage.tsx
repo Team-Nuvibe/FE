@@ -23,7 +23,7 @@ interface Board {
 
 export const QuickdropPage = () => {
   const location = useLocation();
-  const { file } = location.state || {};
+  const { file, tag: preSelectedTag } = location.state || {};
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
     setNavbarVisible(false);
@@ -43,7 +43,7 @@ export const QuickdropPage = () => {
   }>({
     image: null,
     imageUrl: null,
-    tag: "",
+    tag: preSelectedTag || "",
     board: null,
   });
   const [editorState, setEditorState] = useState<{
@@ -90,7 +90,11 @@ export const QuickdropPage = () => {
               return { ...prev, image: blob, imageUrl };
             });
             setEditorState(currentState);
-            setStep("tag");
+            if (preSelectedTag) {
+              setStep("board");
+            } else {
+              setStep("tag");
+            }
           }}
         />
       )}
@@ -112,7 +116,7 @@ export const QuickdropPage = () => {
             setImageData((prev) => ({ ...prev, board: selectedBoard }));
             setStep("uploaded");
           }}
-          onPrevious={() => setStep("tag")}
+          onPrevious={() => setStep(preSelectedTag ? "edit" : "tag")}
         />
       )}
       {step === "uploaded" && (
