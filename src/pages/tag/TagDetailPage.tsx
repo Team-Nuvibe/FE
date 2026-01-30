@@ -105,10 +105,15 @@ export const TagDetailPage = () => {
         </section>
       </main>
       <footer className="flex flex-col items-center justify-center pb-7">
-        <DropYourVibe />
+        <button className="">
+          <DropYourVibe />
+        </button>
       </footer>
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setIsModalOpen(false)}
+        >
           <VibeDropModal
             tag={tagDetails?.data.tag || ""}
             onClose={() => setIsModalOpen(false)}
