@@ -24,15 +24,9 @@ const RevealImagePage: React.FC = () => {
   const location = useLocation();
   const state = location.state as LocationState;
 
-  // State에서 데이터 가져오기, 없으면 기본값 사용 (또는 리다이렉트)
-  // const imageUrl = state?.imageUrl || "";
-  // const tag = state?.tag || "#Vibe";
-
-  // [MOCK DATA] State에서 데이터 가져오기, 없으면 mock 데이터 사용
-  const imageUrl =
-    state?.imageUrl ||
-    "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&auto=format&fit=crop";
-  const tag = state?.tag || "#Healing";
+  // State에서 데이터 가져오기, 없으면 기본값 사용 (리다이렉트)
+  const imageUrl = state?.imageUrl || "";
+  const tag = state?.tag || "#Vibe";
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,12 +45,11 @@ const RevealImagePage: React.FC = () => {
     return () => setNavbarVisible(true);
   }, [setNavbarVisible]);
 
-  // [MOCK DATA] 테스트를 위해 리다이렉트 비활성화
-  // useEffect(() => {
-  //   if (!imageUrl) {
-  //     navigate("/archive-board/vibecalendar", { replace: true });
-  //   }
-  // }, [imageUrl, navigate]);
+  useEffect(() => {
+    if (!imageUrl) {
+      navigate("/archive-board/vibecalendar", { replace: true });
+    }
+  }, [imageUrl, navigate]);
 
   const drawLayer = useCallback(() => {
     const canvas = canvasRef.current;
