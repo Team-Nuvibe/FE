@@ -19,22 +19,16 @@ const NicknameStep = ({ register, errors, setFocus }: NicknameStepProps) => {
   }, [setFocus]);
 
   return (
-    <div className="flex w-full flex-col gap-10">
-      <div className="flex flex-col gap-2">
-        <h2 className="font-['Pretendard'] text-xl leading-[30px] font-semibold tracking-tight text-white">
-          마지막이에요!
-          <br />
-          어떻게 불러드릴까요?
-        </h2>
+    <div className="flex w-full flex-col gap-3">
+      <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
+        닉네임
       </div>
-
       <InputBox
         {...register("nickname")}
         type="text"
-        placeholder="닉네임"
+        placeholder="닉네임을 입력해주세요."
         hasError={!!errors?.nickname}
         errorMessage={errors.nickname?.message as string}
-        guideText="(추후 변경할 수 있어요)"
       />
     </div>
   );

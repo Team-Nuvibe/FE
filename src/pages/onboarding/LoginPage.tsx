@@ -102,53 +102,69 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center pt-10 pb-33 text-white">
-        <div className="H0 flex w-fit items-center justify-center p-9 text-white">
+      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center text-white">
+        <div className="H0 flex w-full items-center justify-center p-9 text-white">
           Start nuvibe
         </div>
-        <div className="flex flex-col gap-3">
-          <InputBox
-            {...getInputProps("email")}
-            type="email"
-            placeholder="이메일"
-          />
-          <InputBox
-            {...getInputProps("password")}
-            type={isPasswordVisible ? "text" : "password"}
-            placeholder="비밀번호"
-            rightElement={
-              <button
-                type="button"
-                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-              >
-                {isPasswordVisible ? <EyeOnIcon /> : <EyeOffIcon />}
-              </button>
-            }
-          />
-          <div className="mb-4 flex items-center justify-between text-[12px]">
-            <div className="flex items-center gap-1">
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLoginSubmit();
+          }}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
+              이메일
+            </div>
+            <InputBox
+              {...getInputProps("email")}
+              type="email"
+              placeholder="이메일을 입력해주세요."
+            />
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
+              비밀번호
+            </div>
+            <InputBox
+              {...getInputProps("password")}
+              type={isPasswordVisible ? "text" : "password"}
+              placeholder="비밀번호를 입력해주세요."
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                  {isPasswordVisible ? <EyeOnIcon /> : <EyeOffIcon />}
+                </button>
+              }
+            />
+          </div>
+          <div className="B2 mb-2 flex items-center justify-between pt-[55px] leading-[150%] tracking-[-0.35px] text-gray-300">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                className="h-[12px] w-[12px] appearance-none rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:border-transparent checked:bg-gray-800 focus:ring-0 focus:ring-offset-0"
+                className="h-4.5 w-4.5 appearance-none rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:border-transparent checked:bg-gray-800 focus:ring-0 focus:ring-offset-0"
               />{" "}
               {/* CheckIcon 필요 */}
-              <div>아이디 저장</div>
+              <div>자동 로그인</div>
             </div>
             <div className="cursor-pointer hover:underline">
               비밀번호를 잊어버리셨나요?
             </div>
           </div>
           <button
+            type="submit"
             className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
-            onClick={handleLoginSubmit}
             disabled={isDisabled || isPending}
           >
             {isPending ? "로그인 중..." : "로그인하기"}
           </button>
-        </div>
-        <div className="mt-4 mb-2 w-[339px] border-t border-gray-800" />
+        </form>
+        <div className="mt-9 mb-2 w-[339px] border-t border-gray-800" />
         <div className="p-4 text-[11.64px] text-gray-500">간편로그인하기</div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 pb-12">
           <button onClick={handleGoogleLogin}>
             <Google_G_logo />
           </button>

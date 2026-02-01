@@ -12,7 +12,7 @@ import WelcomeSplash from "@/components/onboarding/WelcomeSplash";
 import { sendVerificationEmail, confirmVerificationCode } from "@/apis/auth";
 
 // Components
-import ProgressBar from "@/components/onboarding/signup/ProgressBar";
+import ProgressBar from "@/components/onboarding/ProgressBar";
 import NameStep from "@/components/onboarding/signup/NameStep";
 import EmailStep from "@/components/onboarding/signup/EmailStep";
 import PasswordStep from "@/components/onboarding/signup/PasswordStep";
