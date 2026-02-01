@@ -3,29 +3,29 @@ import type {
   UseFormRegister,
   FieldErrors,
   UseFormSetFocus,
+  FieldPath,
 } from "react-hook-form";
 import InputBox from "../InputBox";
 import VerifiedIcon from "@/assets/icons/icon_checked_24.svg?react";
 import EyeOnIcon from "@/assets/icons/icon_eye_on.svg?react";
 import EyeOffIcon from "@/assets/icons/icon_eye_off.svg?react";
-import type { FormFields } from "@/pages/onboarding/SignUpPage";
 import { useState } from "react";
 
-interface PasswordStepProps {
-  register: UseFormRegister<FormFields>;
-  errors: FieldErrors<FormFields>;
+interface PasswordStepProps<T extends Record<string, any>> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
   isPasswordValid: () => boolean;
   isPasswordCheckValid: () => boolean;
-  setFocus: UseFormSetFocus<FormFields>;
+  setFocus: UseFormSetFocus<T>;
 }
 
-const PasswordStep = ({
+const PasswordStep = <T extends Record<string, any>>({
   register,
   errors,
   isPasswordValid,
   isPasswordCheckValid,
   setFocus,
-}: PasswordStepProps) => {
+}: PasswordStepProps<T>) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
@@ -33,7 +33,7 @@ const PasswordStep = ({
   const [isPasswordCheckFocused, setIsPasswordCheckFocused] = useState(false);
 
   useEffect(() => {
-    setFocus("password");
+    setFocus("password" as FieldPath<T>);
   }, [setFocus]);
 
   return (
@@ -43,7 +43,7 @@ const PasswordStep = ({
           비밀번호
         </div>
         <InputBox
-          {...register("password")}
+          {...register("password" as FieldPath<T>)}
           type={isPasswordVisible ? "text" : "password"}
           placeholder="8~20자의 영문, 숫자, 특수문자를 조합해 주세요."
           hasError={!!errors?.password}
@@ -72,7 +72,7 @@ const PasswordStep = ({
           비밀번호 확인
         </div>
         <InputBox
-          {...register("passwordCheck")}
+          {...register("passwordCheck" as FieldPath<T>)}
           type={isPasswordCheckVisible ? "text" : "password"}
           placeholder="동일한 비밀번호를 입력해주세요."
           hasError={!!errors?.passwordCheck}

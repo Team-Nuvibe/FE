@@ -3,21 +3,21 @@ import type {
   UseFormRegister,
   FieldErrors,
   UseFormSetFocus,
+  FieldPath,
 } from "react-hook-form";
 import InputBox from "../InputBox";
-import type { FormFields } from "@/pages/onboarding/SignUpPage";
 
-interface EmailStepProps {
-  register: UseFormRegister<FormFields>;
-  errors: FieldErrors<FormFields>;
+interface EmailStepProps<T extends Record<string, any>> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
   isEmailVerified: boolean;
   isEmailSending: boolean;
   handleEmailVerification: () => void;
   isEmailValid: boolean;
-  setFocus: UseFormSetFocus<FormFields>;
+  setFocus: UseFormSetFocus<T>;
 }
 
-const EmailStep = ({
+const EmailStep = <T extends Record<string, any>>({
   register,
   errors,
   isEmailVerified,
@@ -25,9 +25,9 @@ const EmailStep = ({
   handleEmailVerification,
   isEmailValid,
   setFocus,
-}: EmailStepProps) => {
+}: EmailStepProps<T>) => {
   useEffect(() => {
-    setFocus("email");
+    setFocus("email" as FieldPath<T>);
   }, [setFocus]);
 
   return (
@@ -37,7 +37,7 @@ const EmailStep = ({
       </div>
 
       <InputBox
-        {...register("email")}
+        {...register("email" as FieldPath<T>)}
         type="email"
         placeholder="이메일을 입력해주세요."
         hasError={!!errors?.email}

@@ -1,4 +1,9 @@
-import type { LogInRequest, LogInResponse, SignUpRequest } from "@/types/auth";
+import type {
+  LogInRequest,
+  LogInResponse,
+  SignUpRequest,
+  PasswordResetRequest,
+} from "@/types/auth";
 import { axiosInstance } from "./axios";
 import type { ApiResponse } from "@/types/common";
 
@@ -71,6 +76,45 @@ export const checkPassword = async (
   const { data } = await axiosInstance.post<ApiResponse<string>>(
     "/api/auth/check-password",
     { password },
+  );
+  return data;
+};
+
+// ------- 비밀번호 재설정 로직 -------
+
+// 비밀번호 초기화
+export const resetPassword = async (
+  body: PasswordResetRequest,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset",
+    body,
+  );
+  return data;
+};
+
+// 비밀번호 초기화용 인증 코드 발송
+export const sendResetPasswordVerificationCode = async (
+  email: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset/send-code",
+    { email },
+  );
+  return data;
+};
+
+// 비밀번호 초기화용 인증 코드 검증
+export const confirmResetPasswordVerificationCode = async (
+  email: string,
+  code: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset/verify-code",
+    {
+      email,
+      code,
+    },
   );
   return data;
 };

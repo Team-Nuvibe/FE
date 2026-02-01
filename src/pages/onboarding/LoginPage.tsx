@@ -13,6 +13,8 @@ import InputBox from "../../components/onboarding/InputBox";
 import { useEffect, useState } from "react";
 import useLogin from "@/hooks/mutation/auth/useLogin";
 import { BaseModal } from "@/components/onboarding/BaseModal";
+import LoginCheckedIcon from "@/assets/icons/icon_login_checked.svg?react";
+import LoginNotCheckedIcon from "@/assets/icons/icon_login_notchecked.svg?react";
 import { useAuth } from "@/context/AuthContext";
 
 const LoginPage = () => {
@@ -20,6 +22,7 @@ const LoginPage = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isAutoLogin, setIsAutoLogin] = useState(false);
   const [errorModalContent, setErrorModalContent] = useState({
     maintext: "",
     subtext: "",
@@ -141,16 +144,21 @@ const LoginPage = () => {
               }
             />
           </div>
-          <div className="B2 mb-2 flex items-center justify-between pt-[55px] leading-[150%] tracking-[-0.35px] text-gray-300">
+          <div className="B2 mb-2 flex items-center justify-between pt-[50px] leading-[150%] tracking-[-0.35px] text-gray-300">
             <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="h-4.5 w-4.5 appearance-none rounded-[3px] border-[0.79px] border-gray-500 bg-transparent checked:border-transparent checked:bg-gray-800 focus:ring-0 focus:ring-offset-0"
-              />{" "}
-              {/* CheckIcon 필요 */}
+              <button
+                type="button"
+                onClick={() => setIsAutoLogin(!isAutoLogin)}
+                className="flex items-center"
+              >
+                {isAutoLogin ? <LoginCheckedIcon /> : <LoginNotCheckedIcon />}
+              </button>
               <div>자동 로그인</div>
             </div>
-            <div className="cursor-pointer hover:underline">
+            <div
+              className="cursor-pointer hover:underline"
+              onClick={() => navigate("/reset-password")}
+            >
               비밀번호를 잊어버리셨나요?
             </div>
           </div>

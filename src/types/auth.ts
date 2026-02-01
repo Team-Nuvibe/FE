@@ -18,3 +18,11 @@ export interface LogInResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+// 비밀번호 초기화 요청 타입
+export interface PasswordResetRequest {
+  email: string;
+  code: string;
+  newPassword: string;
+  confirmPassword: string;
+}

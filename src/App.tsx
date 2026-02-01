@@ -23,6 +23,7 @@ import RevealImagePage from "./pages/archive-board/RevealImagePage";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SplashLayout } from "./layouts/SplashLayout";
+import ResetPasswordPage from "./pages/onboarding/ResetPasswordPage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -35,6 +36,7 @@ const publicRoutes: RouteObject[] = [
       { path: "login", element: <LoginPage /> },
       { path: "signup", element: <SignUpPage /> },
       { path: "onboarding", element: <OnboardingPage /> },
+      { path: "reset-password", element: <ResetPasswordPage /> },
     ],
   },
 ];
