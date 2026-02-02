@@ -121,7 +121,7 @@ export const BoardSelector = ({
               }}
             />
             <h1 className="absolute bottom-0 left-0 z-10 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-[28px] tracking-tight text-transparent">
-              #{tag}
+              #{tag[0] + tag.slice(1).toLowerCase()}
             </h1>
           </div>
           <div className="flex flex-col gap-3">

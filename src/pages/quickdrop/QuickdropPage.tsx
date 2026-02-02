@@ -189,8 +189,9 @@ export const QuickdropPage = () => {
                     <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text tracking-tight text-transparent">
                       #{imageData.tag}
                     </p>
-                    <p className="text-[10px]">
-                      {imageData.board?.createdAt} / 09:41
+                    <p className="font-[Montserrat] text-[10px] font-light italic">
+                      {imageData.board?.createdAt}
+                      {"\u00A0\u00A0\u00A0"}|{"\u00A0\u00A0\u00A0"}09:41
                     </p>
                   </div>
                 </div>
