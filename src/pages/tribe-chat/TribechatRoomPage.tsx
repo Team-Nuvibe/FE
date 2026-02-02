@@ -8,6 +8,7 @@ import { useNavbarActions } from "@/hooks/useNavbarStore";
 import ChatMessageItem, {
   type ChatMessage,
 } from "@/components/tribe-chat/ChatMessageItem";
+import DateDivider from "@/components/tribe-chat/DateDivider";
 // 이미지
 import imgTemp1 from "@/assets/images/img_temp1.png";
 import imgTemp9 from "@/assets/images/img_temp9.png";
@@ -18,6 +19,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "1",
     imageUrl: imgTemp1,
     timestamp: "17:03",
+    date: "2026. 01. 01",
     isMine: false,
     userProfile: {
       name: "제이미",
@@ -39,6 +41,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "2",
     imageUrl: imgTemp9,
     timestamp: "17:05",
+    date: "2026. 01. 01",
     isMine: true,
     reactions: {
       amazing: 0,
@@ -56,6 +59,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "3",
     imageUrl: imgTemp1,
     timestamp: "17:12",
+    date: "2026. 01. 01",
     isMine: false,
     userProfile: {
       name: "제이미",
@@ -77,6 +81,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "4",
     imageUrl: imgTemp9,
     timestamp: "17:20",
+    date: "2026. 01. 01",
     isMine: false,
     userProfile: {
       name: "선우",
@@ -98,6 +103,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "5",
     imageUrl: imgTemp1,
     timestamp: "17:25",
+    date: "2026. 01. 02",
     isMine: true,
     reactions: {
       amazing: 1,
@@ -115,6 +121,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "6",
     imageUrl: imgTemp9,
     timestamp: "17:30",
+    date: "2026. 01. 02",
     isMine: false,
     userProfile: {
       name: "제이미",
@@ -136,6 +143,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "7",
     imageUrl: imgTemp1,
     timestamp: "17:35",
+    date: "2026. 01. 02",
     isMine: true,
     reactions: {
       amazing: 0,
@@ -153,6 +161,7 @@ const DUMMY_MESSAGES: ChatMessage[] = [
     id: "8",
     imageUrl: imgTemp9,
     timestamp: "17:40",
+    date: "2026. 01. 02",
     isMine: false,
     userProfile: {
       name: "선우",
@@ -296,15 +305,44 @@ const TribechatRoomPage = () => {
       </div>
 
       {/* 메시지 리스트 - 역방향 스크롤 */}
-      <div className="flex flex-1 flex-col-reverse gap-4 overflow-y-auto px-4 pt-[115px] pb-[100px]">
-        {messages.map((message) => (
-          <ChatMessageItem
-            key={message.id}
-            message={message}
-            onScrap={toggleScrap}
-            onReaction={toggleReaction}
-          />
-        ))}
+      <div className="flex flex-1 flex-col-reverse overflow-y-auto px-4 pt-[115px] pb-[100px]">
+        {messages.map((message, index) => {
+          // 다음 메시지 (역방향이므로 index + 1이 실제로는 이전 메시지)
+          const nextMessage = messages[index + 1];
+
+          // 같은 사람이 연속으로 보낸 메시지인지 확인
+          const isSameSender =
+            nextMessage && nextMessage.isMine === message.isMine;
+
+          // 간격: 같은 사람이면 16px, 다른 사람이면 24px
+          const marginBottom = isSameSender ? "mb-4" : "mb-6";
+
+          // 날짜가 바뀌었는지 확인 (역방향이므로 nextMessage가 이전 메시지)
+          const isDateChanged =
+            nextMessage && nextMessage.date !== message.date;
+
+          return (
+            <div key={message.id}>
+              {/* 날짜 구분선: 다음 메시지와 날짜가 다를 때 표시 */}
+              {isDateChanged && (
+                <div className="my-7">
+                  {" "}
+                  {/* 총 28px: 위아래 패딩 4px (py-1) + 채팅과의 간격 24px */}
+                  <DateDivider date={nextMessage.date} />
+                </div>
+              )}
+
+              {/* 채팅 메시지 */}
+              <div className={marginBottom}>
+                <ChatMessageItem
+                  message={message}
+                  onScrap={toggleScrap}
+                  onReaction={toggleReaction}
+                />
+              </div>
+            </div>
+          );
+        })}
 
         {/* 상단 감지 영역 - 과거 메시지 로딩 트리거 */}
         <div
