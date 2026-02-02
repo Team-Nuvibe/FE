@@ -15,6 +15,7 @@ interface AuthContextType {
   login: (singinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
   clearSession: () => void;
+  setSocialLoginTokens: (accessToken: string, refreshToken: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -23,6 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   clearSession: () => {},
+  setSocialLoginTokens: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -77,9 +79,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const setSocialLoginTokens = (
+    newAccessToken: string,
+    newRefreshToken: string,
+  ) => {
+    setAccessTokenInStorage(newAccessToken);
+    setRefreshTokenInStorage(newRefreshToken);
+
+    setAccessToken(newAccessToken);
+    setRefreshToken(newRefreshToken);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, login, logout, clearSession }}
+      value={{
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+        clearSession,
+        setSocialLoginTokens,
+      }}
     >
       {children}
     </AuthContext.Provider>

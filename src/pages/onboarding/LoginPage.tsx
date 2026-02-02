@@ -12,6 +12,7 @@ import useForm from "../../hooks/useForm";
 import InputBox from "../../components/onboarding/InputBox";
 import { useEffect, useState } from "react";
 import useLogin from "@/hooks/mutation/auth/useLogin";
+import { startSocialLogin } from "@/apis/auth";
 import { BaseModal } from "@/components/onboarding/BaseModal";
 import LoginCheckedIcon from "@/assets/icons/icon_login_checked.svg?react";
 import LoginNotCheckedIcon from "@/assets/icons/icon_login_notchecked.svg?react";
@@ -97,11 +98,17 @@ const LoginPage = () => {
     );
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    startSocialLogin("google");
+  };
 
-  const handleNaverLogin = () => {};
+  const handleNaverLogin = () => {
+    startSocialLogin("naver");
+  };
 
-  const handleKakaoLogin = () => {};
+  const handleKakaoLogin = () => {
+    startSocialLogin("kakao");
+  };
 
   return (
     <>

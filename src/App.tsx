@@ -24,6 +24,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SplashLayout } from "./layouts/SplashLayout";
 import ResetPasswordPage from "./pages/onboarding/ResetPasswordPage";
+import OAuthCallbackPage from "./pages/oauth/OAuthCallbackPage";
+import SocialSignUpCompletePage from "./pages/oauth/SocialSignUpCompletePage";
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -37,6 +39,8 @@ const publicRoutes: RouteObject[] = [
       { path: "signup", element: <SignUpPage /> },
       { path: "onboarding", element: <OnboardingPage /> },
       { path: "reset-password", element: <ResetPasswordPage /> },
+      { path: "oauth/callback", element: <OAuthCallbackPage /> },
+      { path: "oauth/signup-complete", element: <SocialSignUpCompletePage /> },
     ],
   },
 ];

@@ -26,3 +26,9 @@ export interface PasswordResetRequest {
   newPassword: string;
   confirmPassword: string;
 }
+
+// 소셜 회원가입 완료 요청 타입
+export interface SocialSignUpCompleteRequest {
+  name: string;
+  nickname: string;
+}

@@ -3,6 +3,7 @@ import type {
   LogInResponse,
   SignUpRequest,
   PasswordResetRequest,
+  SocialSignUpCompleteRequest,
 } from "@/types/auth";
 import { axiosInstance } from "./axios";
 import type { ApiResponse } from "@/types/common";
@@ -115,6 +116,44 @@ export const confirmResetPasswordVerificationCode = async (
       email,
       code,
     },
+  );
+  return data;
+};
+
+// 소셜 로그인 시작 (OAuth2 인증 페이지로 리다이렉트)
+export const startSocialLogin = (
+  provider: "google" | "naver" | "kakao",
+): void => {
+  const baseUrl =
+    import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site";
+  const redirectUrl = `${baseUrl}api/auth/oauth2/${provider}`;
+  window.location.href = redirectUrl;
+};
+
+// 소셜 로그인 콜백 (OAuth2 인증 코드를 받아서 토큰 발급)
+export const socialLoginCallback = async (
+  provider: "google" | "naver" | "kakao",
+  code: string,
+  state?: string,
+): Promise<ApiResponse<LogInResponse>> => {
+  const params = new URLSearchParams({ code });
+  if (state) {
+    params.append("state", state);
+  }
+
+  const { data } = await axiosInstance.get<ApiResponse<LogInResponse>>(
+    `/api/auth/oauth2/callback/${provider}?${params.toString()}`,
+  );
+  return data;
+};
+
+// 소셜 회원 가입 완료 (신규 소셜 유저 추가 정보 입력)
+export const completeSocialSignUp = async (
+  body: SocialSignUpCompleteRequest,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/oauth2/signup/complete",
+    body,
   );
   return data;
 };
