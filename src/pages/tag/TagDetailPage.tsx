@@ -4,7 +4,7 @@ import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetTagDetails from "@/hooks/queries/useGetTagDetails";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
 import { VibeDropModal } from "@/components/home/VibeDropModal";
 
@@ -20,10 +20,22 @@ export const TagDetailPage = () => {
     location.state?.imageUrl ||
     categories.flatMap((cat) => cat.items).find((item) => item.tag === tagid)
       ?.imageUrl;
-
   const { data: tagDetails } = useGetTagDetails(tagid || "");
-
   const { setNavbarVisible } = useNavbarActions();
+
+  const inputImageRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      alert("파일을 선택하지 않았습니다.");
+      return;
+    }
+    navigate("/quickdrop", {
+      state: { file: file, tag: tagDetails?.data.tag },
+    });
+  };
+
   useEffect(() => {
     setNavbarVisible(false);
     return () => {
@@ -105,7 +117,14 @@ export const TagDetailPage = () => {
         </section>
       </main>
       <footer className="flex flex-col items-center justify-center pb-7">
-        <button className="">
+        <input
+          type="file"
+          accept="image/*"
+          ref={inputImageRef}
+          onChange={handleImageChange}
+          className="hidden"
+        />
+        <button className="" onClick={() => inputImageRef.current?.click()}>
           <DropYourVibe />
         </button>
       </footer>

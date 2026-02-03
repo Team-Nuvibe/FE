@@ -2,13 +2,13 @@ import IconOriginal from "@/assets/icons/icon_original.svg?react";
 import IconOriginalActive from "@/assets/icons/icon_original_active.svg?react";
 import IconFixedratio from "@/assets/icons/icon_fixedratio.svg?react";
 import IconFixedratioActive from "@/assets/icons/icon_fixedratio_active.svg?react";
-import { useState } from "react";
 
 interface CropToolbarProps {
-  onReset: () => void;
+  cropMode: "original" | "fixedratio";
+  onModeChange: (mode: "original" | "fixedratio") => void;
 }
 
-export const CropToolbar = ({ onReset }: CropToolbarProps) => {
+export const CropToolbar = ({ cropMode, onModeChange }: CropToolbarProps) => {
   // const cropTools = [
   //   {
   //     id: "original",
@@ -24,8 +24,6 @@ export const CropToolbar = ({ onReset }: CropToolbarProps) => {
   //   },
   // ];
 
-  const [activeCropTool, setActiveCropTool] = useState("original");
-
   return (
     <div className="z-10 flex flex-col pb-11">
       <div className="relative flex h-[15px] items-center justify-center opacity-0" />
@@ -35,11 +33,10 @@ export const CropToolbar = ({ onReset }: CropToolbarProps) => {
           <button
             key="original"
             onClick={() => {
-              setActiveCropTool("original");
-              onReset();
+              onModeChange("original");
             }}
           >
-            {activeCropTool === "original" ? (
+            {cropMode === "original" ? (
               <IconOriginalActive />
             ) : (
               <IconOriginal />
@@ -51,15 +48,17 @@ export const CropToolbar = ({ onReset }: CropToolbarProps) => {
           <p className="text-[12px]">3:4</p>
           <button
             key="fixedratio"
-            onClick={() => setActiveCropTool("fixedratio")}
+            onClick={() => onModeChange("fixedratio")}
           >
-            {activeCropTool === "fixedratio" ? (
+            {cropMode === "fixedratio" ? (
               <IconFixedratioActive />
             ) : (
               <IconFixedratio />
             )}
           </button>
-          <div className={`h-[8px] w-[8px] rounded-full bg-white`} />
+          <div className="flex h-[18px] items-center justify-center">
+            <div className={`h-[8px] w-[8px] rounded-full bg-white`} />
+          </div>
         </div>
       </div>
     </div>

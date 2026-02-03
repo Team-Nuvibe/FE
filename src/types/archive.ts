@@ -3,6 +3,7 @@ export interface ArchiveBoardItem {
   boardId: number;
   name: string;
   thumbnailUrl: string;
+  tagCount: number;
 }
 
 // 생성된 아카이브 보드 타입

@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
+import useGetFindTags from "@/hooks/queries/useGetFindTags";
 
 interface TagSelectorProps {
   onNext: (selectedTag: string) => void;
@@ -16,6 +17,11 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
+
+  const { data: tagsData, isPending: isPendingTags } = useGetFindTags(
+    selectedCategory || "",
+  );
+  const tags = tagsData?.data || [];
 
   const swiperRef = useRef<SwiperType | null>(null);
 
@@ -29,34 +35,15 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
 
   // 임시 카테고리 데이터
   const categories = [
-    "Mood",
-    "Light",
-    "Color",
-    "Texture",
-    "Space",
-    "Daily",
-    "Fashion",
-    "Media",
-    "Travel",
-  ];
-
-  // 임시 Mood 태그 데이터
-  const moodTags = [
-    "Blur",
-    "Grain",
-    "Silence",
-    "Calm",
-    "Slow",
-    "Lovely",
-    "Heavy",
-    "Light",
-    "Raw",
-    "Warm",
-    "Cool",
-    "Deep",
-    "Still",
-    "Soft",
-    "Muted",
+    "MOOD",
+    "LIGHT",
+    "COLOR",
+    "TEXTURE",
+    "SPACE",
+    "DAILY",
+    "FASHION",
+    "MEDIA",
+    "TRAVEL",
   ];
 
   return (
@@ -69,10 +56,11 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className={`ST2 ${selectedTag
+            className={`ST2 ${
+              selectedTag
                 ? "cursor-pointer text-white"
                 : "cursor-not-allowed text-gray-700"
-              }`}
+            }`}
             onClick={() => onNext(selectedTag)}
           >
             다음
@@ -89,12 +77,13 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
       </div>
 
       <div className="relative mx-4 mb-4 flex items-center justify-between tracking-tight">
-        <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-[206px] bg-gray-400" />
+        <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-[215px] bg-gray-400" />
         <div className="flex">
           <button onClick={() => handleTabClick(0)} className="relative">
             <p
-              className={`transition-all duration-200 ease-in-out ${activeIndex === 0 ? "ST2 text-gray-200" : "B2 text-gray-600"
-                } px-[22px] pb-[2px]`}
+              className={`${
+                activeIndex === 0 ? "ST2 text-gray-200" : "B1 text-gray-600"
+              } px-[22px] pb-[4px] transition`}
             >
               최근 검색어
             </p>
@@ -107,8 +96,9 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           </button>
           <button onClick={() => handleTabClick(1)} className="relative">
             <p
-              className={`transition-all duration-200 ease-in-out ${activeIndex === 1 ? "ST2 text-gray-200" : "B2 text-gray-600"
-                } px-[22px] pb-[2px]`}
+              className={`${
+                activeIndex === 1 ? "ST2 text-gray-200" : "B1 text-gray-600"
+              } px-[22px] pb-[4px] transition`}
             >
               태그 찾기
             </p>
@@ -122,8 +112,9 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           </button>
         </div>
         <p
-          className={`${activeIndex === 0 ? "opacity-100" : "opacity-0"
-            } B2 cursor-pointer text-gray-600`}
+          className={`${
+            activeIndex === 0 ? "opacity-100" : "opacity-0"
+          } B2 cursor-pointer text-gray-600`}
         >
           전체 삭제
         </p>
@@ -165,44 +156,54 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedCategory === category
+                  className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
+                    selectedCategory === category
                       ? "bg-gray-900 text-gray-200"
                       : "bg-black text-gray-500"
-                    }`}
+                  }`}
                   onClick={() => setSelectedCategory(category)}
                 >
-                  <span className="ST1 invisible block">{category}</span>
+                  <span className="ST1 invisible block">
+                    {category[0] + category.slice(1).toLowerCase()}
+                  </span>
                   <span
-                    className={`absolute inset-0 flex items-center justify-center ${selectedCategory === category ? "ST1" : "B0"
-                      }`}
+                    className={`absolute inset-0 flex items-center justify-center ${
+                      selectedCategory === category ? "ST1" : "B0"
+                    }`}
                   >
-                    {category}
+                    {category[0] + category.slice(1).toLowerCase()}
                   </span>
                 </button>
               ))}
             </div>
-            {selectedCategory === "Mood" && (
+            {selectedCategory && (
               <>
                 <p className="ST1 mt-4 mb-3 text-gray-200">태그</p>
                 <div className="flex flex-wrap gap-2">
-                  {moodTags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedTag === tag
-                          ? "bg-gray-900 text-gray-200"
-                          : "bg-black text-gray-500"
+                  {!isPendingTags &&
+                    tags.length > 0 &&
+                    tags.map((tag) => (
+                      <button
+                        key={tag}
+                        className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
+                          selectedTag === tag
+                            ? "bg-gray-900 text-gray-200"
+                            : "bg-black text-gray-500"
                         }`}
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      <span className="ST1 invisible block">#{tag}</span>
-                      <span
-                        className={`absolute inset-0 flex items-center justify-center ${selectedTag === tag ? "ST1" : "B0"
-                          }`}
+                        onClick={() => setSelectedTag(tag)}
                       >
-                        #{tag}
-                      </span>
-                    </button>
-                  ))}
+                        <span className="ST1 invisible block">
+                          #{tag[0] + tag.slice(1).toLowerCase()}
+                        </span>
+                        <span
+                          className={`absolute inset-0 flex items-center justify-center ${
+                            selectedTag === tag ? "ST1" : "B0"
+                          }`}
+                        >
+                          #{tag[0] + tag.slice(1).toLowerCase()}
+                        </span>
+                      </button>
+                    ))}
                 </div>
               </>
             )}

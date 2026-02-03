@@ -58,7 +58,6 @@ const HomePage = () => {
       alert("파일을 선택하지 않았습니다.");
       return;
     }
-    console.log("Selected file:", file);
     navigate("/quickdrop", { state: { file } });
   };
 
@@ -208,7 +207,9 @@ const HomePage = () => {
                   >
                     <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
                       <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
-                        #{item.tag[0] + item.tag.slice(1).toLowerCase()}
+                        #
+                        {item.tag &&
+                          item.tag[0] + item.tag.slice(1).toLowerCase()}
                       </p>
                     </div>
                   </div>
