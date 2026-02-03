@@ -6,7 +6,6 @@ import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import Union from "@/assets/icons/Union.svg?react";
 import { useState, useEffect } from "react";
-import Img1 from "@/assets/images/img_temp1.png";
 import { AddBoardModal } from "../quickdrop/AddBoardModal";
 import {
   getArchiveList,

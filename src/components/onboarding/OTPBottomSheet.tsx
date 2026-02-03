@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import OTPInput from "./OTPInput";
 import CloseIcon from "@/assets/icons/icon_xbutton.svg?react";
 

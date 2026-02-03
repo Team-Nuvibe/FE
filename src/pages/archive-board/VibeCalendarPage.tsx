@@ -200,11 +200,11 @@ export const VibeCalandarPage = () => {
         if (response.data) {
           // listOfWithImages와 todayImages를 구분하여 저장
           const imagesWithSource = [
-            ...response.data.listOfWithImages.map((item) => ({
+            ...(response.data.listOfWithImages || []).map((item) => ({
               ...item,
               source: "lastMonth" as const,
             })),
-            ...response.data.todayImages.map((item) => ({
+            ...(response.data.todayImages || []).map((item) => ({
               ...item,
               source: "today" as const,
             })),
@@ -313,7 +313,7 @@ export const VibeCalandarPage = () => {
         <VibeCalendarBottomCard
           selectedDate={selectedDate}
           activeDates={activeDates}
-          vibeData={calendarImages.map((item: any) => {
+          vibeData={calendarImages.map((item: CalendarImageItemWithSource) => {
             // source 기반으로 label 결정
             const label =
               item.source === "lastMonth"

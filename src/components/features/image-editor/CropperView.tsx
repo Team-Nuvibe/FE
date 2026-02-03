@@ -35,7 +35,6 @@ export const CropperView = ({
   adjustment,
   rotation = 0,
   flipHorizontal = false,
-  isWideImage,
   readOnly = false,
   onCropChange,
   cropMode = "fixedratio",

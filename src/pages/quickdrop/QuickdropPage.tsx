@@ -3,7 +3,6 @@ import { ImageEditor } from "../../components/features/image-editor/ImageEditor"
 import { useEffect, useState } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
 import { postPresignedUrl } from "@/apis/vibedrop";
-import axios from "axios";
 import { BoardSelector } from "../../components/features/BoardSelector";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -64,7 +63,6 @@ export const QuickdropPage = () => {
   });
   const [paginationEl, setPaginationEl] = useState<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -82,8 +80,6 @@ export const QuickdropPage = () => {
       console.error("Image or tag is missing");
       return;
     }
-
-    setIsUploading(true);
 
     try {
       // 1. 파일명 추출 (원본 파일명 또는 기본값)
@@ -120,8 +116,6 @@ export const QuickdropPage = () => {
       console.error("Failed to upload image:", error);
       // TODO: 사용자에게 에러 메시지 표시
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsUploading(false);
     }
   };
 
