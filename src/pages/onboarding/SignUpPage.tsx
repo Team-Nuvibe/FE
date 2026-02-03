@@ -8,10 +8,11 @@ import { useSearchParams } from "react-router-dom";
 import { BackButton } from "../../components/onboarding/BackButton";
 import InputBox from "../../components/onboarding/InputBox";
 import { BaseModal } from "@/components/onboarding/BaseModal";
+import { OTPBottomSheet } from "@/components/onboarding/OTPBottomSheet";
 import VerifiedIcon from "@/assets/icons/icon_select_image_white.svg?react";
 import useSignup from "@/hooks/mutation/auth/useSignup";
 import WelcomeSplash from "@/components/onboarding/WelcomeSplash";
-import { sendVerificationEmail } from "@/apis/auth";
+import { sendVerificationEmail, confirmVerificationCode } from "@/apis/auth";
 
 const schema = z
   .object({
@@ -44,6 +45,7 @@ const SignUpPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSplash, setShowSplash] = useState(false);
   const [isEmailSending, setIsEmailSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const {
     register,
@@ -78,6 +80,29 @@ const SignUpPage = () => {
   const passwordValue = watch("password");
   const passwordCheckValue = watch("passwordCheck");
 
+  // 코드 검증 함수 (OTPBottomSheet에서 호출)
+  const handleVerifyCode = async (code: string) => {
+    setIsVerifying(true);
+    try {
+      const response = await confirmVerificationCode(emailValue, code);
+      console.log("인증 성공:", response.message);
+
+      // 성공 시
+      setIsEmailVerified(true);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "인증 코드가 유효하지 않습니다.";
+      setErrorModalContent({
+        maintext: "인증 실패",
+        subtext: errorMessage,
+      });
+      setIsErrorModalOpen(true);
+      throw error; // OTPBottomSheet에서 에러 처리를 위해 throw
+    } finally {
+      setIsVerifying(false);
+    }
+  };
   // 이메일 형식 유효성 검사
   const isEmailValid = () => {
     try {
@@ -116,7 +141,7 @@ const SignUpPage = () => {
       const response = await sendVerificationEmail(emailValue);
       console.log("이메일 발송 성공:", response.message);
 
-      // 성공 시 모달 열기
+      // 성공 시 바텀시트 열기
       setIsModalOpen(true);
     } catch (error: any) {
       const errorMessage =
@@ -193,13 +218,12 @@ const SignUpPage = () => {
                 type="button"
                 onClick={handleEmailVerification}
                 disabled={!isEmailValid() || isEmailVerified || isEmailSending}
-                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${
-                  isEmailVerified
-                    ? "cursor-not-allowed bg-gray-700 text-gray-300"
-                    : isEmailValid()
-                      ? "bg-[#b9bdc2] text-[#212224]"
-                      : "cursor-not-allowed bg-gray-700 text-gray-300"
-                }`}
+                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${isEmailVerified
+                  ? "cursor-not-allowed bg-gray-700 text-gray-300"
+                  : isEmailValid()
+                    ? "bg-[#b9bdc2] text-[#212224]"
+                    : "cursor-not-allowed bg-gray-700 text-gray-300"
+                  }`}
               >
                 {isEmailVerified
                   ? "인증 완료"
@@ -250,12 +274,14 @@ const SignUpPage = () => {
         </button>
       </div>
 
-      {/* 이메일 인증 모달 */}
-      <BaseModal
+      {/* OTP 인증 바텀시트 */}
+      <OTPBottomSheet
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        maintext="메일함을 확인해주세요"
-        subtext="메일이 보이지 않는다면 스팸함을 함께 확인해주세요"
+        onVerify={handleVerifyCode}
+        onResend={handleEmailVerification}
+        isVerifying={isVerifying}
+        isResending={isEmailSending}
       />
 
       {/* 에러 모달 */}
