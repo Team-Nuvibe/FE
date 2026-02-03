@@ -87,6 +87,9 @@ export const ImageEditor = ({
 
   const [activeTool, setActiveTool] = useState("adjustment");
   const [isWideImage, setIsWideImage] = useState(false);
+  const [cropMode, setCropMode] = useState<"original" | "fixedratio">(
+    "fixedratio",
+  );
 
   const navigate = useNavigate();
 
@@ -303,6 +306,7 @@ export const ImageEditor = ({
               }
               isWideImage={isWideImage}
               readOnly={activeTool !== "crop"}
+              cropMode={cropMode}
             />
           </div>
         </div>
@@ -321,12 +325,14 @@ export const ImageEditor = ({
       )}
       {activeTool === "crop" && (
         <CropToolbar
-          onReset={() =>
+          cropMode={cropMode}
+          onModeChange={(mode) => {
+            setCropMode(mode);
             setEditState((prev) => ({
               ...prev,
               crop: { x: 0, y: 0, zoom: 1, croppedAreaPixels: null },
-            }))
-          }
+            }));
+          }}
         />
       )}
       {activeTool === "rotation" && (

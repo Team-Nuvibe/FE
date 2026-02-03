@@ -24,6 +24,7 @@ interface CropperViewProps {
   isWideImage: boolean;
   readOnly?: boolean;
   onCropChange: (crop: CropState) => void;
+  cropMode?: "original" | "fixedratio";
 }
 
 export const CropperView = ({
@@ -35,6 +36,7 @@ export const CropperView = ({
   isWideImage,
   readOnly = false,
   onCropChange,
+  cropMode = "fixedratio",
 }: CropperViewProps) => {
   const onCropComplete = useCallback(
     (_croppedArea: Area, croppedAreaPixels: Area) => {
@@ -79,13 +81,26 @@ export const CropperView = ({
         onCropChange={(newCrop) => onCropChange({ ...crop, ...newCrop })}
         onZoomChange={(newZoom) => onCropChange({ ...crop, zoom: newZoom })}
         onCropComplete={onCropComplete}
-        objectFit="cover"
+        objectFit={cropMode === "fixedratio" ? "cover" : "contain"}
+        restrictPosition={cropMode === "fixedratio"}
+        minZoom={cropMode === "fixedratio" ? 1 : 0.5}
+        maxZoom={cropMode === "fixedratio" ? 3 : 1}
         showGrid={!readOnly}
         style={{
           mediaStyle: {
             filter: getFilterStyle(adjustment),
-            width: isWideImage ? "auto" : "100%",
-            height: isWideImage ? "100%" : "auto",
+            width:
+              cropMode === "fixedratio"
+                ? isWideImage
+                  ? "auto"
+                  : "100%"
+                : undefined,
+            height:
+              cropMode === "fixedratio"
+                ? isWideImage
+                  ? "100%"
+                  : "auto"
+                : undefined,
             maxWidth: "none",
             maxHeight: "none",
           },
