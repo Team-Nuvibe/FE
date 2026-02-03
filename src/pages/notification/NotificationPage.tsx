@@ -1,31 +1,73 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Icon_backbutton from "@/assets/icons/icon_backbutton.svg?react";
-import Icon_rightarrow from "@/assets/icons/icon_rightarrow.svg?react";
-import Icon_folder from "@/assets/icons/icon_folder.svg?react";
+import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
 import Img_3 from "@/assets/images/img_3.png";
+import type { Notification } from "@/types/notification";
+import { NotificationItem } from "@/components/notification/NotificationItem";
 
-interface Notification {
-  id: number;
-  image: string;
-  tag: string;
-  title: string;
-  description: string;
-  isRead: boolean;
-}
-
-const dummyNotifications: Notification[] = Array(5)
-  .fill(null)
-  .map((_, index) => ({
-    id: index,
+const dummyNotifications: Notification[] = [
+  {
+    id: 1,
+    category: "채팅",
+    type: "TRIBE_CHAT_OPENED",
+    tribeName: "비싼",
     image: Img_3,
-    tag: "Grain",
     title: "트라이브챗이 열렸어요",
-    description: "지금 입장해보세요!",
-    isRead: index !== 0, // 첫 번째 알림은 읽지 않음(신규), 나머지는 읽음 처리 (임시; 추후 로직 따라 변경)
-  }));
+    description: "#비싼 | 지금 입장해보세요!",
+    isRead: false,
+    createdAt: "2026-02-03T18:00:00Z",
+  },
+  {
+    id: 2,
+    category: "미션",
+    type: "MISSION_COMPLETED",
+    image: Img_3,
+    title: "미션이 달성되었어요",
+    description: "보상을 확인하세요!",
+    isRead: true,
+    createdAt: "2026-02-03T17:30:00Z",
+  },
+  {
+    id: 3,
+    category: "알림",
+    type: "ARCHIVE_COMMENT",
+    image: Img_3,
+    title: "아이디어에 댓글이 달렸어요",
+    description: "지금 확인해보세요!",
+    isRead: true,
+    createdAt: "2026-02-03T16:00:00Z",
+  },
+  {
+    id: 4,
+    category: "채팅",
+    type: "TRIBE_CHAT_CLOSING",
+    tribeName: "Grain",
+    image: Img_3,
+    title: "트라이브챗이 1시간 후 종료돼요",
+    description: "#Grain | 마지막 대화를 나눠보세요",
+    isRead: true,
+    createdAt: "2026-02-03T15:00:00Z",
+  },
+  {
+    id: 5,
+    category: "알림",
+    type: "ACCOUNT_NICKNAME",
+    image: Img_3,
+    title: "닉네임이 변경되었어요",
+    description: "새로운 닉네임을 확인하세요",
+    isRead: true,
+    createdAt: "2026-02-03T14:00:00Z",
+  },
+];
 
 export const NotificationPage = () => {
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState<Notification[]>(dummyNotifications);
+
+  const handleDelete = (id: number) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
@@ -39,53 +81,22 @@ export const NotificationPage = () => {
           <h1 className="H2 absolute left-1/2 -translate-x-1/2 text-center leading-[150%] tracking-[-0.025em] text-gray-200">
             알림
           </h1>
-          <button className="ST2 cursor-pointer leading-[150%] tracking-[-0.025em] text-gray-600 transition-colors hover:text-gray-400">
-            선택
-          </button>
         </header>
 
         {/* Notification List */}
-        <div className="flex flex-col gap-[20px]">
-          {dummyNotifications.map((it) => (
-            <div
-              key={it.id}
-              className={`flex h-[95px] w-full cursor-pointer items-center gap-5 border-b border-gray-800/50 px-4 transition-colors active:bg-gray-900/50 ${
-                it.isRead ? "opacity-30" : "opacity-100"
-              }`}
-            >
-              {/* 폴더 형태 이미지 (레이어 구현) */}
-              <div className="relative h-[70px] w-[70px] shrink-0 overflow-hidden rounded-[2.84px] border-[0.28px] border-[#36383E] bg-[#212224]">
-                {/* 이미지 레이어 */}
-                <img
-                  src={it.image}
-                  alt="thumbnail"
-                  className="absolute top-[2.3px] left-[11.65px] h-[61.92px] w-[46.64px] object-cover"
-                />
-                {/* 폴더 오버레이 */}
-                <Icon_folder className="pointer-events-none absolute top-[21.01px] left-0 z-10 h-[48.92px] w-[69.93px] text-[#D9D9D9]" />
+        <div className="flex flex-col">
+          {notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center pt-[200px]">
+              <div className="flex h-[48px] w-[48px] items-center justify-center mb-[12px]">
+                <img src={DefaultProfileImage} alt="no notifications" className="h-full w-full opacity-40" />
               </div>
-
-              {/* content */}
-              <div className="flex flex-1 flex-col gap-[2px]">
-                <div className="flex">
-                  <span className="flex h-[17px] w-[50px] items-center justify-center rounded-[5px] bg-gray-900 text-[12px] leading-[150%] font-medium tracking-[-0.025em]">
-                    <span className="bg-gradient-to-b from-[#F7F7F7] to-[#F7F7F780] bg-clip-text text-transparent">
-                      #{it.tag}
-                    </span>
-                  </span>
-                </div>
-                <p className="H4 mt-0.5 leading-[150%] tracking-[-0.025em] text-gray-100">
-                  {it.title}
-                </p>
-                <p className="text-[10px] leading-[150%] font-normal tracking-[-0.025em] text-gray-100">
-                  {it.description}
-                </p>
-              </div>
-
-              {/* 바로가기 버튼 */}
-              <Icon_rightarrow className="h-6 w-6 shrink-0 text-gray-600" />
+              <p className="text-[16px] font-medium leading-[150%] tracking-[-0.025em] text-gray-500">
+                새로운 알림이 없습니다.
+              </p>
             </div>
-          ))}
+          ) : (
+            notifications.map((it) => <NotificationItem key={it.id} notification={it} onDelete={handleDelete} />)
+          )}
         </div>
       </div>
     </div>
