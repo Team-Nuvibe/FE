@@ -79,7 +79,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tribe-chat",
         children: [
           { index: true, element: <TribeChatPage /> },
-          { path: "/tribe-chat:tagid", element: <TribechatRoomPage /> },
+          { path: "/tribe-chat/:tagid", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
       },
