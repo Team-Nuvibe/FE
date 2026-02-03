@@ -1,54 +1,125 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Img_3 from "@/assets/images/img_3.png";
-import Icon_backbutton from "@/assets/icons/icon_backbutton.svg?react";
+import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
+import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
+import useGetTagDetails from "@/hooks/queries/useGetTagDetails";
+import { useNavbarActions } from "@/hooks/useNavbarStore";
+import { useEffect, useState } from "react";
+import { DropYourVibe } from "@/components/common/DropYourVibe";
+import { VibeDropModal } from "@/components/home/VibeDropModal";
 
 export const TagDetailPage = () => {
   const { tagid } = useParams<{ tagid: string }>();
   const navigate = useNavigate();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const location = useLocation();
+  const { categories } = useGetAllCategoriesTags();
+  const imageUrl =
+    location.state?.imageUrl ||
+    categories.flatMap((cat) => cat.items).find((item) => item.tag === tagid)
+      ?.imageUrl;
+
+  const { data: tagDetails } = useGetTagDetails(tagid || "");
+
+  const { setNavbarVisible } = useNavbarActions();
+  useEffect(() => {
+    setNavbarVisible(false);
+    return () => {
+      setNavbarVisible(true);
+    };
+  }, [setNavbarVisible]);
+
   return (
-    <div className="flex flex-col w-full min-h-full">
-      <section className="relative flex flex-col justify-between h-[50dvh] bg-cover bg-bottom bg-no-repeat shrink-0">
-        <div
-          className="absolute inset-0 w-full h-full object-cover bg-bottom bg-cover bg-no-repeat"
-          style={{
-            backgroundImage: `url(${Img_3})`,
-            maskImage:
-              "linear-gradient(to bottom, black 70%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 70%, transparent 100%)",
-          }}
-        />
-        <div className="flex justify-start p-6 z-10">
+    <div className="flex min-h-full w-full flex-col justify-between">
+      <main className="flex flex-col">
+        <section className="relative flex h-[50dvh] shrink-0 flex-col justify-between bg-cover bg-bottom bg-no-repeat">
           <div
-            className="w-[35px] h-[35px] rounded-full bg-gray-900 flex justify-center items-center cursor-pointer"
-            onClick={() => navigate(-1)}
-          >
-            <Icon_backbutton className="h-[24px] text-gray-100" />
-          </div>
-        </div>
-        <div className="flex justify-between items-end w-full">
-          <div className="flex flex-col">
-            <div className="ST0 mb-2 px-6 z-10">
-              <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
-                #{tagid}
-              </h1>
-            </div>
-            <div className="px-6 z-10">
-              <p className="B2 text-gray-200">
-                설명글 설명글 설명글 설명글 설명글 설명글
-              </p>
-              <p className="B2 text-gray-200">
-                설명글 설명글 설명글 설명글 설명글 설명글
-              </p>
+            className="absolute inset-0 h-full w-full bg-cover bg-bottom bg-no-repeat object-cover"
+            style={{
+              backgroundImage: `url(${imageUrl || Img_3})`,
+              maskImage:
+                "linear-gradient(to bottom, black 70%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, black 70%, transparent 100%)",
+            }}
+          />
+          <div className="z-10 m-[18px] flex justify-start">
+            <div
+              className="flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full bg-gray-900 opacity-50"
+              onClick={() => navigate(-1)}
+            >
+              <IconChevronLeft className="h-[24px] text-gray-100" />
             </div>
           </div>
+          <div className="flex w-full items-end justify-between">
+            <div className="flex flex-col px-4">
+              <div className="z-10 mb-2">
+                <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] font-medium tracking-tight text-transparent">
+                  #
+                  {tagDetails?.data.tag
+                    ? tagDetails.data.tag[0] +
+                      tagDetails.data.tag.slice(1).toLowerCase()
+                    : ""}
+                </h1>
+              </div>
+              <div className="z-10">
+                <p className="B2 tracking-tight text-gray-200">
+                  {tagDetails?.data.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="flex flex-col gap-4 py-6 pl-4">
+          <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
+          {tagDetails?.data.hasImages && (
+            <div className="mt-3 flex gap-2"></div>
+          )}
+          {tagDetails?.data.hasImages && (
+            <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
+              <p>아직 드랍된 이미지가 없어요.</p>
+              <p>
+                첫 번째 #
+                {tagDetails?.data.tag
+                  ? tagDetails.data.tag[0] +
+                    tagDetails.data.tag.slice(1).toLowerCase()
+                  : ""}
+                을 드랍해보세요!
+              </p>
+            </div>
+          )}
+          {!tagDetails?.data.hasImages && (
+            <div className="flex gap-2 overflow-x-auto">
+              <div
+                className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"
+                onClick={() => setIsModalOpen(true)}
+              ></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+            </div>
+          )}
+        </section>
+      </main>
+      <footer className="flex flex-col items-center justify-center pb-7">
+        <button className="">
+          <DropYourVibe />
+        </button>
+      </footer>
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <VibeDropModal
+            tag={tagDetails?.data.tag || ""}
+            onClose={() => setIsModalOpen(false)}
+          />
         </div>
-      </section>
-      <section className="flex flex-col px-6 py-6 gap-4">
-        <h2 className="H2 text-gray-200">Image in Tribe Chat</h2>
-        <div className="flex"></div>
-      </section>
+      )}
     </div>
   );
 };

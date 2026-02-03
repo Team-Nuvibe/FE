@@ -3,7 +3,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.PROD ? "" : "https://api.nuvibe.site",
+  baseURL: import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site",
   withCredentials: false, //쿠키
 });
 

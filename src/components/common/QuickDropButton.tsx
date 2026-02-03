@@ -16,21 +16,15 @@ const QuickDropButton = () => {
     navigate("/quickdrop", { state: { file } });
   };
 
-  // 임시: quickdrop에서 숨기기
-  const location = useLocation();
-  if (location.pathname === "/quickdrop") {
-    return null;
-  }
-
   return (
     <button
-      className="relative w-[65px] h-[65px] bg-[var(--color-gray-900)]/90 rounded-[40px] flex items-center justify-center z-50 transition-transform cursor-pointer"
+      className="relative z-50 flex h-[65px] w-[65px] cursor-pointer items-center justify-center rounded-[40px] bg-[var(--color-gray-900)]/90 transition-transform"
       aria-label="Quick Drop"
     >
-      <IconQuickDrop className="w-full h-full" />
+      <IconQuickDrop className="h-full w-full" />
       <input
         type="file"
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         accept="image/*"
         ref={inputImageRef}
         onChange={handleImageChange}
