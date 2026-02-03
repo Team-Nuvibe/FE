@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OTPInput from "./OTPInput";
 import CloseIcon from "@/assets/icons/icon_xbutton.svg?react";
 
@@ -72,7 +72,7 @@ export const OTPBottomSheet = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 bottom-0 left-0 z-101 flex flex-col rounded-t-[20px] bg-gray-900 px-6 pt-6 pb-8"
+            className="absolute right-0 bottom-0 left-0 z-101 mx-auto flex max-w-[393px] flex-col rounded-t-[20px] bg-gray-900 px-6 pt-6 pb-8"
           >
             {/* Close Button */}
             <button

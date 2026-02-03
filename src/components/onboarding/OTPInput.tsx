@@ -14,7 +14,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
   // 첫 번째 칸에 자동 포커스 (선택 사항)
   useEffect(() => {
     if (inputRefs.current[0]) {
-      inputRefs.current[0].focus();
+      inputRefs.current[0].focus({ preventScroll: true });
     }
   }, []);
 
@@ -38,7 +38,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
 
     // 값이 입력되었고, 마지막 칸이 아니라면 다음 칸으로 포커스 이동
     if (value && index < length - 1 && inputRefs.current[index + 1]) {
-      inputRefs.current[index + 1]?.focus();
+      inputRefs.current[index + 1]?.focus({ preventScroll: true });
     }
   };
 
@@ -50,7 +50,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
     if (e.key === "Backspace") {
       // 현재 칸이 비어있고, 첫 번째 칸이 아니라면 이전 칸으로 이동
       if (!otp[index] && index > 0 && inputRefs.current[index - 1]) {
-        inputRefs.current[index - 1]?.focus();
+        inputRefs.current[index - 1]?.focus({ preventScroll: true });
       }
     }
   };
@@ -74,7 +74,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
 
     // 마지막 입력된 곳으로 포커스
     const lastFilledIndex = Math.min(pastedData.length, length - 1);
-    inputRefs.current[lastFilledIndex]?.focus();
+    inputRefs.current[lastFilledIndex]?.focus({ preventScroll: true });
   };
 
   return (
