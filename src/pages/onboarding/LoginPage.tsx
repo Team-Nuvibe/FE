@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import useLogin from "@/hooks/mutation/auth/useLogin";
 import { BaseModal } from "@/components/onboarding/BaseModal";
 import { useAuth } from "@/context/AuthContext";
+import { deleteUser } from "@/apis/auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LoginPage = () => {
   const location = useLocation();
@@ -23,18 +25,54 @@ const LoginPage = () => {
   });
 
   const { mutate: login, isPending } = useLogin();
-  const { accessToken } = useAuth();
+  const { accessToken, clearSession } = useAuth();
   const fromPath = location.state?.fromPath || "/home";
   const navigate = useNavigate();
-  // 이미 로그인 해있을 시 홈으로 이동
+  const queryClient = useQueryClient();
+
+  // 이미 로그인 해있을 시 홈으로 이동 (단, 탈퇴 대기 중일 때나 로그아웃 직후에는 이동하지 않음)
   useEffect(() => {
-    if (accessToken) {
+    if (
+      accessToken &&
+      !location.state?.pendingDeletion &&
+      !location.state?.isLogout
+    ) {
       navigate(fromPath, { replace: true });
     }
-  }, [navigate, accessToken, fromPath]);
+  }, [navigate, accessToken, fromPath, location.state]);
+
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (location.state?.toastMessage) {
+    if (location.state?.pendingDeletion) {
+      // 탈퇴 대기 상태 진입
+      setIsDeleting(true);
+      setToastMessage("계정이 삭제 되었습니다."); // 사용자 경험을 위해 삭제된 것처럼 표시
+
+      const timerIdx = setTimeout(async () => {
+        // 4초 후 실제 삭제 요청
+        try {
+          await deleteUser();
+          // 성공 처리
+          setIsDeleting(false);
+          queryClient.clear();
+          clearSession();
+          // 페이지 새로고침 효과 및 메시지 표시를 위해 replace 이동
+          navigate("/login", {
+            replace: true,
+            state: { toastMessage: "계정이 영구적으로 삭제되었습니다." } // 메시지 약간 변경하여 완료됨을 구분하거나 그대로 유지
+          });
+        } catch (error) {
+          console.error("Account deletion failed:", error);
+          setIsDeleting(false);
+          setToastMessage("계정 삭제에 실패했습니다.");
+        }
+      }, 4000);
+
+      // 클린업: 만약 컴포넌트가 언마운트되면 타이머 취소
+      return () => clearTimeout(timerIdx);
+    } else if (location.state?.toastMessage) {
+      // 일반적인 토스트 메시지 처리
       setToastMessage(location.state.toastMessage);
       const timer = setTimeout(() => {
         setToastMessage(null);
@@ -42,7 +80,12 @@ const LoginPage = () => {
       }, 3000); // 3초 후 토스트 메시지 제거
       return () => clearTimeout(timer);
     }
-  }, [location.state]);
+  }, [location.state, navigate, queryClient, clearSession]);
+
+  const handleUndoDelete = () => {
+    // 실행 취소: 타이머 취소는 useEffect cleanup 발생으로 처리 (navigate 이동 시)
+    navigate("/profile");
+  };
 
   const { values, errors, getInputProps } = useForm<UserSigninInformation>({
     initialValues: {
@@ -91,11 +134,11 @@ const LoginPage = () => {
     );
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => { };
 
-  const handleNaverLogin = () => {};
+  const handleNaverLogin = () => { };
 
-  const handleKakaoLogin = () => {};
+  const handleKakaoLogin = () => { };
 
   return (
     <>
@@ -149,11 +192,20 @@ const LoginPage = () => {
           </button>
         </div>
 
+        {/* 계정삭제 시 로그인 화면에서 뜨는 토스트 메시지 */}
         {toastMessage && (
-          <div className="animate-fade-in-out absolute bottom-[122px] z-50 flex h-[46px] w-[361px] items-center justify-center rounded-[5px] bg-gray-800">
-            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-white">
+          <div className="animate-fade-in-out absolute bottom-[40px] z-50 flex h-[48px] w-[344px] items-center justify-center gap-[10px] rounded-[5px] bg-[#D0D3D7]/85 px-[16px] pr-[8px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
+            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black">
               {toastMessage}
             </span>
+            {isDeleting && (
+              <button
+                onClick={handleUndoDelete}
+                className="ml-auto text-[14px] font-normal leading-[150%] tracking-[-0.025em] text-gray-600 underline decoration-solid underline-offset-auto"
+              >
+                실행취소
+              </button>
+            )}
           </div>
         )}
 

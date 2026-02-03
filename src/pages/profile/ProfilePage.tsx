@@ -7,14 +7,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LogoutModal } from "@/components/profile/LogoutModal";
 import useLogout from "@/hooks/mutation/auth/useLogout";
-import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
-import { useUserProfileImage } from "@/hooks/queries/useUserProfileImage";
+// import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
+import { useUserProfileImage, useUserNickname } from "@/hooks/queries/useUser";
 import { useUpdateProfileImage } from "@/hooks/mutation/user/useUpdateProfileImage";
 
 import { DeleteAccountModal } from "@/components/profile/DeleteAccountModal";
 
 const ProfilePage = () => {
-  const { nickname, profileImage, setProfileImage, reset } = useUserStore();
+  const { nickname, profileImage, setProfileImage, setNickname, reset } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -22,10 +22,13 @@ const ProfilePage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
   const { mutate: logout } = useLogout();
-  const { mutate: deleteUser } = useDeleteUser();
+  // const { mutate: deleteUser } = useDeleteUser();
 
   // 프로필 이미지 조회
   const { data: profileData } = useUserProfileImage();
+  // 닉네임 조회
+  const { data: nicknameData } = useUserNickname();
+
   const { mutate: updateImage } = useUpdateProfileImage();
 
   // API로부터 프로필 이미지 동기화
@@ -34,6 +37,17 @@ const ProfilePage = () => {
       setProfileImage(profileData.data.profileImage);
     }
   }, [profileData, setProfileImage]);
+
+  // API로부터 닉네임 동기화
+  useEffect(() => {
+    if (nicknameData?.data?.nickname) {
+      // useUserStore의 setNickname 사용
+      // 하지만 useUserStore는 export되지 않은 set함수들만 있음 -> destructuring 필요
+      // 이미 useUserStore()에서 nickname 등 가져옴. 
+      // 여기서 setNickname을 가져와야 함.
+      setNickname(nicknameData.data.nickname);
+    }
+  }, [nicknameData, setNickname]);
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -83,8 +97,8 @@ const ProfilePage = () => {
 
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(false);
-    reset(); // 저장된 데이터 초기화
-    deleteUser();
+    // 지연 삭제를 위해 즉시 삭제하지 않고 로그인 페이지로 의도 전달
+    navigate("/login", { state: { pendingDeletion: true, fromPath: location.pathname } });
   };
 
   const menuGroups = [

@@ -14,8 +14,9 @@ export const useUpdateNickname = () => {
             if (response.data.nickname) {
                 setNickname(response.data.nickname);
             }
-            // 프로필 쿼리 무효화
+            // 프로필 쿼리 및 닉네임 쿼리 무효화
             queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+            queryClient.invalidateQueries({ queryKey: ["userNickname"] });
         },
     });
 };
