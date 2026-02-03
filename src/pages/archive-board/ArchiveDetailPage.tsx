@@ -35,7 +35,7 @@ interface ModelItem {
 }
 
 const ArchiveDetailPage = () => {
-  const { boardid } = useParams<string>();
+  const { boardid } = useParams<{ boardid: string }>();
 
   // Title state to allow renaming
   const [boardTitle, setBoardTitle] = useState<string>(boardid || "");
@@ -70,9 +70,14 @@ const ArchiveDetailPage = () => {
     const fetchBoardDetail = async () => {
       if (!boardid) return;
 
+      const boardIdNum = parseInt(boardid, 10);
+      if (isNaN(boardIdNum)) {
+        console.error("Invalid board ID:", boardid);
+        return;
+      }
       try {
         setIsLoadingDetail(true);
-        const response = await getArchiveBoardDetail(parseInt(boardid));
+        const response = await getArchiveBoardDetail(boardIdNum);
 
         if (response.data) {
           console.log("📋 Board detail loaded:", response.data);
