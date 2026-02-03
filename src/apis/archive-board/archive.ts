@@ -1,8 +1,8 @@
 import type {
   ArchiveBoardDetail,
   ArchiveBoardItem,
+  ArchiveImagesResponse,
   CreatedArchiveBoard,
-  RecapImagesResponse,
   VibeToneTagsResponse,
 } from "@/types/archive";
 import { axiosInstance } from "../axios";
@@ -45,6 +45,35 @@ export const deleteArchiveBoard = async (
   return data;
 };
 
+// 아카이브 메인 상단에 표시할 전체 이미지 조회
+export const getArchiveImages = async (
+  page: number = 0,
+  size: number = 20,
+): Promise<ApiResponse<ArchiveImagesResponse>> => {
+  const { data } = await axiosInstance.get<ApiResponse<ArchiveImagesResponse>>(
+    "/api/archive/images",
+    {
+      params: {
+        page,
+        size,
+      },
+    },
+  );
+  return data;
+};
+
+// 바이브톤 태그 조회
+export const getVibeToneTags = async (): Promise<
+  ApiResponse<VibeToneTagsResponse>
+> => {
+  const { data } =
+    await axiosInstance.get<ApiResponse<VibeToneTagsResponse>>(
+      "/api/archive/vibe",
+    );
+  return data;
+};
+
+// -------- 퀵드랍(이미지 업로드 시) 이용 --------
 // 아카이브 보드에 이미지 추가
 export const addImageToArchiveBoard = async (
   boardId: number,
@@ -56,7 +85,9 @@ export const addImageToArchiveBoard = async (
   );
   return data;
 };
+// ----------------------------------------------
 
+// ------- ArchiveDetailPage에서 필요 ----------
 // 아카이브 보드 내 이미지 삭제
 export const deleteArchiveBoardImages = async (
   boardId: number,
@@ -96,33 +127,5 @@ export const getArchiveBoardDetail = async (
       },
     },
   );
-  return data;
-};
-
-// 아카이브 메인 상단 Recap 조회
-export const getArchiveRecapImages = async (
-  page: number = 0,
-  size: number = 20,
-): Promise<ApiResponse<RecapImagesResponse>> => {
-  const { data } = await axiosInstance.get<ApiResponse<RecapImagesResponse>>(
-    "/api/archive/images",
-    {
-      params: {
-        page,
-        size,
-      },
-    },
-  );
-  return data;
-};
-
-// 바이브톤 태그 조회
-export const getVibeToneTags = async (): Promise<
-  ApiResponse<VibeToneTagsResponse>
-> => {
-  const { data } =
-    await axiosInstance.get<ApiResponse<VibeToneTagsResponse>>(
-      "/api/archive/vibe",
-    );
   return data;
 };

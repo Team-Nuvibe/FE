@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import IconHome from "../../assets/icons/icon_navbar_home.svg?react";
 import IconHomeActive from "../../assets/icons/icon_navbar_home_active.svg?react";
 import IconArchive from "../../assets/icons/icon_navbar_archive.svg?react";

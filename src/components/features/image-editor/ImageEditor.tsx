@@ -119,15 +119,12 @@ export const ImageEditor = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `brightness(${
-      finalBrightness > 100
+    return `brightness(${finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
         : (finalBrightness - 100) * 4 + 100
-    }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
-      levels.temperature > 0 ? levels.temperature : 0
-    }%) hue-rotate(${
-      levels.temperature < 0 ? levels.temperature * -0.8 : 0
-    }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
+      }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${levels.temperature > 0 ? levels.temperature : 0
+      }%) hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0
+      }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   const handleExportImage = () => {

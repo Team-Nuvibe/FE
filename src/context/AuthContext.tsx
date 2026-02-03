@@ -12,9 +12,10 @@ import { logIn, logOut } from "@/apis/auth";
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
-  login: (singinData: LogInRequest) => Promise<void>;
+  login: (signinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
   clearSession: () => void;
+  setSocialLoginTokens: (accessToken: string, refreshToken: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -23,6 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   clearSession: () => {},
+  setSocialLoginTokens: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -50,17 +52,45 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const { data } = await logIn(signinData);
 
     if (data) {
-      const newAccressToken = data.accessToken;
+      const newAccessToken = data.accessToken;
       const newRefreshToken = data.refreshToken;
 
-      setAccessTokenInStorage(newAccressToken);
+      setAccessTokenInStorage(newAccessToken);
       setRefreshTokenInStorage(newRefreshToken);
 
-      setAccessToken(newAccressToken);
+      setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
+
+      // 로그인 성공 후 사용자 프로필 정보 가져오기
+      try {
+        const { getUserNickname, getUserProfileImage } =
+          await import("@/apis/user");
+        const { useUserStore } = await import("@/hooks/useUserStore");
+
+        const [nicknameData, profileImageData] = await Promise.all([
+          getUserNickname(),
+          getUserProfileImage(),
+        ]);
+
+        const { setNickname, setEmail, setProfileImage } =
+          useUserStore.getState();
+
+        if (nicknameData.data?.nickname) {
+          setNickname(nicknameData.data.nickname);
+        }
+
+        if (profileImageData.data?.profileImage) {
+          setProfileImage(profileImageData.data.profileImage);
+        }
+
+        // 이메일은 로그인 시 입력한 값 저장
+        setEmail(signinData.email);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        // 프로필 가져오기 실패해도 로그인은 성공으로 처리
+      }
     }
   };
-
   const clearSession = () => {
     removeAccessTokenFromStorage();
     removeRefreshTokenFromStorage();
@@ -77,9 +107,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const setSocialLoginTokens = (
+    newAccessToken: string,
+    newRefreshToken: string,
+  ) => {
+    setAccessTokenInStorage(newAccessToken);
+    setRefreshTokenInStorage(newRefreshToken);
+
+    setAccessToken(newAccessToken);
+    setRefreshToken(newRefreshToken);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, login, logout, clearSession }}
+      value={{
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+        clearSession,
+        setSocialLoginTokens,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,4 +1,10 @@
-import type { LogInRequest, LogInResponse, SignUpRequest } from "@/types/auth";
+import type {
+  LogInRequest,
+  LogInResponse,
+  SignUpRequest,
+  PasswordResetRequest,
+  SocialSignUpCompleteRequest,
+} from "@/types/auth";
 import { axiosInstance } from "./axios";
 import type { ApiResponse } from "@/types/common";
 
@@ -38,13 +44,28 @@ export const deleteUser = async (): Promise<ApiResponse<string>> => {
   return data;
 };
 
-// 이메일 인증 발송
+// 회원가입 인증 코드 발송
 export const sendVerificationEmail = async (
   email: string,
 ): Promise<ApiResponse<string>> => {
   const { data } = await axiosInstance.post<ApiResponse<string>>(
-    "/api/auth/verify-email",
+    "/api/auth/verify-code/send",
     { email },
+  );
+  return data;
+};
+
+// 회원가입 인증 코드 검증
+export const confirmVerificationCode = async (
+  email: string,
+  code: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/verify-code/confirm",
+    {
+      email,
+      code,
+    },
   );
   return data;
 };
@@ -60,15 +81,79 @@ export const checkPassword = async (
   return data;
 };
 
-// 이메일 인증 완료
-export const verifyEmail = async (
-  token: string,
+// ------- 비밀번호 재설정 로직 -------
+
+// 비밀번호 초기화
+export const resetPassword = async (
+  body: PasswordResetRequest,
 ): Promise<ApiResponse<string>> => {
-  const { data } = await axiosInstance.get<ApiResponse<string>>(
-    "/api/auth/verify",
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset",
+    body,
+  );
+  return data;
+};
+
+// 비밀번호 초기화용 인증 코드 발송
+export const sendResetPasswordVerificationCode = async (
+  email: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset/send-code",
+    { email },
+  );
+  return data;
+};
+
+// 비밀번호 초기화용 인증 코드 검증
+export const confirmResetPasswordVerificationCode = async (
+  email: string,
+  code: string,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/password-reset/verify-code",
     {
-      params: { token },
+      email,
+      code,
     },
+  );
+  return data;
+};
+
+// 소셜 로그인 시작 (OAuth2 인증 페이지로 리다이렉트)
+export const startSocialLogin = (
+  provider: "google" | "naver" | "kakao",
+): void => {
+  const baseUrl =
+    import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site";
+  const redirectUrl = `${baseUrl}api/auth/oauth2/${provider}`;
+  window.location.href = redirectUrl;
+};
+
+// 소셜 로그인 콜백 (OAuth2 인증 코드를 받아서 토큰 발급)
+export const socialLoginCallback = async (
+  provider: "google" | "naver" | "kakao",
+  code: string,
+  state?: string,
+): Promise<ApiResponse<LogInResponse>> => {
+  const params = new URLSearchParams({ code });
+  if (state) {
+    params.append("state", state);
+  }
+
+  const { data } = await axiosInstance.get<ApiResponse<LogInResponse>>(
+    `/api/auth/oauth2/callback/${provider}?${params.toString()}`,
+  );
+  return data;
+};
+
+// 소셜 회원 가입 완료 (신규 소셜 유저 추가 정보 입력)
+export const completeSocialSignUp = async (
+  body: SocialSignUpCompleteRequest,
+): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>(
+    "/api/auth/oauth2/signup/complete",
+    body,
   );
   return data;
 };

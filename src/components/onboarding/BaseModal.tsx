@@ -6,6 +6,7 @@ interface DeleteModalProps {
   maintext: string;
   subtext: string;
   onClose: () => void;
+  children?: React.ReactNode;
 }
 
 export const BaseModal = ({
@@ -13,6 +14,7 @@ export const BaseModal = ({
   onClose,
   maintext,
   subtext,
+  children,
 }: DeleteModalProps) => {
   return (
     <AnimatePresence>
@@ -44,13 +46,18 @@ export const BaseModal = ({
               </p>
             </div>
 
-            {/* 버튼 영역 */}
-            <button
-              onClick={onClose}
-              className="B2 mx-auto h-[36px] w-full rounded-[5px] bg-gray-300 text-gray-900"
-            >
-              확인
-            </button>
+            {/* 동적 컨텐츠 */}
+            {children}
+
+            {/* 버튼 영역 - children이 없을 때만 표시 */}
+            {!children && (
+              <button
+                onClick={onClose}
+                className="B2 mx-auto h-[36px] w-full rounded-[5px] bg-gray-300 text-gray-900"
+              >
+                확인
+              </button>
+            )}
           </motion.div>
         </motion.div>
       )}

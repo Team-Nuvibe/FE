@@ -2,83 +2,45 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/hooks/useUserStore";
 import FolderIcon from "@/assets/icons/icon_folder_vibetone.svg?react";
+import type { MostUsedBoardResponse } from "@/types/archive";
+import { useNavigate } from "react-router";
 
 const RecapSecondSlide = ({
   isActive,
   activeTab,
+  data,
 }: {
   isActive: boolean;
   activeTab: "weekly" | "all";
+  data: MostUsedBoardResponse | undefined;
 }) => {
   const { nickname } = useUserStore();
+  const navigate = useNavigate();
 
   // 초기 상태는 false (닫힘)
   const [isOpen, setIsOpen] = useState(false);
 
-  // 테스트용 이미지
-  const images = [
-    "https://drive.google.com/thumbnail?id=1GSrTDxIbpF51wLBnC54gNDKJs_qf0UOb&sz=w1000",
-    "https://drive.google.com/thumbnail?id=1NiYVh5jdbPlQl_mrXkDS3zH8G1NZBi0Y&sz=w1000",
-    "https://drive.google.com/thumbnail?id=1mcn0PnuftGvBxPqhtizGxQWbJXw1_5j6&sz=w1000",
-  ];
-  const [weekDate, setWeekDate] = useState<{ start: string; end: string }>({
-    start: "2026.01.05",
-    end: "~01.11",
-  });
-  const [dropCount, setDropCount] = useState<number>(1);
+  // API 데이터로부터 이미지 배열 생성 (최대 3개)
+  const images = data?.boardImages.slice(0, 3) || [];
 
-  // 날짜 포맷팅 함수 (7일 범위: 줄바꿈 포함)
-  const formatWeekDate = (endDate: Date): { start: string; end: string } => {
-    // 종료일 (현재 날짜)
-    const endYear = endDate.getFullYear();
-    const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
-    const endDay = String(endDate.getDate()).padStart(2, "0");
-
-    // 시작일 (7일 전 = 종료일 - 6일)
-    const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - 6);
-    const startYear = startDate.getFullYear();
-    const startMonth = String(startDate.getMonth() + 1).padStart(2, "0");
-    const startDay = String(startDate.getDate()).padStart(2, "0");
-
-    // 연도가 같으면 시작일에는 연도 생략
-    if (startYear === endYear) {
-      return {
-        start: `${startYear}.${startMonth}.${startDay}`,
-        end: `~${endMonth}.${endDay}`,
-      };
-    } else {
-      // 연도가 다르면 둘 다 표시
-      return {
-        start: `${startYear}.${startMonth}.${startDay}`,
-        end: `~${endYear}.${endMonth}.${endDay}`,
-      };
-    }
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}.${month}.${day}`;
   };
 
-  // TODO: API 호출 - 일주일 데이터 가져오기
-  useEffect(() => {
-    // 추후 API 엔드포인트 연동
-    const fetchWeeklyData = async () => {
-      try {
-        // TODO: 실제 API 호출로 교체
-        // const response = await fetch('/api/vibetone/weekly-recap');
-        // const data = await response.json();
-        // setWeekDate(formatWeekDate(new Date(data.weekStartDate)));
-        // setDropCount(data.dropCount);
+  const weekDate = data
+    ? {
+      start: formatDate(data.startDate),
+      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+    }
+    : { start: "", end: "" };
 
-        // 현재는 임시 데이터 사용
-        // 예시: 현재 날짜 기반으로 설정
-        const currentDate = new Date();
-        setWeekDate(formatWeekDate(currentDate));
-        setDropCount(1);
-      } catch (error) {
-        console.error("Failed to fetch weekly data:", error);
-      }
-    };
-
-    fetchWeeklyData();
-  }, []);
+  const dropCount = data?.totalDropCount || 0;
+  const boardName = data?.boardName || "";
 
   // 슬라이드가 활성화되거나 activeTab이 변경될 때 애니메이션 시작
   useEffect(() => {
@@ -172,7 +134,7 @@ const RecapSecondSlide = ({
                 variants={imageVariants}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
-                className={`border-[3px]shadow-2xl absolute origin-bottom overflow-hidden rounded-[5px] ${
+                className={`absolute origin-bottom overflow-hidden rounded-[5px] border-[3px] shadow-2xl ${
                   index === 1 ? "h-[198px] w-[149px]" : "h-[146px] w-[110px]"
                 }`}
                 style={{
@@ -212,12 +174,13 @@ const RecapSecondSlide = ({
               {dropCount}회 드랍
             </p>
             <h1 className="H2 leading-[150%] tracking-[-0.5px] text-white">
-              애나하나다하개아
-              <br />
-              다고나디아아아
+              {boardName}
             </h1>
           </div>
-          <button className="mx-auto h-[36px] w-[132px] rounded-[5px] bg-gray-300 text-[14px] leading-[150%] font-medium tracking-[-0.35px] text-gray-800 transition-colors hover:bg-white">
+          <button
+            onClick={() => navigate(`/archive-board/${data?.boardId}`)}
+            className="mx-auto h-[36px] w-[132px] rounded-[5px] bg-gray-300 text-[14px] leading-[150%] font-medium tracking-[-0.35px] text-gray-800 transition-colors hover:bg-white"
+          >
             보드 방문하기
           </button>
         </div>
