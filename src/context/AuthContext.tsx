@@ -15,14 +15,16 @@ interface AuthContextType {
   login: (signinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
   clearSession: () => void;
+  setSocialLoginTokens: (accessToken: string, refreshToken: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  login: async () => { },
-  logout: async () => { },
-  clearSession: () => { },
+  login: async () => {},
+  logout: async () => {},
+  clearSession: () => {},
+  setSocialLoginTokens: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -61,7 +63,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
       // 로그인 성공 후 사용자 프로필 정보 가져오기
       try {
-        const { getUserNickname, getUserProfileImage } = await import("@/apis/user");
+        const { getUserNickname, getUserProfileImage } =
+          await import("@/apis/user");
         const { useUserStore } = await import("@/hooks/useUserStore");
 
         const [nicknameData, profileImageData] = await Promise.all([
@@ -69,7 +72,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
           getUserProfileImage(),
         ]);
 
-        const { setNickname, setEmail, setProfileImage } = useUserStore.getState();
+        const { setNickname, setEmail, setProfileImage } =
+          useUserStore.getState();
 
         if (nicknameData.data?.nickname) {
           setNickname(nicknameData.data.nickname);
@@ -103,9 +107,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const setSocialLoginTokens = (
+    newAccessToken: string,
+    newRefreshToken: string,
+  ) => {
+    setAccessTokenInStorage(newAccessToken);
+    setRefreshTokenInStorage(newRefreshToken);
+
+    setAccessToken(newAccessToken);
+    setRefreshToken(newRefreshToken);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, login, logout, clearSession }}
+      value={{
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+        clearSession,
+        setSocialLoginTokens,
+      }}
     >
       {children}
     </AuthContext.Provider>
