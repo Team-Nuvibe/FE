@@ -8,7 +8,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LogoutModal } from "@/components/profile/LogoutModal";
 import useLogout from "@/hooks/mutation/auth/useLogout";
-// import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
+import { deleteUser } from "@/apis/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
 import { useUserProfileImage, useUserNickname } from "@/hooks/queries/useUser";
 import { useUpdateProfileImage } from "@/hooks/mutation/user/useUpdateProfileImage";
 
@@ -23,7 +25,8 @@ const ProfilePage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
   const { mutate: logout } = useLogout();
-  // const { mutate: deleteUser } = useDeleteUser();
+  const queryClient = useQueryClient();
+  const { clearSession } = useAuth();
 
   // 프로필 이미지 조회
   const { data: profileData } = useUserProfileImage();
@@ -96,10 +99,26 @@ const ProfilePage = () => {
     logout();
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     setIsDeleteModalOpen(false);
-    // 지연 삭제를 위해 즉시 삭제하지 않고 로그인 페이지로 의도 전달
-    navigate("/login", { state: { pendingDeletion: true, fromPath: location.pathname } });
+    try {
+      await deleteUser();
+      // 성공 시 세션 정리 및 로그인 페이지로 이동
+      reset();
+      clearSession();
+      queryClient.clear();
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          toastMessage: "계정이 삭제되었습니다."
+        }
+      });
+    } catch (error) {
+      console.error("Account deletion failed:", error);
+      setToastMessage("계정 삭제에 실패했습니다.");
+      setTimeout(() => setToastMessage(null), 3000);
+    }
   };
 
   const menuGroups = [

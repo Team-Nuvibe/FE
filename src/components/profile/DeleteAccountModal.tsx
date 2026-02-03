@@ -12,7 +12,7 @@ interface DeleteAccountModalProps {
 export const DeleteAccountModal = ({ isOpen, onClose, onConfirm }: DeleteAccountModalProps) => {
     const [isChecked, setIsChecked] = useState(false);
 
-    // Reset state when modal opens
+    // 모달 열리면 상태 초기화
     useEffect(() => {
         if (isOpen) setIsChecked(false);
     }, [isOpen]);
@@ -61,7 +61,7 @@ export const DeleteAccountModal = ({ isOpen, onClose, onConfirm }: DeleteAccount
                             flex items-center justify-center transition-colors
                             ${isChecked
                                 ? 'bg-gray-700 text-gray-300'
-                                : 'bg-gray-800 text-gray-500 cursor-not-allowed'}
+                                : 'bg-gray-800 text-gray-400 cursor-not-allowed'}
                         `}
                     >
                         삭제하기
