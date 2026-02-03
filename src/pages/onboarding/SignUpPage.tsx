@@ -249,7 +249,13 @@ const SignUpPage = () => {
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
         </div>
 
-        <form className="flex w-full flex-1 flex-col justify-between">
+        <form
+          className="flex w-full flex-1 flex-col justify-between"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleNext();
+          }}
+        >
           <div className="w-full">
             {currentStep === 1 && (
               <NameStep
