@@ -21,7 +21,6 @@ const HomePage = () => {
 
   const { categories, categoryQueries } = useGetAllCategoriesTags();
 
-  const isLoading = categoryQueries.some((query) => query.isLoading);
   const isSuccess = categoryQueries.every((query) => query.isSuccess);
 
   useEffect(() => {
