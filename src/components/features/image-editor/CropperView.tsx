@@ -25,6 +25,8 @@ interface CropperViewProps {
   readOnly?: boolean;
   onCropChange: (crop: CropState) => void;
   cropMode?: "original" | "fixedratio";
+  minZoom?: number;
+  maxZoom?: number;
 }
 
 export const CropperView = ({
@@ -37,6 +39,8 @@ export const CropperView = ({
   readOnly = false,
   onCropChange,
   cropMode = "fixedratio",
+  minZoom = 1,
+  maxZoom = 3,
 }: CropperViewProps) => {
   const onCropComplete = useCallback(
     (_croppedArea: Area, croppedAreaPixels: Area) => {
@@ -45,7 +49,7 @@ export const CropperView = ({
         croppedAreaPixels,
       });
     },
-    [onCropChange],
+    [onCropChange, crop],
   );
 
   const getFilterStyle = (levels: {
@@ -59,18 +63,22 @@ export const CropperView = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `brightness(${finalBrightness > 100
+    return `brightness(${
+      finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
         : (finalBrightness - 100) * 4 + 100
-      }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${levels.temperature > 0 ? levels.temperature : 0
-      }%) hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0
-      }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
+    }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
+      levels.temperature > 0 ? levels.temperature : 0
+    }%) hue-rotate(${
+      levels.temperature < 0 ? levels.temperature * -0.8 : 0
+    }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   return (
     <div
-      className={`relative h-full w-full ${readOnly ? "pointer-events-none" : ""
-        }`}
+      className={`relative h-full w-full ${
+        readOnly ? "pointer-events-none" : ""
+      }`}
     >
       <Cropper
         image={image}
@@ -81,26 +89,16 @@ export const CropperView = ({
         onCropChange={(newCrop) => onCropChange({ ...crop, ...newCrop })}
         onZoomChange={(newZoom) => onCropChange({ ...crop, zoom: newZoom })}
         onCropComplete={onCropComplete}
-        objectFit={cropMode === "fixedratio" ? "cover" : "contain"}
+        objectFit="cover" // 항상 cover를 사용하여 격자가 컨테이너(3:4)를 가득 채우게 함
         restrictPosition={cropMode === "fixedratio"}
-        minZoom={cropMode === "fixedratio" ? 1 : 0.5}
-        maxZoom={cropMode === "fixedratio" ? 3 : 1}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
         showGrid={!readOnly}
         style={{
           mediaStyle: {
             filter: getFilterStyle(adjustment),
-            width:
-              cropMode === "fixedratio"
-                ? isWideImage
-                  ? "auto"
-                  : "100%"
-                : undefined,
-            height:
-              cropMode === "fixedratio"
-                ? isWideImage
-                  ? "100%"
-                  : "auto"
-                : undefined,
+            // objectFit: cover 사용 시 width/height 오버라이드 불필요하거나,
+            // 커버 동작을 위해 auto/auto로 두는 편이 나음. 기존 로직 제거.
             maxWidth: "none",
             maxHeight: "none",
           },

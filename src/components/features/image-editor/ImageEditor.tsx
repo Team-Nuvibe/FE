@@ -87,6 +87,7 @@ export const ImageEditor = ({
 
   const [activeTool, setActiveTool] = useState("adjustment");
   const [isWideImage, setIsWideImage] = useState(false);
+  const [fitZoom, setFitZoom] = useState(1);
   const [cropMode, setCropMode] = useState<"original" | "fixedratio">(
     "fixedratio",
   );
@@ -122,12 +123,15 @@ export const ImageEditor = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `brightness(${finalBrightness > 100
+    return `brightness(${
+      finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
         : (finalBrightness - 100) * 4 + 100
-      }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${levels.temperature > 0 ? levels.temperature : 0
-      }%) hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0
-      }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
+    }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
+      levels.temperature > 0 ? levels.temperature : 0
+    }%) hue-rotate(${
+      levels.temperature < 0 ? levels.temperature * -0.8 : 0
+    }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   const handleExportImage = () => {
@@ -169,12 +173,24 @@ export const ImageEditor = ({
       ctx.drawImage(img, 0, 0);
 
       // 4. 크롭된 영역 추출
-      const data = ctx.getImageData(
-        croppedAreaPixels.x,
-        croppedAreaPixels.y,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
-      );
+      // 캔버스 사이즈는 croppedAreaPixels의 크기로 설정
+      const cropWidth = croppedAreaPixels.width;
+      const cropHeight = croppedAreaPixels.height;
+      const cropCanvas = document.createElement("canvas");
+      cropCanvas.width = cropWidth;
+      cropCanvas.height = cropHeight;
+      const cropCtx = cropCanvas.getContext("2d");
+
+      if (!cropCtx) return;
+
+      // 배경을 색으로 채움 (여백) - 여기서는 검은색 (#000000)
+      cropCtx.fillStyle = "#000000";
+      cropCtx.fillRect(0, 0, cropWidth, cropHeight);
+
+      // 원본 이미지가 그려진 임시 캔버스(canvas)를 cropCanvas에 그림
+      // croppedAreaPixels.x, y가 음수일 수 있으므로(여백 포함시),
+      // 그 역수만큼 이동하여 그림.
+      cropCtx.drawImage(canvas, -croppedAreaPixels.x, -croppedAreaPixels.y);
 
       // 5. 최종 리사이징을 위한 캔버스 생성 (MAX_SIZE 1280)
       const MAX_SIZE = 1280;
@@ -198,18 +214,13 @@ export const ImageEditor = ({
 
       if (!outputCtx) return;
 
-      // 추출한 데이터를 임시 캔버스에 그림 (리사이징을 위해)
-      canvas.width = croppedAreaPixels.width;
-      canvas.height = croppedAreaPixels.height;
-      ctx.putImageData(data, 0, 0);
-
       // 리사이징하여 최종 캔버스에 그리기
       outputCtx.drawImage(
-        canvas,
+        cropCanvas,
         0,
         0,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
+        cropWidth,
+        cropHeight,
         0,
         0,
         dWidth,
@@ -244,6 +255,21 @@ export const ImageEditor = ({
       const height = img.naturalHeight;
       const imageRatio = width / height;
       setIsWideImage(imageRatio > 3 / 4);
+
+      // fitZoom 계산 (이미지가 3:4 프레임 안에 딱 맞게 들어가는 줌 레벨)
+      // react-easy-crop에서 objectFit="cover"일 때(즉 꽉 채울 때) 기준
+      const TARGET_ASPECT = 3 / 4;
+      let fit = 1;
+      if (imageRatio > TARGET_ASPECT) {
+        // 이미지가 더 넓음 -> 높이가 맞음, 너비가 잘림
+        // 전체 너비를 보려면 축소해야 함
+        fit = TARGET_ASPECT / imageRatio;
+      } else {
+        // 이미지가 더 높음 -> 너비가 맞음, 높이가 잘림
+        // 전체 높이를 보려면 축소해야 함
+        fit = imageRatio / TARGET_ASPECT;
+      }
+      setFitZoom(fit);
     };
 
     return () => {
@@ -307,6 +333,8 @@ export const ImageEditor = ({
               isWideImage={isWideImage}
               readOnly={activeTool !== "crop"}
               cropMode={cropMode}
+              minZoom={cropMode === "original" ? fitZoom / 2 : 1}
+              maxZoom={cropMode === "original" ? fitZoom : 3}
             />
           </div>
         </div>
@@ -330,7 +358,12 @@ export const ImageEditor = ({
             setCropMode(mode);
             setEditState((prev) => ({
               ...prev,
-              crop: { x: 0, y: 0, zoom: 1, croppedAreaPixels: null },
+              crop: {
+                x: 0,
+                y: 0,
+                zoom: mode === "original" ? fitZoom : 1, // original이면 fitZoom으로 시작
+                croppedAreaPixels: null,
+              },
             }));
           }}
         />
