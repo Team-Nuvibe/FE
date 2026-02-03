@@ -2,6 +2,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ImageEditor } from "../../components/features/image-editor/ImageEditor";
 import { useEffect, useState } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
+import { postPresignedUrl } from "@/apis/vibedrop";
+import axios from "axios";
 import { BoardSelector } from "../../components/features/BoardSelector";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -16,7 +18,6 @@ import { useNavbarActions } from "@/hooks/useNavbarStore";
 interface Board {
   id: number;
   name: string;
-  createdAt: string;
   thumbnailUrl: string;
   tagCount: number;
 }
@@ -63,6 +64,7 @@ export const QuickdropPage = () => {
   });
   const [paginationEl, setPaginationEl] = useState<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -73,6 +75,52 @@ export const QuickdropPage = () => {
   }, [imageData.imageUrl]);
 
   const navigate = useNavigate();
+
+  // 이미지 업로드 핸들러
+  const handleBoardComplete = async (selectedBoard: Board) => {
+    if (!imageData.image || !imageData.tag) {
+      console.error("Image or tag is missing");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // 1. 파일명 추출 (원본 파일명 또는 기본값)
+      const originalFileName = file?.name || "image.jpg";
+
+      // 2. Presigned URL 발급 API 호출
+      const response = await postPresignedUrl(imageData.tag, originalFileName);
+      const presignedUrl = response.data.imageURL;
+
+      console.log("Presigned URL:", presignedUrl);
+
+      // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        body: imageData.image,
+        headers: {
+          "Content-Type": imageData.image.type,
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`S3 upload failed: ${uploadResponse.status}`);
+      }
+
+      console.log("Image uploaded successfully to S3");
+
+      // 4. 성공 시 보드 정보 저장하고 uploaded 단계로 이동
+      setImageData((prev) => ({ ...prev, board: selectedBoard }));
+      setStep("uploaded");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      // TODO: 사용자에게 에러 메시지 표시
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <div className="flex h-dvh w-full flex-col">
@@ -112,10 +160,7 @@ export const QuickdropPage = () => {
           image={imageData.image}
           imageUrl={imageData.imageUrl}
           tag={imageData.tag}
-          onNext={(selectedBoard: Board) => {
-            setImageData((prev) => ({ ...prev, board: selectedBoard }));
-            setStep("uploaded");
-          }}
+          onNext={handleBoardComplete}
           onPrevious={() => setStep(preSelectedTag ? "edit" : "tag")}
         />
       )}
@@ -190,7 +235,7 @@ export const QuickdropPage = () => {
                       #{imageData.tag}
                     </p>
                     <p className="font-[Montserrat] text-[10px] font-light italic">
-                      {imageData.board?.createdAt}
+                      2025. 03. 21.
                       {"\u00A0\u00A0\u00A0"}|{"\u00A0\u00A0\u00A0"}09:41
                     </p>
                   </div>

@@ -5,9 +5,13 @@ import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import Union from "@/assets/icons/Union.svg?react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Img1 from "@/assets/images/img_temp1.png";
 import { AddBoardModal } from "../quickdrop/AddBoardModal";
+import {
+  getArchiveList,
+  createArchiveBoard,
+} from "@/apis/archive-board/archive";
 
 interface BoardSelectorProps {
   image: Blob | null;
@@ -21,7 +25,6 @@ interface BoardSelectorProps {
 interface Board {
   id: number;
   name: string;
-  createdAt: string;
   thumbnailUrl: string;
   tagCount: number;
 }
@@ -36,55 +39,59 @@ export const BoardSelector = ({
   const [showingSavedBoards, setShowingSavedBoards] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 임시 보드 데이터
-  const [boards, setBoards] = useState<Board[]>([
-    {
-      id: 1,
-      name: "가나다라마바사아자차카타파하",
-      createdAt: "2026. 01. 03",
-      thumbnailUrl: imageUrl || "",
-      tagCount: 12,
-    },
-    {
-      id: 2,
-      name: "가나다라마바사아자차카타파하",
-      createdAt: "2025. 12. 28",
-      thumbnailUrl: Img1,
-      tagCount: 8,
-    },
-    {
-      id: 3,
-      name: "크리스의 집",
-      createdAt: "2026. 01. 03",
-      thumbnailUrl: imageUrl || "",
-      tagCount: 12,
-    },
-    {
-      id: 4,
-      name: "텔리의 집",
-      createdAt: "2026. 01. 03",
-      thumbnailUrl: imageUrl || "",
-      tagCount: 12,
-    },
-    {
-      id: 5,
-      name: "구디의 집",
-      createdAt: "2026. 01. 03",
-      thumbnailUrl: imageUrl || "",
-      tagCount: 12,
-    },
-  ]);
+  // 아카이브 보드 목록
+  const [boards, setBoards] = useState<Board[]>([]);
 
-  const handleAddBoard = (boardName: string) => {
-    const newBoard: Board = {
-      id: boards.length + 1,
-      name: boardName,
-      createdAt: "2026. 01. 13",
-      thumbnailUrl: imageUrl || "",
-      tagCount: 0,
+  // 아카이브 목록 조회 API 이용해 데이터 가져오기
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const response = await getArchiveList();
+        console.log(response);
+
+        if (response.data) {
+          console.log(response.data);
+          const mappedBoards: Board[] = response.data.map((board) => ({
+            id: board.boardId,
+            name: board.name,
+            thumbnailUrl: board.thumbnailUrl || imageUrl || "",
+            tagCount: board.tagCount || 0,
+          }));
+
+          setBoards(mappedBoards);
+        } else {
+          console.warn("Unexpected response format:", response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch archive boards:", error);
+      }
     };
-    setBoards([newBoard, ...boards]);
-    setIsModalOpen(false);
+
+    fetchBoards();
+  }, [imageUrl]);
+
+  const handleAddBoard = async (boardName: string) => {
+    if (!boardName || boardName.trim() === "") return;
+
+    try {
+      const response = await createArchiveBoard(boardName.trim());
+
+      if (response.data) {
+        const newBoard: Board = {
+          id: response.data.boardId,
+          name: response.data.name,
+          thumbnailUrl: imageUrl || "",
+          tagCount: 0,
+        };
+        setBoards([newBoard, ...boards]);
+      }
+    } catch (error) {
+      console.error("Failed to create archive board:", error);
+      // TODO: 사용자에게 에러 메시지 표시
+      alert("보드 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
   return (
@@ -98,10 +105,11 @@ export const BoardSelector = ({
             />
             <h2 className="H2 text-white">바이브 드랍</h2>
             <p
-              className={`ST2 ${selectedBoard
+              className={`ST2 ${
+                selectedBoard
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
-                }`}
+              }`}
               onClick={() => onNext(selectedBoard!)}
             >
               완료
@@ -157,7 +165,7 @@ export const BoardSelector = ({
                   <Union className="pointer-events-none absolute bottom-0 left-0 z-10 w-full translate-y-[0.5px]" />
                   <div className="absolute inset-0 z-20 flex flex-col justify-between text-white">
                     <p className="pt-11 pr-[6px] text-right text-[6px]">
-                      {board.createdAt}
+                      2025. 01. 01.
                     </p>
                     <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
                       <p className="w-[70px] text-[10px] text-white">
@@ -189,10 +197,11 @@ export const BoardSelector = ({
             />
             <h2 className="H2 text-white">저장할 아카이브 보드</h2>
             <p
-              className={`ST2 ${selectedBoard
+              className={`ST2 ${
+                selectedBoard
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
-                }`}
+              }`}
               onClick={() => onNext(selectedBoard!)}
             >
               완료
