@@ -3,13 +3,13 @@ import DefaultProfileImage from '@/assets/images/Default_profile_logo.svg';
 interface ProfileImageDisplayProps {
     src?: string;
     alt?: string;
-    className?: string; // Expecting width/height classes here (e.g., w-[76px] h-[76px])
+    className?: string; // width/height 클래스가 필요합니다 (예: w-[76px] h-[76px])
 }
 
 export const ProfileImageDisplay = ({ src, alt = "profile", className = "" }: ProfileImageDisplayProps) => {
     const isDefault = !src || src === DefaultProfileImage;
 
-    // If it's the default image, just render the original SVG (or img tag pointing to it)
+    // 기본 이미지인 경우, 원본 SVG를 그대로 렌더링 (또는 img 태그 사용)
     if (isDefault) {
         return (
             <div className={`${className} overflow-visible`}>
@@ -18,7 +18,7 @@ export const ProfileImageDisplay = ({ src, alt = "profile", className = "" }: Pr
         );
     }
 
-    // Geometry derived directly from Default_profile_logo.svg
+    // Default_profile_logo.svg에서 직접 가져온 지오메트리 값
     // ViewBox: 0 0 77 77
     const viewBoxSize = 77;
 
@@ -29,35 +29,34 @@ export const ProfileImageDisplay = ({ src, alt = "profile", className = "" }: Pr
                 className="w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
             >
-                {/* 1. Define the mask using the exact inner rect from the default logo */}
+                {/* 1. 기본 로고의 내부 사각형(Diamond shape)과 정확히 일치하는 마스크 정의 */}
                 <defs>
                     <clipPath id="innerDiamondMask">
                         {/* 
-                            Original SVG Inner Rect:
-                            <rect y="38.0391" width="53.7867" height="53.7867" rx="18.8765" transform="rotate(-45 0 38.0391)" fill="#D9D9D9"/>
+                            중앙 기준 회전된 사각형:
+                            사각형 너비/높이: 53.7867
+                            viewBox 중심: (38.5, 38.5)
                             
-                            In SVG clipPath, transforms on the element inside apply to the clip area.
+                            x = 38.5 - 53.7867 / 2 = 11.60665
+                            y = 11.60665
+                            
+                            중심점(38.5, 38.5)을 기준으로 45도 회전
                          */}
                         <rect
-                            y="38.0391"
+                            x="11.60665"
+                            y="11.60665"
                             width="53.7867"
                             height="53.7867"
                             rx="18.8765"
-                            transform="rotate(-45 0 38.0391)"
+                            transform="rotate(45 38.5 38.5)"
                         />
                     </clipPath>
                 </defs>
 
-                {/* 2. Background Circle (Outer part of the default logo) */}
-                {/* <rect width="76.1582" height="76.1582" rx="38.0791" fill="#212224"/> */}
-                <circle cx="38.0791" cy="38.0791" r="38.0791" fill="#FFFFFF" />
+                {/* 2. 배경 원 (기본 로고의 바깥쪽 부분) */}
+                <circle cx="38.5" cy="38.5" r="38.0791" fill="#FFFFFF" />
 
-
-                {/* 3. The User's Image, masked by the inner diamond */}
-                {/* 
-                    We need to position the image to cover the mask area. 
-                    Since the mask rotates, covering the whole 77x77 area is safest.
-                */}
+                {/* 3. 내부 다이아몬드 형태로 마스킹된 사용자 이미지 */}
                 <image
                     href={src}
                     x="0"

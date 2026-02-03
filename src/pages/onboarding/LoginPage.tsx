@@ -33,12 +33,15 @@ const LoginPage = () => {
   const { accessToken } = useAuth();
   const fromPath = location.state?.fromPath || "/home";
   const navigate = useNavigate();
-  // 이미 로그인 해있을 시 홈으로 이동
+
+  // 이미 로그인 해있을 시 홈으로 이동 (로그아웃 직후에는 이동하지 않음)
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken && !location.state?.isLogout) {
       navigate(fromPath, { replace: true });
     }
-  }, [navigate, accessToken, fromPath]);
+  }, [navigate, accessToken, fromPath, location.state]);
+
+  // 토스트 메시지 처리
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -46,7 +49,7 @@ const LoginPage = () => {
       const timer = setTimeout(() => {
         setToastMessage(null);
         window.history.replaceState({}, document.title);
-      }, 3000); // 3초 후 토스트 메시지 제거
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [location.state]);
@@ -191,9 +194,10 @@ const LoginPage = () => {
           </button>
         </div>
 
+        {/* 토스트 메시지 */}
         {toastMessage && (
-          <div className="animate-fade-in-out absolute bottom-[122px] z-50 flex h-[46px] w-[361px] items-center justify-center rounded-[5px] bg-gray-800">
-            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-white">
+          <div className="animate-fade-in-out absolute bottom-[40px] z-50 flex h-[48px] w-[344px] items-center justify-center rounded-[5px] bg-[#D0D3D7]/85 px-[16px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
+            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black">
               {toastMessage}
             </span>
           </div>

@@ -29,24 +29,24 @@ export const LogoutModal = ({ isOpen, onClose, onConfirm }: LogoutModalProps) =>
 
                 <div className="flex w-full justify-center gap-[8px]">
                     <button
-                        onClick={onClose}
+                        onClick={onConfirm}
                         className="
                             w-[128px] h-[36px] rounded-[5px] bg-gray-700
                             text-gray-300 text-[14px] font-medium leading-[150%] tracking-[-0.025em]
                             flex items-center justify-center transition-colors
                         "
                     >
-                        취소하기
+                        로그아웃하기
                     </button>
                     <button
-                        onClick={onConfirm}
+                        onClick={onClose}
                         className="
                             w-[128px] h-[36px] rounded-[5px] bg-gray-300
                             text-gray-800 text-[14px] font-medium leading-[150%] tracking-[-0.025em]
                             flex items-center justify-center transition-colors
                         "
                     >
-                        로그아웃하기
+                        돌아가기
                     </button>
                 </div>
             </div>
