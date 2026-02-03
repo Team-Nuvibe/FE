@@ -184,7 +184,7 @@ export const ImageEditor = ({
       if (!cropCtx) return;
 
       // 배경을 색으로 채움 (여백) - 여기서는 검은색 (#000000)
-      cropCtx.fillStyle = "#000000";
+      cropCtx.fillStyle = "#575757";
       cropCtx.fillRect(0, 0, cropWidth, cropHeight);
 
       // 원본 이미지가 그려진 임시 캔버스(canvas)를 cropCanvas에 그림

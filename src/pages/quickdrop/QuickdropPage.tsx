@@ -90,7 +90,10 @@ export const QuickdropPage = () => {
       const originalFileName = file?.name || "image.jpg";
 
       // 2. Presigned URL 발급 API 호출
-      const response = await postPresignedUrl(imageData.tag, originalFileName);
+      const response = await postPresignedUrl(
+        imageData.tag.toUpperCase(),
+        originalFileName,
+      );
       const presignedUrl = response.data.imageURL;
 
       console.log("Presigned URL:", presignedUrl);
