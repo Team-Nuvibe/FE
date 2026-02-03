@@ -5,7 +5,7 @@ import type {
   RecapImagesResponse,
   VibeToneTagsResponse,
 } from "@/types/archive";
-import { axiosInstance } from "./axios";
+import { axiosInstance } from "../axios";
 import type { ApiResponse } from "@/types/common";
 
 // 아카이브 목록 조회
