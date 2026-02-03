@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import Img_3 from "@/assets/images/Img_3.png";
+import Img_3 from "@/assets/images/img_3.png";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import Icon_notification from "@/assets/icons/icon_notification.svg?react";
@@ -65,11 +65,11 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-full">
+    <div className="flex min-h-full w-full flex-col">
       {/* 헤더 */}
-      <header className="relative flex flex-col justify-between h-[50dvh] bg-cover bg-bottom bg-no-repeat shrink-0">
+      <header className="relative flex h-[50dvh] shrink-0 flex-col justify-between bg-cover bg-bottom bg-no-repeat">
         <div
-          className="absolute inset-0 w-full h-full object-cover bg-bottom bg-cover bg-no-repeat"
+          className="absolute inset-0 h-full w-full bg-cover bg-bottom bg-no-repeat object-cover"
           style={{
             backgroundImage: `url(${Img_3})`,
             maskImage:
@@ -78,20 +78,20 @@ const HomePage = () => {
               "linear-gradient(to bottom, black 70%, transparent 100%)",
           }}
         />
-        <div className="flex justify-end p-6 z-10">
+        <div className="z-10 flex justify-end p-6">
           <Icon_notification
             className="cursor-pointer"
             onClick={() => navigate("/notification")}
           />
         </div>
-        <div className="flex justify-between items-end w-full">
+        <div className="flex w-full items-end justify-between">
           <div className="flex flex-col">
-            <div className="B0 text-gray-100 px-4 z-10 tracking-tight">
+            <div className="B0 z-10 px-4 tracking-tight text-gray-100">
               <p className="text-[24px] leading-4">Drop</p>
               <p className="text-[24px]">your vibe</p>
             </div>
-            <div className="H1 pb-4 px-4 z-10">
-              <h1 className="inline-block text-[28px] bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-transparent">
+            <div className="H1 z-10 px-4 pb-4">
+              <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] text-transparent">
                 #Minimal
               </h1>
             </div>
@@ -100,7 +100,7 @@ const HomePage = () => {
             <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
             <input
               type="file"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               accept="image/*"
               ref={inputImageRef}
               onChange={handleImageChange}
@@ -109,10 +109,10 @@ const HomePage = () => {
         </div>
       </header>
       {/* My Trace */}
-      <section className="flex flex-col px-4 pt-4 pb-4 gap-4">
+      <section className="flex flex-col gap-4 px-4 pt-4 pb-4">
         <h2 className="H2 text-gray-200">나의 기록</h2>
         <div className="flex">
-          <div className="w-[123px] h-[116px] bg-gray-900 rounded-[5px] flex justify-center items-center cursor-pointer border-dashed border-1 border-gray-800">
+          <div className="flex h-[116px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
             <Icon_plus className="h-[16px]" />
           </div>
         </div>
@@ -121,10 +121,10 @@ const HomePage = () => {
       <section className="flex flex-col pb-4">
         <div className="sticky top-0 z-40 bg-black pt-4 pb-4">
           <div className="relative mx-4">
-            <div className="absolute bottom-[0.5px] left-0 w-full h-[0.5px] bg-gray-400" />
+            <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-full bg-gray-400" />
             <div
               ref={tabsContainerRef}
-              className="flex gap-3 overflow-x-auto scrollbar-hide"
+              className="scrollbar-hide flex gap-3 overflow-x-auto"
               style={{
                 maskImage:
                   "linear-gradient(to right, black 90%, transparent 100%)",
@@ -139,20 +139,21 @@ const HomePage = () => {
                     tabRefs.current[index] = el;
                   }}
                   onClick={() => handleCategoryClick(index)}
-                  className={`relative flex flex-col items-center shrink-0 transition-colors cursor-pointer pb-2`}
+                  className={`relative flex shrink-0 cursor-pointer flex-col items-center pb-2 transition-colors`}
                 >
                   <p
-                    className={`ST2 transition-colors duration-200 ${activeIndex === index
-                      ? "B2 text-white"
-                      : "B2 text-gray-400"
-                      }`}
+                    className={`ST2 transition-colors duration-200 ${
+                      activeIndex === index
+                        ? "B2 text-white"
+                        : "B2 text-gray-400"
+                    }`}
                   >
                     {"\u00A0" + category.name + "\u00A0"}
                   </p>
                   {activeIndex === index && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute bottom-0 w-full h-[1.5px] bg-white z-10"
+                      className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
                       transition={{ stiffness: 500, damping: 30 }}
                     />
                   )}
@@ -182,7 +183,7 @@ const HomePage = () => {
             setActiveIndex(swiper.activeIndex);
             scrollToTab(swiper.activeIndex);
           }}
-          className="w-full mt-1"
+          className="mt-1 w-full"
         >
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
@@ -190,12 +191,12 @@ const HomePage = () => {
                 {category.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className="w-full aspect-[177/236] bg-gray-400 rounded-[5px] flex justify-center items-end cursor-pointer"
+                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px] bg-gray-400"
                     onClick={() => navigate(`/tag/${item}`)}
-                  // 임시로 태그 id 대신 이름 사용
+                    // 임시로 태그 id 대신 이름 사용
                   >
-                    <div className="flex justify-center items-center bg-gray-900 rounded-[5px] w-[80px] h-[27px] px-9 mb-[10px]">
-                      <p className="py-3 ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text text-transparent">
+                    <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
+                      <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 text-transparent">
                         #{item}
                       </p>
                     </div>
@@ -206,7 +207,7 @@ const HomePage = () => {
           ))}
         </Swiper>
       </section>
-      <div className="fixed bottom-0 left-0 w-full h-[12dvh] bg-gradient-to-b from-transparent to-[#121212] pointer-events-none z-50" />
+      <div className="pointer-events-none fixed bottom-0 left-0 z-50 h-[12dvh] w-full bg-gradient-to-b from-transparent to-[#121212]" />
 
       <div className="h-[calc(env(safe-area-inset-bottom)+12rem)] w-full shrink-0" />
     </div>

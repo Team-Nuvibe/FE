@@ -70,8 +70,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const logout = async () => {
-    await logOut();
-    clearSession();
+    try {
+      await logOut();
+    } finally {
+      clearSession();
+    }
   };
 
   return (
