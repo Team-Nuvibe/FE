@@ -63,7 +63,6 @@ const ArchiveDetailPage = () => {
 
   // Board detail state
   const [allModelItems, setAllModelItems] = useState<ModelItem[]>([]);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
   useEffect(() => {
     const fetchBoardDetail = async () => {
@@ -75,7 +74,6 @@ const ArchiveDetailPage = () => {
         return;
       }
       try {
-        setIsLoadingDetail(true);
         const response = await getArchiveBoardDetail(boardIdNum);
 
         if (response.data) {

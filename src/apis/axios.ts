@@ -134,8 +134,9 @@ axiosInstance.interceptors.response.use(
           }
 
           // [핵심 변경] 인터셉터 간섭을 피하기 위해 axios 직접 사용
-          // baseURL 수동 지정 필요: import.meta.env.PROD 체크 유지
-          const baseURL = import.meta.env.PROD ? "" : "http://43.200.96.34";
+          // baseURL 수동 지정 필요
+          const baseURL =
+            import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site";
 
           const { data } = await axios.post(
             `${baseURL}/api/auth/reissue`,
