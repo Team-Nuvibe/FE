@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/hooks/useUserStore";
 import FolderIcon from "@/assets/icons/icon_folder_vibetone.svg?react";
 import type { MostUsedBoardResponse } from "@/types/archive";
+import { useNavigate } from "react-router";
 
 const RecapSecondSlide = ({
   isActive,
@@ -14,6 +15,7 @@ const RecapSecondSlide = ({
   data: MostUsedBoardResponse | undefined;
 }) => {
   const { nickname } = useUserStore();
+  const navigate = useNavigate();
 
   // 초기 상태는 false (닫힘)
   const [isOpen, setIsOpen] = useState(false);
@@ -132,8 +134,9 @@ const RecapSecondSlide = ({
                 variants={imageVariants}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
-                className={`border-[3px]shadow-2xl absolute origin-bottom overflow-hidden rounded-[5px] ${index === 1 ? "h-[198px] w-[149px]" : "h-[146px] w-[110px]"
-                  }`}
+                className={`absolute origin-bottom overflow-hidden rounded-[5px] border-[3px] shadow-2xl ${
+                  index === 1 ? "h-[198px] w-[149px]" : "h-[146px] w-[110px]"
+                }`}
                 style={{
                   zIndex: index === 1 ? 20 : 10,
                   x: (index - 1) * 50,
@@ -174,7 +177,10 @@ const RecapSecondSlide = ({
               {boardName}
             </h1>
           </div>
-          <button className="mx-auto h-[36px] w-[132px] rounded-[5px] bg-gray-300 text-[14px] leading-[150%] font-medium tracking-[-0.35px] text-gray-800 transition-colors hover:bg-white">
+          <button
+            onClick={() => navigate(`/archive-board/${data?.boardId}`)}
+            className="mx-auto h-[36px] w-[132px] rounded-[5px] bg-gray-300 text-[14px] leading-[150%] font-medium tracking-[-0.35px] text-gray-800 transition-colors hover:bg-white"
+          >
             보드 방문하기
           </button>
         </div>

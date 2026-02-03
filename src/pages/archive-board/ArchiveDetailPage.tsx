@@ -35,7 +35,7 @@ interface ModelItem {
 }
 
 const ArchiveDetailPage = () => {
-  const { boardid } = useParams<string>();
+  const { boardid } = useParams<{ boardid: string }>();
 
   // Title state to allow renaming
   const [boardTitle, setBoardTitle] = useState<string>(boardid || "");
@@ -68,8 +68,14 @@ const ArchiveDetailPage = () => {
     const fetchBoardDetail = async () => {
       if (!boardid) return;
 
+      const boardIdNum = parseInt(boardid, 10);
+      if (isNaN(boardIdNum)) {
+        console.error("Invalid board ID:", boardid);
+        return;
+      }
       try {
-        const response = await getArchiveBoardDetail(Number(boardid));
+        setIsLoadingDetail(true);
+        const response = await getArchiveBoardDetail(boardIdNum);
 
         if (response.data) {
           console.log("📋 Board detail loaded:", response.data);
@@ -350,6 +356,7 @@ const ArchiveDetailPage = () => {
         initialTitle={boardTitle} // Pass current title
         toptext="아카이브 보드명 수정"
         buttontext="저장하기"
+        placeholderText="수정할 보드명을 입력해주세요."
         onClose={() => setIsEditNameModalOpen(false)}
         onClick={handleEditNameSave} // Handle save
       />

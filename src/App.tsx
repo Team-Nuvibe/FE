@@ -25,6 +25,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TribeChatPage from "./pages/tribe-chat/TribechatPage";
 import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 import { SplashLayout } from "./layouts/SplashLayout";
+import VConsole from "vconsole";
+
+if (import.meta.env.DEV) {
+  new VConsole();
+}
 
 // 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [

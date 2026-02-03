@@ -30,7 +30,7 @@ import {
   getMonthlyUploadDates,
   getCalendarImages,
 } from "@/apis/archive-board/vibetone";
-import type { CalendarImageItem } from "@/types/archive";
+import type { CalendarImageItemWithSource } from "@/types/archive";
 import VibeCalendarBottomCard from "@/components/archive-board/vibecalendar/VibeCalendarBottomCard";
 
 // 달력 그리드 컴포넌트 (최적화 적용)
@@ -143,7 +143,9 @@ export const VibeCalandarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeDates, setActiveDates] = useState<string[]>([]);
-  const [calendarImages, setCalendarImages] = useState<CalendarImageItem[]>([]);
+  const [calendarImages, setCalendarImages] = useState<
+    CalendarImageItemWithSource[]
+  >([]);
 
   const swiperRef = useRef<SwiperClass | null>(null);
 
@@ -162,7 +164,7 @@ export const VibeCalandarPage = () => {
         const month = currentDate.getMonth() + 1;
         const response = await getMonthlyUploadDates(year, month);
 
-        if (response.code === "string" && response.data) {
+        if (response.data) {
           setActiveDates(response.data);
         }
       } catch (error) {
@@ -195,7 +197,7 @@ export const VibeCalandarPage = () => {
         const dateString = format(selectedDate, "yyyy-MM-dd");
         const response = await getCalendarImages(dateString);
 
-        if (response.code === "string" && response.data) {
+        if (response.data) {
           // listOfWithImages와 todayImages를 구분하여 저장
           const imagesWithSource = [
             ...response.data.listOfWithImages.map((item) => ({
@@ -207,7 +209,7 @@ export const VibeCalandarPage = () => {
               source: "today" as const,
             })),
           ];
-          setCalendarImages(imagesWithSource as any);
+          setCalendarImages(imagesWithSource);
         }
       } catch (error) {
         console.error("Failed to fetch calendar images:", error);

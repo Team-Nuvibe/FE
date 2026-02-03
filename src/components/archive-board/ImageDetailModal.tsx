@@ -1,14 +1,13 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import html2canvas from 'html2canvas';
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import html2canvas from "html2canvas";
 
-import Xbutton from "@/assets/icons/icon_xbutton_sm.svg?react"
-import Xbutton24 from "@/assets/icons/icon_xbutton_24.svg?react"
-import Downloadbutton from "@/assets/icons/icon_imagesave.svg?react"
-import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg?react"
+import Xbutton from "@/assets/icons/icon_xbutton_sm.svg?react";
+import Xbutton24 from "@/assets/icons/icon_xbutton_24.svg?react";
+import Downloadbutton from "@/assets/icons/icon_imagesave.svg?react";
+import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg?react";
 
-import { TagSelector } from '@/components/features/TagSelector';
-
+import { TagSelector } from "@/components/features/TagSelector";
 
 interface ModelItem {
   id: string;
@@ -23,7 +22,12 @@ interface ImageDetailModalProps {
   onTagUpdate?: (newTag: string) => void;
 }
 
-export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpdate }: ImageDetailModalProps) => {
+export const ImageDetailModal = ({
+  item,
+  onClose,
+  boardTitle = "Model",
+  onTagUpdate,
+}: ImageDetailModalProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
@@ -38,7 +42,8 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
         backgroundColor: null, // Capture actual background
         scale: 2, // Higher resolution
         useCORS: true, // Allow cross-origin images
-        ignoreElements: (element) => element.classList.contains('ignore-capture'), // Ignore header buttons
+        ignoreElements: (element) =>
+          element.classList.contains("ignore-capture"), // Ignore header buttons
       });
 
       const fileName = `Nuvibe_${item.tag}_${Date.now()}.png`;
@@ -50,7 +55,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
           return;
         }
 
-        const file = new File([blob], fileName, { type: 'image/png' });
+        const file = new File([blob], fileName, { type: "image/png" });
 
         // Web Share API
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -59,14 +64,14 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
               files: [file],
             });
           } catch (error) {
-            if ((error as Error).name !== 'AbortError') {
+            if ((error as Error).name !== "AbortError") {
               console.error("Share failed:", error);
             }
           }
         } else {
           // Native Download Fallback
           const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
+          const a = document.createElement("a");
           a.href = url;
           a.download = fileName;
           document.body.appendChild(a);
@@ -75,8 +80,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
           URL.revokeObjectURL(url);
         }
         setIsDownloading(false);
-      }, 'image/png');
-
+      }, "image/png");
     } catch (error) {
       console.error("Download failed:", error);
       setIsDownloading(false);
@@ -91,10 +95,7 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
         exit={{ opacity: 0 }}
         className="absolute inset-0 z-50 bg-black/90 selection:bg-none" // z-50 to stay above everything else except TagSelector
       >
-        <div
-          ref={captureRef}
-          className="relative w-full h-full flex flex-col"
-        >
+        <div ref={captureRef} className="relative flex h-full w-full flex-col">
           {/* Background Blur */}
           <div
             className="absolute inset-0 z-0 overflow-hidden"
@@ -104,90 +105,88 @@ export const ImageDetailModal = ({ item, onClose, boardTitle = "Model", onTagUpd
               <img
                 src={item.thumbnail}
                 alt="background blur"
-                className="w-full h-full object-cover blur-[100px] opacity-60 scale-110"
+                className="h-full w-full scale-110 object-cover opacity-60 blur-[100px]"
                 referrerPolicy="no-referrer"
               />
             )}
             <div
               className="absolute inset-0"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
             />
           </div>
 
           {/* Header */}
-          <div className="ignore-capture relative z-10 px-4 pt-6 pb-4 flex items-center justify-between">
-            <button onClick={onClose} className="p-2 -ml-2 text-white">
+          <div className="ignore-capture relative z-10 flex items-center justify-between px-4 pt-6 pb-4">
+            <button onClick={onClose} className="-ml-2 p-2 text-white">
               <Xbutton24 />
             </button>
             <button
-              className="p-2 -mr-2 text-white disabled:opacity-50"
+              className="-mr-2 p-2 text-white disabled:opacity-50"
               onClick={handleDownload}
               disabled={isDownloading}
             >
               {isDownloading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               ) : (
                 <Downloadbutton />
               )}
             </button>
           </div>
-          <div className="flex flex-col gap-5 p-5 flex-1 min-h-0 ">
+          <div className="flex min-h-0 flex-1 flex-col gap-5 p-5">
             {/* Main Image Container */}
-            <div
-              className="relative z-10 w-full flex flex-col items-center justify-center min-h-0">
+            <div className="relative z-10 flex min-h-0 w-full flex-col items-center justify-center">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="flex flex-col items-start gap-5 p-5 bg-transparent"
+                className="flex flex-col items-start gap-5 bg-transparent p-5"
               >
                 {/* Image Frame */}
-                <div className="bg-white overflow-hidden relative rounded-[10px] w-72.75 h-97 shrink-0">
+                <div className="relative h-97 w-72.75 shrink-0 overflow-hidden rounded-[10px] bg-white">
                   {item.thumbnail ? (
                     <>
                       <img
                         src={item.thumbnail}
                         alt={item.tag}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 transform ${isLoaded ? 'opacity-100' : 'opacity-0'
-                          }`}
+                        className={`absolute inset-0 h-full w-full transform object-cover transition-opacity duration-300 ${
+                          isLoaded ? "opacity-100" : "opacity-0"
+                        }`}
                         referrerPolicy="no-referrer"
                         onLoad={() => setIsLoaded(true)}
                       />
                       {!isLoaded && (
-                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                        <div className="absolute inset-0 animate-pulse bg-gray-200" />
                       )}
                     </>
                   ) : (
-                    <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400 text-sm">No Image</span>
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                      <span className="text-sm text-gray-400">No Image</span>
                     </div>
                   )}
                 </div>
 
                 {/* Bottom Info */}
-                <div className="flex flex-col items-start w-full">
-                  <p className="font-pretendard font-normal text-[14px] leading-[150%] tracking-[-0.35px] text-white flex items-center">
+                <div className="flex w-full flex-col items-start">
+                  <p className="B2 font-pretendard flex items-center leading-[150%] tracking-[-0.35px] text-white">
                     {boardTitle}
                     <ChevronRightIcon />
                   </p>
                   <div className="flex items-center gap-2">
-                    <h2
-                      className="font-pretendard H2 leading-[150%] tracking-[-0.6px] text-[#f7f7f7]"
-                    >
+                    <h2 className="font-pretendard H1 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-[-0.6px] text-transparent">
                       #{item.tag}
                     </h2>
                     <button
-                      className="text-gray-300 hover:text-white transition-colors"
+                      className="text-gray-300 transition-colors hover:text-white"
                       onClick={() => setIsTagSelectorOpen(true)}
                     >
-                      <Xbutton className='w-6 h-6' />
+                      <Xbutton className="h-6 w-6" />
                     </button>
                   </div>
                   <p
-                    className="font-montserrat pt-1 font-light italic text-[10px] leading-[9.3px] text-[#FAFAFA]"
+                    className="font-montserrat pt-1 text-[10px] leading-[9.3px] font-light text-[#FAFAFA] italic"
                     style={{ opacity: 0.8 }}
                   >
-                    2025.11.24   |   09:41
+                    2025.11.24 | 09:41
                   </p>
                 </div>
               </motion.div>

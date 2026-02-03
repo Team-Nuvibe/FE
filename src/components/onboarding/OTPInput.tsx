@@ -23,7 +23,7 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
     index: number,
   ) => {
     const value = e.target.value;
-    if (isNaN(Number(value))) return; // 숫자가 아니면 무시
+    if (!/^\d*$/.test(value)) return; // 숫자(0-9)가 아니면 무시 (공백 제외)
 
     const newOtp = [...otp];
     // 입력된 값의 마지막 글자만 가져옴 (한 칸에 하나만)

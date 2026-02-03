@@ -3,7 +3,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.PROD ? "" : "http://43.200.96.34",
+  baseURL: import.meta.env.PROD ? "" : "https://api.nuvibe.site",
   withCredentials: false, //쿠키
 });
 
@@ -13,7 +13,11 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 인증이 필요 없는 공개 엔드포인트 목록
-    const publicEndpoints = ["/api/auth/login", "/api/auth/sign-up"];
+    const publicEndpoints = [
+      "/api/auth/login",
+      "/api/auth/sign-up",
+      "/api/auth/reissue",
+    ];
     const isPublicEndpoint = publicEndpoints.some((endpoint) =>
       config.url?.includes(endpoint),
     );
@@ -61,12 +65,22 @@ const isTokenExpiredError = (error: unknown): boolean => {
 
   const status = response.status;
   const message = response.data?.message || "";
+  const lowerMessage = message.toLowerCase();
 
   // 401 에러는 항상 토큰 만료로 간주
   if (status === 401) return true;
 
   // 400 에러 중 "만료된 jwt 토큰입니다." 메시지가 있는 경우
   if (status === 400 && message.includes("만료된 jwt 토큰")) {
+    return true;
+  }
+
+  // 404 에러 중 authorization header 관련 메시지가 있는 경우
+  if (
+    status === 404 &&
+    (lowerMessage.includes("authorization") ||
+      lowerMessage.includes("autorization"))
+  ) {
     return true;
   }
 
@@ -115,8 +129,16 @@ axiosInstance.interceptors.response.use(
 
           const refreshToken = getRefreshToken();
 
-          const { data } = await axiosInstance.post(
-            "/api/auth/reissue",
+          if (!refreshToken) {
+            throw new Error("No refresh token available");
+          }
+
+          // [핵심 변경] 인터셉터 간섭을 피하기 위해 axios 직접 사용
+          // baseURL 수동 지정 필요: import.meta.env.PROD 체크 유지
+          const baseURL = import.meta.env.PROD ? "" : "http://43.200.96.34";
+
+          const { data } = await axios.post(
+            `${baseURL}/api/auth/reissue`,
             {}, // body는 비움
             {
               headers: {
@@ -140,8 +162,7 @@ axiosInstance.interceptors.response.use(
           //새 accessToken을 반환하여 다른 요청들이 이것을 사용할 수 있게함
           return data.data.accessToken;
         })()
-          .catch((error) => {
-            console.error("Failed to refresh token:", error);
+          .catch((refreshError) => {
             // 토큰 삭제
             const { removeItem: removeAccessToken } = useLocalStorage(
               LOCAL_STORAGE_KEY.accessToken,
@@ -157,19 +178,25 @@ axiosInstance.interceptors.response.use(
             window.location.href = "/login";
 
             // 에러를 재throw하여 요청이 실패했음을 명확히 함
-            throw error;
+            throw refreshError;
           })
           .finally(() => {
             refreshPromise = null;
           });
       }
+
       // 진행중인 refreshPromise(비동기)가 해결될 때까지 기다림
-      return refreshPromise.then((newAccessToken) => {
-        // 원본 요청에 Authorization 헤더를 갱신된 토큰으로 업뎃
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        // 업데이트 된 원본 요청을 재시도
-        return axiosInstance.request(originalRequest);
-      });
+      return refreshPromise
+        .then((newAccessToken) => {
+          // 원본 요청에 Authorization 헤더를 갱신된 토큰으로 업뎃
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          // 업데이트 된 원본 요청을 재시도
+          return axiosInstance.request(originalRequest);
+        })
+        .catch((refreshError) => {
+          // 에러를 그대로 전파 (이미 위에서 /login 리다이렉트 처리됨)
+          return Promise.reject(refreshError);
+        });
     }
     // 401/400 에러가 아닌 경우에 그대로 오류를 반환
     return Promise.reject(error);

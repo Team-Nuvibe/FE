@@ -82,6 +82,11 @@ export interface CalendarImagesResponse {
 // 월별 업로드 날짜 조회 응답 타입 (날짜 문자열 배열)
 export type MonthlyUploadDatesResponse = string[];
 
+// 캘린더 이미지 아이템 타입 (소스 정보 추가)
+export interface CalendarImageItemWithSource extends CalendarImageItem {
+  source: "lastMonth" | "today";
+}
+
 // 가장 많이 사용한 보드 조회 응답 타입
 export interface MostUsedBoardResponse {
   period: string;
