@@ -66,7 +66,11 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
       newOtp[i] = char;
     });
     setOtp(newOtp);
-    onComplete(newOtp.join(""));
+    // 모든 자릿수가 채워진 경우에만 onComplete 호출
+    const combinedOtp = newOtp.join("");
+    if (combinedOtp.length === length && !newOtp.includes("")) {
+      onComplete(combinedOtp);
+    }
 
     // 마지막 입력된 곳으로 포커스
     const lastFilledIndex = Math.min(pastedData.length, length - 1);
@@ -74,9 +78,9 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
   };
 
   return (
-    <div className="flex justify-center gap-1.5">
+    <div className="flex justify-center gap-2">
       {otp.map((_, index) => (
-        <div key={index} className="relative">
+        <div key={index} className={`relative ${index === 2 ? "mr-2" : ""}`}>
           <input
             ref={(el) => {
               inputRefs.current[index] = el;

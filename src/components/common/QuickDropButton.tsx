@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import IconQuickDrop from "../../assets/icons/icon_quickdrop.svg?react";
 import { useRef } from "react";
 
