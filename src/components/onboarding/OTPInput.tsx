@@ -66,7 +66,11 @@ const OTPInput = ({ length = 6, onComplete }: OTPInputProps) => {
       newOtp[i] = char;
     });
     setOtp(newOtp);
-    onComplete(newOtp.join(""));
+    // 모든 자릿수가 채워진 경우에만 onComplete 호출
+    const combinedOtp = newOtp.join("");
+    if (combinedOtp.length === length && !newOtp.includes("")) {
+      onComplete(combinedOtp);
+    }
 
     // 마지막 입력된 곳으로 포커스
     const lastFilledIndex = Math.min(pastedData.length, length - 1);

@@ -46,10 +46,10 @@ const publicRoutes: RouteObject[] = [
       { path: "signup", element: <SignUpPage /> },
       { path: "onboarding", element: <OnboardingPage /> },
       { path: "reset-password", element: <ResetPasswordPage /> },
-      { path: "oauth/callback", element: <OAuthCallbackPage /> },
-      { path: "oauth/signup-complete", element: <SocialSignUpCompletePage /> },
     ],
   },
+  { path: "oauth/callback", element: <OAuthCallbackPage /> },
+  { path: "oauth/signup-complete", element: <SocialSignUpCompletePage /> },
 ];
 
 // 인증이 필요한 라우트
