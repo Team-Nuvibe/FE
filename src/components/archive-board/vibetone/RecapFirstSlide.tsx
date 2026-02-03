@@ -1,63 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 import { useUserStore } from "@/hooks/useUserStore";
+import type { TagUsageRankingResponse } from "@/types/archive";
 
 // GravityTags 컴포넌트 - 물리 엔진 기반 태그 애니메이션
 // ----------------------------------------------------------------------
 const GravityTags = ({
   isActive,
   activeTab,
+  tags,
 }: {
   isActive: boolean;
   activeTab: "weekly" | "all";
+  tags: Array<{
+    text: string;
+    h: number;
+    fontSize: number;
+    fontWeight: number;
+    paddingInline: number;
+    paddingBlock: number;
+  }>;
 }) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const tagRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [isReady, setIsReady] = useState(false);
-
-  // 태그 데이터 (외부에서 props로 받을 수도 있지만 일단 내부에 정의)
-  const tags = [
-    {
-      text: "#Minimal",
-      h: 105,
-      fontSize: 50,
-      fontWeight: 500,
-      paddingInline: 30,
-      paddingBlock: 15,
-    },
-    {
-      text: "#Vintage",
-      h: 88,
-      fontSize: 44,
-      fontWeight: 500,
-      paddingInline: 22,
-      paddingBlock: 11,
-    },
-    {
-      text: "#Street",
-      h: 72,
-      fontSize: 33.231,
-      fontWeight: 500,
-      paddingInline: 16.62,
-      paddingBlock: 11.08,
-    },
-    {
-      text: "#Cozy",
-      h: 56,
-      fontSize: 28,
-      fontWeight: 500,
-      paddingInline: 14,
-      paddingBlock: 7,
-    },
-    {
-      text: "#Modern",
-      h: 42,
-      fontSize: 20,
-      fontWeight: 500,
-      paddingInline: 12,
-      paddingBlock: 6,
-    },
-  ];
 
   // [1단계] DOM 요소의 실제 너비 측정
   useEffect(() => {
@@ -201,70 +167,51 @@ const GravityTags = ({
 const RecapFirstSlide = ({
   isActive,
   activeTab,
+  data,
 }: {
   isActive: boolean;
   activeTab: "weekly" | "all";
+  data: TagUsageRankingResponse | undefined;
 }) => {
   const { nickname } = useUserStore();
-  // TODO: API 연동 - 일주일 날짜와 드랍 수 데이터
-  const [weekDate, setWeekDate] = useState<{ start: string; end: string }>({
-    start: "2026.01.05",
-    end: "~01.11",
-  });
-  const [dropCount, setDropCount] = useState<number>(1);
 
-  // 날짜 포맷팅 함수 (7일 범위: 줄바꿈 포함)
-  const formatWeekDate = (endDate: Date): { start: string; end: string } => {
-    // 종료일 (현재 날짜)
-    const endYear = endDate.getFullYear();
-    const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
-    const endDay = String(endDate.getDate()).padStart(2, "0");
+  // API 데이터로부터 태그 배열 생성 (순위에 따라 크기 조정)
+  const tags =
+    data?.ranks.map((item, index) => {
+      // 순위에 따라 크기 차등 적용 (1위가 가장 크게)
+      const sizes = [
+        { h: 105, fontSize: 50, paddingInline: 30, paddingBlock: 15 },
+        { h: 88, fontSize: 44, paddingInline: 22, paddingBlock: 11 },
+        { h: 72, fontSize: 33.231, paddingInline: 16.62, paddingBlock: 11.08 },
+        { h: 56, fontSize: 28, paddingInline: 14, paddingBlock: 7 },
+        { h: 42, fontSize: 20, paddingInline: 12, paddingBlock: 6 },
+      ];
+      const size = sizes[index] || sizes[sizes.length - 1]; // index 벗어나면 마지막 크기 사용
 
-    // 시작일 (7일 전 = 종료일 - 6일)
-    const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - 6);
-    const startYear = startDate.getFullYear();
-    const startMonth = String(startDate.getMonth() + 1).padStart(2, "0");
-    const startDay = String(startDate.getDate()).padStart(2, "0");
-
-    // 연도가 같으면 시작일에는 연도 생략
-    if (startYear === endYear) {
       return {
-        start: `${startYear}.${startMonth}.${startDay}`,
-        end: `~${endMonth}.${endDay}`,
+        text: `#${item.tag}`,
+        ...size,
+        fontWeight: 500,
       };
-    } else {
-      // 연도가 다르면 둘 다 표시
-      return {
-        start: `${startYear}.${startMonth}.${startDay}`,
-        end: `~${endYear}.${endMonth}.${endDay}`,
-      };
-    }
+    }) || [];
+
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}.${month}.${day}`;
   };
 
-  // TODO: API 호출 - 일주일 데이터 가져오기
-  useEffect(() => {
-    // 추후 API 엔드포인트 연동
-    const fetchWeeklyData = async () => {
-      try {
-        // TODO: 실제 API 호출로 교체
-        // const response = await fetch('/api/vibetone/weekly-recap');
-        // const data = await response.json();
-        // setWeekDate(formatWeekDate(new Date(data.weekStartDate)));
-        // setDropCount(data.dropCount);
+  const weekDate = data
+    ? {
+      start: formatDate(data.startDate),
+      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+    }
+    : { start: "", end: "" };
 
-        // 현재는 임시 데이터 사용
-        // 예시: 현재 날짜 기반으로 설정
-        const currentDate = new Date();
-        setWeekDate(formatWeekDate(currentDate));
-        setDropCount(1);
-      } catch (error) {
-        console.error("Failed to fetch weekly data:", error);
-      }
-    };
-
-    fetchWeeklyData();
-  }, []);
+  const dropCount = data?.totalDropCount || 0;
 
   return (
     <div className="relative flex h-full w-full flex-col rounded-[15px] bg-[radial-gradient(ellipse_at_center,#191A1B_0%,#252729_40%,#353739_70%,#454749_100%)] shadow-[inset_0_0_40px_0_rgba(255,255,255,0.25)] backdrop-blur-[25px]">
@@ -299,6 +246,7 @@ const RecapFirstSlide = ({
           key={activeTab}
           isActive={isActive}
           activeTab={activeTab}
+          tags={tags}
         />
       </div>
     </div>

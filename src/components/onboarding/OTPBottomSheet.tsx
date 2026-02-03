@@ -21,6 +21,12 @@ export const OTPBottomSheet = ({
   isResending = false,
 }: OTPBottomSheetProps) => {
   const [verificationCode, setVerificationCode] = useState("");
+  const [resetKey, setResetKey] = useState(0);
+
+  const resetOtp = () => {
+    setVerificationCode("");
+    setResetKey((k) => k + 1);
+  };
 
   const handleCodeComplete = (code: string) => {
     setVerificationCode(code);
@@ -30,20 +36,20 @@ export const OTPBottomSheet = ({
     if (verificationCode.length < 6 || isVerifying) return;
     try {
       await onVerify(verificationCode);
-      setVerificationCode(""); // Reset on success
+      resetOtp(); // Reset on success
     } catch {
-      setVerificationCode(""); // Reset on error
+      resetOtp(); // Reset on error
     }
   };
 
   const handleResendClick = async () => {
     if (isResending) return;
     await onResend();
-    setVerificationCode(""); // Reset code when resending
+    resetOtp(); // Reset code when resending
   };
 
   const handleClose = () => {
-    setVerificationCode("");
+    resetOtp();
     onClose();
   };
 
@@ -93,7 +99,11 @@ export const OTPBottomSheet = ({
 
             {/* OTP Input */}
             <div className="mb-4 flex justify-center">
-              <OTPInput length={6} onComplete={handleCodeComplete} />
+              <OTPInput
+                key={resetKey}
+                length={6}
+                onComplete={handleCodeComplete}
+              />
             </div>
 
             {/* Help Text */}

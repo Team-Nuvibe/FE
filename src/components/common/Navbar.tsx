@@ -36,20 +36,15 @@ const Navbar = () => {
     },
   ];
 
-  // 임시: quickdrop에서 숨기기
-  const location = useLocation();
-  if (location.pathname === "/quickdrop") {
-    return null;
-  }
-
   return (
-    <nav className="w-[282px] h-[65px] bg-[var(--color-gray-900)]/90 backdrop-blur-[20px] rounded-[40px] flex items-center justify-between px-6 z-50">
+    <nav className="z-50 flex h-[65px] w-[282px] items-center justify-between rounded-[40px] bg-[var(--color-gray-900)]/90 px-6 backdrop-blur-[20px]">
       {navItems.map((item) => (
         <NavLink
           key={item.path}
           to={item.path}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? "text-white" : "text-[#8A8A8A]"
+            `flex flex-col items-center justify-center gap-1 transition-colors ${
+              isActive ? "text-white" : "text-[#8A8A8A]"
             }`
           }
         >
@@ -60,7 +55,7 @@ const Navbar = () => {
               ) : (
                 <item.icon width={24} height={24} />
               )}
-              <span className="text-[10px] font-normal leading-[12px]">
+              <span className="text-[10px] leading-[12px] font-normal">
                 {item.label}
               </span>
             </>

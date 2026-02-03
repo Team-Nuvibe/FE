@@ -1,4 +1,4 @@
-import TrashIcon  from '@/assets/icons/icon_trashcan.svg?react';
+import TrashIcon from '@/assets/icons/icon_trashcan.svg?react';
 import { motion } from 'framer-motion';
 import ExitIcon from '@/assets/icons/icon_exit.svg?react';
 
@@ -11,7 +11,7 @@ interface Props {
 
 export const CountBottomSheet = ({ count, onDelete, onMove, maintext }: Props) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
       exit={{ y: "100%" }}
@@ -32,10 +32,10 @@ export const CountBottomSheet = ({ count, onDelete, onMove, maintext }: Props) =
           <span className="ST2 text-gray-200 whitespace-nowrap">
             {count}{maintext}
           </span>
-          
+
           {/* 이미지 삭제일 때 휴지통 아이콘 */}
           {onDelete && (
-            <button 
+            <button
               className="
                 absolute 
                 left-full 
