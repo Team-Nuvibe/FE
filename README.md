@@ -23,6 +23,7 @@
   <img src="https://img.shields.io/badge/axios-5A29E4?style=flat-square&logo=axios&logoColor=white"/>
   <img src="https://img.shields.io/badge/tanstack-000000?style=flat-square&logo=tanstack&logoColor=white"/>
   <img src="https://img.shields.io/badge/vconsole-1E1E28?style=flat-square&logo=vconsole&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REACT%20EASY%20CROP-00CBC6?style=flat-square">
 </p>
   
 ## 📌 GitHub Convention
