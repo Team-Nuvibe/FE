@@ -1,5 +1,6 @@
 import ChevronRightIcon2 from "@/assets/icons/icon_chevron_right2.svg?react";
-import ChangeProfileIcon from "@/assets/icons/icon_change_profile_picture.svg?react";
+import CameraFrame from "@/assets/icons/icon-camera-frame.svg";
+import CameraInside from "@/assets/icons/icon-camera-inside.svg";
 import { useUserStore } from "@/hooks/useUserStore";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
 import { ProfileImageDisplay } from "@/components/common/ProfileImageDisplay";
@@ -162,9 +163,9 @@ const ProfilePage = () => {
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-black text-white">
       <div className="mt-[38.06px] mb-8 flex flex-col items-center">
-        <div className="relative mb-[12px]">
+        <div className="relative mb-[12px] w-[89.79px] h-[89.79px]">
           {profileImage === DefaultProfileImage ? (
-            <div className="h-[89.79px] w-[89.79px] overflow-visible">
+            <div className="h-full w-full overflow-visible">
               <img
                 src={profileImage}
                 alt="profile"
@@ -174,7 +175,7 @@ const ProfilePage = () => {
           ) : (
             <ProfileImageDisplay
               src={profileImage}
-              className="h-[89.79px] w-[89.79px]"
+              className="h-full w-full"
             />
           )}
           <input
@@ -186,10 +187,15 @@ const ProfilePage = () => {
           />
           <button
             onClick={handleCameraClick}
-            className="absolute right-0 bottom-0 flex h-[21.22px] w-[21.22px] items-center justify-center rounded-full bg-[#9C9C9C]"
+            className="absolute left-[71.58px] top-[68.37px] h-[24px] w-[24px] p-0 bg-transparent block"
             aria-label="Change profile picture"
           >
-            <ChangeProfileIcon className="h-[14px] w-[14px] text-black" />
+            <img src={CameraFrame} alt="" className="absolute inset-0 w-full h-full" />
+            <img
+              src={CameraInside}
+              alt=""
+              className="absolute z-10 w-[16.6px] h-[16.8px] left-[3.53px] top-[3.84px]"
+            />
           </button>
         </div>
 
