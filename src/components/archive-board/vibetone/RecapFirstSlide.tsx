@@ -206,9 +206,9 @@ const RecapFirstSlide = ({
 
   const weekDate = data
     ? {
-        start: formatDate(data.startDate),
-        end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
-      }
+      start: formatDate(data.startDate),
+      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+    }
     : { start: "", end: "" };
 
   const dropCount = data?.totalDropCount || 0;

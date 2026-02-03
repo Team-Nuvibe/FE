@@ -58,13 +58,11 @@ const ArchiveDetailPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditNameModalOpen, setIsEditNameModalOpen] = useState(false);
   const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false); // New: Board Selector State
-
   // Detail Modal State
   const [selectedItem, setSelectedItem] = useState<ModelItem | null>(null);
 
   // Board detail state
   const [allModelItems, setAllModelItems] = useState<ModelItem[]>([]);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(true);
 
   useEffect(() => {
     const fetchBoardDetail = async () => {
@@ -81,26 +79,25 @@ const ArchiveDetailPage = () => {
 
         if (response.data) {
           console.log("📋 Board detail loaded:", response.data);
+          const detail = response.data;
 
-          const mappedItems: ModelItem[] = response.data.images.map((img) => ({
-            id: img.boardImageId.toString(),
+          const mappedItems: ModelItem[] = detail.images.map((img) => ({
+            id: String(img.boardImageId),
             tag: img.imageTag,
-            thumbnail: img.imageUrl,
+            thumbnail: img.imageUrl
           }));
 
           // Extract unique tags for filters
           const uniqueTags = Array.from(
-            new Set(response.data.images.map((img) => img.imageTag)),
+            new Set(detail.images.map((img) => img.imageTag)),
           );
           setFilters(["최신순", ...uniqueTags]);
 
           setAllModelItems(mappedItems);
-          setBoardTitle(response.data.name);
+          setBoardTitle(detail.name);
         }
       } catch (error) {
         console.error("Failed to fetch board detail:", error);
-      } finally {
-        setIsLoadingDetail(false);
       }
     };
 
@@ -169,6 +166,8 @@ const ArchiveDetailPage = () => {
     setIsMoveMode(false);
     setSelectedIds([]);
   };
+
+
 
   // Rename Logic
   const handleEditNameSave = async (newTitle: string) => {
@@ -264,11 +263,10 @@ const ArchiveDetailPage = () => {
                     selectedFilter === filter ? "최신순" : filter,
                   )
                 }
-                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${
-                  selectedFilter === filter
-                    ? "bg-gray-200 text-black"
-                    : "bg-gray-900 text-gray-200"
-                }`}
+                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${selectedFilter === filter
+                  ? "bg-gray-200 text-black"
+                  : "bg-gray-900 text-gray-200"
+                  }`}
               >
                 {filter === "최신순" ? filter : `#${filter}`}
               </button>
@@ -309,9 +307,8 @@ const ArchiveDetailPage = () => {
 
                 {isSelectMode && (
                   <div
-                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${
-                      isSelected ? "bg-black/40" : "bg-black/10"
-                    }`}
+                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${isSelected ? "bg-black/40" : "bg-black/10"
+                      }`}
                   >
                     {isSelected ? (
                       <SelectedImageIcon className="h-[42px] w-[42px]" />
@@ -335,8 +332,8 @@ const ArchiveDetailPage = () => {
             onDelete={
               !isMoveMode
                 ? () => {
-                    if (selectedIds.length > 0) setIsDeleteModalOpen(true);
-                  }
+                  if (selectedIds.length > 0) setIsDeleteModalOpen(true);
+                }
                 : undefined
             }
             onMove={isMoveMode ? handleOpenBoardSelector : undefined}

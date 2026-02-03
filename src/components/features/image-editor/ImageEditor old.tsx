@@ -162,15 +162,12 @@ export const ImageEditor = ({
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
-    return `brightness(${
-      finalBrightness > 100
+    return `brightness(${finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
         : (finalBrightness - 100) * 4 + 100
-    }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
-      levels.temperature > 0 ? levels.temperature : 0
-    }%) hue-rotate(${
-      levels.temperature < 0 ? levels.temperature * -0.8 : 0
-    }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
+      }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${levels.temperature > 0 ? levels.temperature : 0
+      }%) hue-rotate(${levels.temperature < 0 ? levels.temperature * -0.8 : 0
+      }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
   const handleExportImage = () => {
@@ -302,7 +299,7 @@ export const ImageEditor = ({
             max={50}
             value={
               adjustmentLevels[
-                activeAdjustmentTool as keyof typeof adjustmentLevels
+              activeAdjustmentTool as keyof typeof adjustmentLevels
               ]
             }
             onChange={(e) =>
@@ -318,9 +315,8 @@ export const ImageEditor = ({
         <div className="scrollbar-hide flex gap-5 overflow-x-auto pt-[21px]">
           {adjustmentTools.map((tool) => (
             <div
-              className={`ST2 flex flex-col items-center gap-[10px] ${
-                tool.id === "brightness" && `pl-6`
-              } ${tool.id === "exposure" && `pr-6`}`}
+              className={`ST2 flex flex-col items-center gap-[10px] ${tool.id === "brightness" && `pl-6`
+                } ${tool.id === "exposure" && `pr-6`}`}
             >
               <p className="text-[12px]">{tool.label}</p>
               <button
@@ -334,12 +330,11 @@ export const ImageEditor = ({
                 )}
               </button>
               <div
-                className={`h-[8px] w-[8px] rounded-full ${
-                  adjustmentLevels[tool.id as keyof typeof adjustmentLevels] ===
-                  0
+                className={`h-[8px] w-[8px] rounded-full ${adjustmentLevels[tool.id as keyof typeof adjustmentLevels] ===
+                    0
                     ? `opacity-0`
                     : `bg-white`
-                }`}
+                  }`}
               />
             </div>
           ))}

@@ -30,3 +30,4 @@ export const useLocalStorage = (key: string) => {
     removeItem,
   };
 };
+

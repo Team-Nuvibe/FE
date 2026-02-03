@@ -200,10 +200,8 @@ const ArchivePage = () => {
   };
 
   // Board 삭제 함수 (deleteArchiveBoard API 이용)
-  const [isDeleting, setIsDeleting] = useState(false);
   const executeDelete = async () => {
     try {
-      setIsDeleting(true);
       // Convert string IDs to numbers for API
       const boardIds = selectedIds.map((id) => parseInt(id, 10));
       await deleteArchiveBoard(boardIds);
@@ -221,7 +219,6 @@ const ArchivePage = () => {
       console.error("Failed to delete archive boards:", error);
       // TODO: Show error toast to user
     } finally {
-      setIsDeleting(false);
       setIsDeleteModalOpen(false);
     }
   };
@@ -440,9 +437,8 @@ const ArchivePage = () => {
                       {/* 체크표시 */}
                       {isSelectMode && (
                         <div
-                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
-                            isSelected ? "bg-white/30" : "bg-transparent"
-                          }`}
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? "bg-white/30" : "bg-transparent"
+                            }`}
                         >
                           {isSelected && (
                             <SelectedImageIcon className="h-[32px] w-[32px]" />

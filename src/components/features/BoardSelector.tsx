@@ -98,11 +98,10 @@ export const BoardSelector = ({
             />
             <h2 className="H2 text-white">바이브 드랍</h2>
             <p
-              className={`ST2 ${
-                selectedBoard
+              className={`ST2 ${selectedBoard
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
-              }`}
+                }`}
               onClick={() => onNext(selectedBoard!)}
             >
               완료
@@ -190,11 +189,10 @@ export const BoardSelector = ({
             />
             <h2 className="H2 text-white">저장할 아카이브 보드</h2>
             <p
-              className={`ST2 ${
-                selectedBoard
+              className={`ST2 ${selectedBoard
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
-              }`}
+                }`}
               onClick={() => onNext(selectedBoard!)}
             >
               완료

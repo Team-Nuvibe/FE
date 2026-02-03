@@ -218,13 +218,12 @@ const SignUpPage = () => {
                 type="button"
                 onClick={handleEmailVerification}
                 disabled={!isEmailValid() || isEmailVerified || isEmailSending}
-                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${
-                  isEmailVerified
-                    ? "cursor-not-allowed bg-gray-700 text-gray-300"
-                    : isEmailValid()
-                      ? "bg-[#b9bdc2] text-[#212224]"
-                      : "cursor-not-allowed bg-gray-700 text-gray-300"
-                }`}
+                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${isEmailVerified
+                  ? "cursor-not-allowed bg-gray-700 text-gray-300"
+                  : isEmailValid()
+                    ? "bg-[#b9bdc2] text-[#212224]"
+                    : "cursor-not-allowed bg-gray-700 text-gray-300"
+                  }`}
               >
                 {isEmailVerified
                   ? "인증 완료"

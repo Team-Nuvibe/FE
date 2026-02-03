@@ -22,6 +22,8 @@ import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import TribeChatPage from "./pages/tribe-chat/TribechatPage";
+import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 import { SplashLayout } from "./layouts/SplashLayout";
 import VConsole from "vconsole";
 
@@ -70,8 +72,8 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "tribe-chat",
         children: [
-          // {index: true , element: <TribechatPage /> },
-          // {path: "/tribe-chat:tagid", element: </> },
+          { index: true, element: <TribeChatPage /> },
+          { path: "/tribe-chat:tagid", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
       },
