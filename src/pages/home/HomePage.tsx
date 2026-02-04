@@ -139,11 +139,10 @@ const HomePage = () => {
                   className={`relative flex shrink-0 cursor-pointer flex-col items-center pb-2 transition-colors`}
                 >
                   <p
-                    className={`ST2 tracking-tight transition-colors duration-200 ${
-                      activeIndex === index
-                        ? "B2 text-white"
-                        : "B2 text-gray-400"
-                    }`}
+                    className={`ST2 tracking-tight transition-colors duration-200 ${activeIndex === index
+                      ? "B2 text-white"
+                      : "B2 text-gray-400"
+                      }`}
                   >
                     {"\u00A0" +
                       category.name[0] +
@@ -152,7 +151,7 @@ const HomePage = () => {
                   </p>
                   {activeIndex === index && (
                     <motion.div
-                      layoutId="activeTabIndicator"
+                      layoutId="homeTabIndicator"
                       className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
                       transition={{ stiffness: 500, damping: 30 }}
                     />

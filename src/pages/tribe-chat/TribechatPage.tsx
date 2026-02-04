@@ -12,11 +12,6 @@ const TribechatPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"ing" | "waiting">("ing");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -88,7 +83,7 @@ const TribechatPage = () => {
             </span>
             {activeTab === "ing" && (
               <motion.div
-                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                layoutId="tribeChatTabIndicator"
                 className="absolute bottom-[-1px] left-0 right-0 h-[1.5px] bg-white z-10"
                 transition={{ stiffness: 500, damping: 30 }}
                 initial={false}
@@ -109,7 +104,7 @@ const TribechatPage = () => {
             </span>
             {activeTab === "waiting" && (
               <motion.div
-                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                layoutId="tribeChatTabIndicator"
                 className="absolute bottom-[-1px] left-0 right-0 h-[1.5px] bg-white z-10"
                 transition={{ stiffness: 500, damping: 30 }}
                 initial={false}

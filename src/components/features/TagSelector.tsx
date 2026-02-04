@@ -56,11 +56,10 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className={`ST2 ${
-              selectedTag
+            className={`ST2 ${selectedTag
                 ? "cursor-pointer text-white"
                 : "cursor-not-allowed text-gray-700"
-            }`}
+              }`}
             onClick={() => onNext(selectedTag)}
           >
             다음
@@ -81,30 +80,28 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
         <div className="flex">
           <button onClick={() => handleTabClick(0)} className="relative">
             <p
-              className={`${
-                activeIndex === 0 ? "ST2 text-gray-200" : "B1 text-gray-600"
-              } px-[22px] pb-[4px] transition`}
+              className={`${activeIndex === 0 ? "ST2 text-gray-200" : "B1 text-gray-600"
+                } px-[22px] pb-[4px] transition`}
             >
               최근 검색어
             </p>
             {activeIndex === 0 && (
               <motion.div
-                layoutId="activeTabIndicator"
+                layoutId="tagSelectorTabIndicator"
                 className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
               />
             )}
           </button>
           <button onClick={() => handleTabClick(1)} className="relative">
             <p
-              className={`${
-                activeIndex === 1 ? "ST2 text-gray-200" : "B1 text-gray-600"
-              } px-[22px] pb-[4px] transition`}
+              className={`${activeIndex === 1 ? "ST2 text-gray-200" : "B1 text-gray-600"
+                } px-[22px] pb-[4px] transition`}
             >
               태그 찾기
             </p>
             {activeIndex === 1 && (
               <motion.div
-                layoutId="activeTabIndicator"
+                layoutId="tagSelectorTabIndicator"
                 className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
                 transition={{ stiffness: 500, damping: 30 }}
               />
@@ -112,9 +109,8 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           </button>
         </div>
         <p
-          className={`${
-            activeIndex === 0 ? "opacity-100" : "opacity-0"
-          } B2 cursor-pointer text-gray-600`}
+          className={`${activeIndex === 0 ? "opacity-100" : "opacity-0"
+            } B2 cursor-pointer text-gray-600`}
         >
           전체 삭제
         </p>
@@ -156,20 +152,18 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
-                    selectedCategory === category
+                  className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedCategory === category
                       ? "bg-gray-900 text-gray-200"
                       : "bg-black text-gray-500"
-                  }`}
+                    }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   <span className="ST1 invisible block">
                     {category[0] + category.slice(1).toLowerCase()}
                   </span>
                   <span
-                    className={`absolute inset-0 flex items-center justify-center ${
-                      selectedCategory === category ? "ST1" : "B0"
-                    }`}
+                    className={`absolute inset-0 flex items-center justify-center ${selectedCategory === category ? "ST1" : "B0"
+                      }`}
                   >
                     {category[0] + category.slice(1).toLowerCase()}
                   </span>
@@ -185,20 +179,18 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
                     tags.map((tag) => (
                       <button
                         key={tag}
-                        className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${
-                          selectedTag === tag
+                        className={`relative cursor-pointer rounded-[5px] border-[1px] border-gray-900 px-2 py-[3px] ${selectedTag === tag
                             ? "bg-gray-900 text-gray-200"
                             : "bg-black text-gray-500"
-                        }`}
+                          }`}
                         onClick={() => setSelectedTag(tag)}
                       >
                         <span className="ST1 invisible block">
                           #{tag[0] + tag.slice(1).toLowerCase()}
                         </span>
                         <span
-                          className={`absolute inset-0 flex items-center justify-center ${
-                            selectedTag === tag ? "ST1" : "B0"
-                          }`}
+                          className={`absolute inset-0 flex items-center justify-center ${selectedTag === tag ? "ST1" : "B0"
+                            }`}
                         >
                           #{tag[0] + tag.slice(1).toLowerCase()}
                         </span>

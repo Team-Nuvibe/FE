@@ -2,10 +2,6 @@ import { axiosInstance } from "./axios";
 import type { ApiResponse } from "@/types/common";
 import type { NotificationResponse } from "@/types/notification";
 
-// FcmTokenRequest 타입 정의
-interface FcmTokenRequest {
-    token: string;
-}
 
 // 알림 목록 조회
 export const getNotifications = async () => {
