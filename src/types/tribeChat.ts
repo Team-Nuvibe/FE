@@ -128,6 +128,8 @@ export interface ActiveTribeItem {
   lastActivityAt: string;
   lastChatId: number;
   complete: boolean;
+  unreadCount: number;
+  counts: number;
 }
 
 // 활성화된 트라이브 목록 조회 응답

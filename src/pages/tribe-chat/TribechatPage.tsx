@@ -1,17 +1,53 @@
 import { useState, useEffect } from "react";
 import { ChatListItem } from "@/components/tribe-chat/ChatListItem";
-import type { ChatRoom } from "@/types/tribeChat";
-import { MY_ROOMS, WAITING_ROOMS } from "@/constants/tribeChatData";
 import IconChatScrap from "@/assets/icons/icon_chat_scrap.svg?react";
 import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TribeChatExitModal } from "@/components/tribe-chat/TribeChatExitModal";
 import { useNavigate } from "react-router-dom";
+import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
+import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
+import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFavorite";
+import useLeaveTribe from "@/hooks/mutation/tribe-chat/useLeaveTribe";
+import useMarkTribeAsRead from "@/hooks/mutation/tribe-chat/useMarkTribeAsRead";
+import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"ing" | "waiting">("ing");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedRoomForExit, setSelectedRoomForExit] = useState<{
+    userTribeId: number;
+    tribeId: number;
+    title: string;
+  } | null>(null);
+
+  // React Query 훅
+  const { data: activeTribeData, isLoading: isLoadingActive } =
+    useGetActiveTribeList();
+  const { data: waitingTribeData, isLoading: isLoadingWaiting } =
+    useGetWaitingTribeList();
+
+  // Mutation 훅
+  const { mutate: toggleFavorite } = useToggleTribeFavorite();
+  const { mutate: leaveTribe } = useLeaveTribe();
+  const { mutate: markAsRead } = useMarkTribeAsRead();
+  const { mutate: activateUserTribe } = useActivateUserTribe();
+
+  // API 응답 로그 (디버깅용)
+  useEffect(() => {
+    if (activeTribeData) {
+      console.log("✅ 활성화된 트라이브 목록:", activeTribeData);
+      console.log("✅ 활성화된 트라이브 items:", activeTribeData.data?.items);
+    }
+  }, [activeTribeData]);
+
+  useEffect(() => {
+    if (waitingTribeData) {
+      console.log("⏳ 대기 중인 트라이브 목록:", waitingTribeData);
+      console.log("⏳ 대기 중인 트라이브 items:", waitingTribeData.data?.items);
+    }
+  }, [waitingTribeData]);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -26,44 +62,79 @@ const TribechatPage = () => {
     }
   }, [toastMessage]);
 
-  // 더미 데이터 사용 (Constants)
-  const [myRooms, setMyRooms] = useState<ChatRoom[]>(MY_ROOMS);
-  const [waitingRooms] = useState<ChatRoom[]>(WAITING_ROOMS);
-
-  const [selectedRoomForExit, setSelectedRoomForExit] = useState<string | null>(
-    null,
-  );
-
   const handleConfirmExit = () => {
     if (selectedRoomForExit) {
-      setMyRooms((prev) => prev.filter((r) => r.id !== selectedRoomForExit));
-      setSelectedRoomForExit(null);
+      leaveTribe(selectedRoomForExit.userTribeId, {
+        onSuccess: () => {
+          showToast("트라이브 챗에서 나갔습니다.");
+          setSelectedRoomForExit(null);
+        },
+        onError: () => {
+          showToast("나가기에 실패했습니다.");
+        },
+      });
     }
   };
 
   // 룸 액션 핸들러
   const handleRoomAction = (
-    roomId: string,
+    userTribeId: number,
+    tribeId: number,
     action: "mute" | "pin" | "read" | "exit" | "enter",
+    roomTitle: string,
   ) => {
-    if (action === "mute") {
-      setMyRooms((prev) =>
-        prev.map((r) => (r.id === roomId ? { ...r, isMuted: !r.isMuted } : r)),
-      );
-    } else if (action === "pin") {
-      setMyRooms((prev) =>
-        prev.map((r) =>
-          r.id === roomId ? { ...r, isPinned: !r.isPinned } : r,
-        ),
-      );
+    if (action === "pin") {
+      // 즐겨찾기 토글
+      toggleFavorite(userTribeId, {
+        onSuccess: () => {
+          showToast("즐겨찾기가 변경되었습니다.");
+        },
+        onError: () => {
+          showToast("즐겨찾기 변경에 실패했습니다.");
+        },
+      });
     } else if (action === "read") {
-      setMyRooms((prev) =>
-        prev.map((r) => (r.id === roomId ? { ...r, unreadCount: 0 } : r)),
-      );
+      // 읽음 처리
+      markAsRead(tribeId, {
+        onSuccess: () => {
+          showToast("모두 읽음 처리되었습니다.");
+        },
+        onError: () => {
+          showToast("읽음 처리에 실패했습니다.");
+        },
+      });
     } else if (action === "exit") {
-      setSelectedRoomForExit(roomId);
+      // 나가기 모달 표시
+      setSelectedRoomForExit({ userTribeId, tribeId, title: roomTitle });
     }
   };
+
+  // 활성화된 트라이브 데이터 변환
+  const activeRooms =
+    activeTribeData?.data.items.map((item) => ({
+      id: item.tribeId.toString(),
+      userTribeId: item.tribeId, // API에서 userTribeId가 필요할 수 있음
+      title: `#${item.imageTag}`,
+      memberCount: item.counts ?? 0,
+      isPinned: item.isFavorite,
+      isMuted: false, // API 응답에 없으므로 기본값
+      unreadCount: item.unreadCount ?? 0,
+      lastMessageTime: item.lastActivityAt,
+      tags: [item.imageTag],
+    })) ?? [];
+
+  // 대기 중인 트라이브 데이터 변환
+  const waitingRooms =
+    waitingTribeData?.data.items.map((item) => ({
+      id: item.tribeId.toString(),
+      userTribeId: item.tribeId,
+      title: `#${item.imageTag}`,
+      memberCount: item.counts,
+      isPinned: false,
+      isMuted: false,
+      unreadCount: 0,
+      tags: [item.imageTag],
+    })) ?? [];
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
@@ -108,15 +179,32 @@ const TribechatPage = () => {
         </div>
 
         {/* 우측 아이콘 (스크랩) - top 73px에 absolute 배치 */}
+
         <div className="absolute top-[73px] right-4">
-          <IconChatScrap className="h-[24px] w-[24px] text-white" />
+          <IconChatScrap
+            className="h-[24px] w-[24px] text-white"
+            onClick={() => {
+              const activeTags = Array.from(
+                new Set(activeRooms.flatMap((room) => room.tags ?? [])),
+              );
+              navigate("/tribe-chat/scrap", {
+                state: { tags: activeTags },
+              });
+            }}
+          />
         </div>
       </div>
 
       {/* 리스트 콘텐츠 */}
       <div className="flex-1 touch-auto overflow-y-auto px-[14px] pt-[115px] pb-24">
         {activeTab === "ing" ? (
-          myRooms.length === 0 ? (
+          isLoadingActive ? (
+            <div className="flex h-full flex-col items-center justify-center">
+              <p className="ST2 leading-[150%] tracking-[-0.025em] text-gray-500">
+                로딩 중...
+              </p>
+            </div>
+          ) : activeRooms.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center">
               <IconNavbarTribe className="h-[48px] w-[48px] text-gray-500" />
               <p className="ST2 mt-[12px] leading-[150%] tracking-[-0.025em] text-gray-500">
@@ -125,17 +213,41 @@ const TribechatPage = () => {
             </div>
           ) : (
             <div className="mx-auto flex w-[365px] flex-col">
-              {myRooms.map((room) => (
+              {activeRooms.map((room) => (
                 <ChatListItem
                   key={room.id}
                   room={room}
                   isActiveTab={true}
-                  onAction={(action) => handleRoomAction(room.id, action)}
-                  onClick={() => navigate(`/tribe-chat/:${room.id}`)}
+                  onAction={(action) =>
+                    handleRoomAction(
+                      room.userTribeId,
+                      Number(room.id),
+                      action,
+                      room.title,
+                    )
+                  }
+                  onClick={() =>
+                    navigate(`/tribe-chat/${room.id}`, {
+                      state: { imageTag: room.tags?.[0] || "Tribe" },
+                    })
+                  }
                 />
               ))}
             </div>
           )
+        ) : isLoadingWaiting ? (
+          <div className="flex h-full flex-col items-center justify-center">
+            <p className="ST2 leading-[150%] tracking-[-0.025em] text-gray-500">
+              로딩 중...
+            </p>
+          </div>
+        ) : waitingRooms.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center">
+            <IconNavbarTribe className="h-[48px] w-[48px] text-gray-500" />
+            <p className="ST2 mt-[12px] leading-[150%] tracking-[-0.025em] text-gray-500">
+              아직 트라이브 챗이 없어요.
+            </p>
+          </div>
         ) : (
           <div className="mx-auto flex w-[365px] flex-col">
             {waitingRooms.map((room) => (
@@ -143,9 +255,22 @@ const TribechatPage = () => {
                 key={room.id}
                 room={room}
                 isActiveTab={false}
-                onAction={(action) =>
-                  console.log(`Action: ${action} on room ${room.id}`)
-                }
+                onAction={(action) => {
+                  if (action === "enter") {
+                    // 대기 탭: 트라이브 활성화 후 채팅방으로 이동
+                    activateUserTribe(room.userTribeId, {
+                      onSuccess: () => {
+                        showToast(`${room.title}에 입장했습니다.`);
+                        navigate(`/tribe-chat/${room.id}`, {
+                          state: { imageTag: room.tags?.[0] || "Tribe" },
+                        });
+                      },
+                      onError: () => {
+                        showToast("트라이브 활성화에 실패했습니다.");
+                      },
+                    });
+                  }
+                }}
                 onClick={() => {
                   // 방에 입장할 수 없는 경우 (대기중), 토스트 메시지 표시
                   if (room.memberCount < 5) {
@@ -177,9 +302,7 @@ const TribechatPage = () => {
       {/* 나가기 확인 모달 */}
       {selectedRoomForExit && (
         <TribeChatExitModal
-          roomTitle={
-            myRooms.find((r) => r.id === selectedRoomForExit)?.title ?? ""
-          }
+          roomTitle={selectedRoomForExit.title}
           onConfirm={handleConfirmExit}
           onCancel={() => setSelectedRoomForExit(null)}
         />

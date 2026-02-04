@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import PicturesIcon from "@/assets/icons/icon_pictures.svg?react";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
@@ -9,183 +9,97 @@ import ChatMessageItem, {
   type ChatMessage,
 } from "@/components/tribe-chat/ChatMessageItem";
 import DateDivider from "@/components/tribe-chat/DateDivider";
-// 이미지
-import imgTemp1 from "@/assets/images/img_temp1.png";
-import imgTemp9 from "@/assets/images/img_temp9.png";
-
-// 더미 데이터
-const DUMMY_MESSAGES: ChatMessage[] = [
-  {
-    id: "1",
-    imageUrl: imgTemp1,
-    timestamp: "17:03",
-    date: "2026. 01. 01",
-    isMine: false,
-    userProfile: {
-      name: "제이미",
-      avatar: "#E2E2E2",
-    },
-    reactions: {
-      amazing: 1,
-      like: 1,
-      nice: 1,
-    },
-    myReactions: {
-      amazing: false,
-      like: true,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "2",
-    imageUrl: imgTemp9,
-    timestamp: "17:05",
-    date: "2026. 01. 01",
-    isMine: true,
-    reactions: {
-      amazing: 0,
-      like: 0,
-      nice: 0,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "3",
-    imageUrl: imgTemp1,
-    timestamp: "17:12",
-    date: "2026. 01. 01",
-    isMine: false,
-    userProfile: {
-      name: "제이미",
-      avatar: "#E2E2E2",
-    },
-    reactions: {
-      amazing: 2,
-      like: 0,
-      nice: 3,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "4",
-    imageUrl: imgTemp9,
-    timestamp: "17:20",
-    date: "2026. 01. 01",
-    isMine: false,
-    userProfile: {
-      name: "선우",
-      avatar: "#B9BDC2",
-    },
-    reactions: {
-      amazing: 0,
-      like: 1,
-      nice: 0,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "5",
-    imageUrl: imgTemp1,
-    timestamp: "17:25",
-    date: "2026. 01. 02",
-    isMine: true,
-    reactions: {
-      amazing: 1,
-      like: 2,
-      nice: 0,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "6",
-    imageUrl: imgTemp9,
-    timestamp: "17:30",
-    date: "2026. 01. 02",
-    isMine: false,
-    userProfile: {
-      name: "제이미",
-      avatar: "#E2E2E2",
-    },
-    reactions: {
-      amazing: 0,
-      like: 0,
-      nice: 1,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: true,
-    },
-    isScraped: false,
-  },
-  {
-    id: "7",
-    imageUrl: imgTemp1,
-    timestamp: "17:35",
-    date: "2026. 01. 02",
-    isMine: true,
-    reactions: {
-      amazing: 0,
-      like: 0,
-      nice: 0,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-  {
-    id: "8",
-    imageUrl: imgTemp9,
-    timestamp: "17:40",
-    date: "2026. 01. 02",
-    isMine: false,
-    userProfile: {
-      name: "선우",
-      avatar: "#B9BDC2",
-    },
-    reactions: {
-      amazing: 1,
-      like: 1,
-      nice: 1,
-    },
-    myReactions: {
-      amazing: false,
-      like: false,
-      nice: false,
-    },
-    isScraped: false,
-  },
-];
+// React Query Hooks
+import useGetChatTimeline from "@/hooks/queries/tribe-chat/useGetChatTimeline";
+import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
+import useReactToChatEmoji from "@/hooks/mutation/tribe-chat/useReactToChatEmoji";
+import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap";
+import { DropYourVibe } from "@/components/common/DropYourVibe";
+import DropIcon from "@/assets/logos/Subtract.svg?react";
 
 const TribechatRoomPage = () => {
   const navigate = useNavigate();
-  const { tagId } = useParams<{ tagId: string }>();
-  const [messages, setMessages] = useState<ChatMessage[]>(DUMMY_MESSAGES);
+  const location = useLocation();
+  const { tribeId } = useParams<{ tribeId: string }>();
   const { setNavbarVisible } = useNavbarActions();
+
+  // Get imageTag from location state passed during navigation
+  const imageTag =
+    (location.state as { imageTag?: string })?.imageTag || "Tribe";
+
+  // React Query - Timeline Data
+  const {
+    data: timelineData,
+    isLoading,
+    isError,
+    error,
+  } = useGetChatTimeline({
+    tribeId: Number(tribeId),
+    size: 20,
+  });
+
+  // React Query - Mutations
+  const { mutate: toggleScrapMutation } = useToggleImageScrap();
+  const { mutate: reactToEmoji } = useReactToChatEmoji();
+  const { mutate: sendMessage } = useSendChatMessage();
+
+  // API 응답 로그 (디버깅용)
+  useEffect(() => {
+    console.log("🔍 TribeId from URL:", tribeId);
+    console.log("🔍 Timeline Loading:", isLoading);
+    console.log("🔍 Timeline Error:", isError, error);
+
+    if (timelineData) {
+      console.log("📨 Chat Timeline Data:", timelineData);
+      console.log("📨 Timeline Items:", timelineData.data?.items);
+    } else if (!isLoading) {
+      console.warn("⚠️ No timeline data received");
+    }
+  }, [timelineData, isLoading, isError, error, tribeId]);
+
+  // Transform API response to ChatMessage format
+  const messages: ChatMessage[] =
+    timelineData?.data.items.map((item) => {
+      // reactionSummary를 reactions 객체로 변환
+      const reactions = {
+        amazing: 0,
+        like: 0,
+        nice: 0,
+      };
+      item.reactionSummary.forEach((reaction) => {
+        if (reaction.type === "WOW") reactions.amazing = reaction.count;
+        if (reaction.type === "LIKE") reactions.like = reaction.count;
+        if (reaction.type === "COOL") reactions.nice = reaction.count;
+      });
+
+      return {
+        id: item.chatId.toString(),
+        imageUrl: item.imageUrl,
+        timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }),
+        isMine: !item.sender, // sender가 없으면 내가 보낸 메시지
+        userProfile: item.sender
+          ? {
+              name: item.sender.nickname || "Unknown",
+              avatar: item.sender.profileImage || "#E2E2E2",
+            }
+          : undefined,
+        reactions,
+        myReactions: {
+          amazing: item.myReactionType === "WOW",
+          like: item.myReactionType === "LIKE",
+          nice: item.myReactionType === "COOL",
+        },
+        isScraped: false, // TODO: API에 isScraped 필드 확인 필요
+      };
+    }) ?? [];
 
   // 역방향 무한 스크롤: 상단 감지를 위한 useInView 훅
   const { ref: loadMoreRef, inView } = useInView({
@@ -214,11 +128,14 @@ const TribechatRoomPage = () => {
 
   // 스크랩 토글
   const toggleScrap = (messageId: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, isScraped: !msg.isScraped } : msg,
-      ),
-    );
+    toggleScrapMutation(Number(messageId), {
+      onSuccess: () => {
+        console.log("✅ Scrap toggled successfully");
+      },
+      onError: () => {
+        console.error("❌ Failed to toggle scrap");
+      },
+    });
   };
 
   // 이모지 반응 추가/제거 (한 채팅당 1개만 가능)
@@ -226,50 +143,57 @@ const TribechatRoomPage = () => {
     messageId: string,
     reactionType: keyof ChatMessage["reactions"],
   ) => {
-    setMessages((prev) =>
-      prev.map((msg) => {
-        if (msg.id === messageId) {
-          const isMyReaction = msg.myReactions[reactionType];
+    const emojiMap = {
+      amazing: "WOW" as const,
+      like: "LIKE" as const,
+      nice: "COOL" as const,
+    };
 
-          // 현재 내가 반응한 이모지 찾기
-          const currentReaction = (
-            Object.keys(msg.myReactions) as Array<keyof typeof msg.myReactions>
-          ).find((key) => msg.myReactions[key]);
-
-          // 새로운 reactions 객체
-          const newReactions = { ...msg.reactions };
-          const newMyReactions = { amazing: false, like: false, nice: false };
-
-          if (isMyReaction) {
-            // 같은 이모지를 다시 클릭 -> 반응 취소
-            newReactions[reactionType] = msg.reactions[reactionType] - 1;
-          } else {
-            // 다른 이모지 클릭
-            if (currentReaction) {
-              // 기존 반응 제거
-              newReactions[currentReaction] =
-                msg.reactions[currentReaction] - 1;
-            }
-            // 새로운 반응 추가
-            newReactions[reactionType] = msg.reactions[reactionType] + 1;
-            newMyReactions[reactionType] = true;
-          }
-
-          return {
-            ...msg,
-            reactions: newReactions,
-            myReactions: newMyReactions,
-          };
-        }
-        return msg;
-      }),
+    reactToEmoji(
+      {
+        chatId: Number(messageId),
+        type: emojiMap[reactionType],
+      },
+      {
+        onSuccess: () => {
+          console.log(`✅ Emoji ${reactionType} added`);
+        },
+        onError: () => {
+          console.error(`❌ Failed to add emoji ${reactionType}`);
+        },
+      },
     );
   };
 
   // Drop Vibe 버튼 클릭
   const handleDropVibe = () => {
-    console.log("Drop Vibe button");
-    // TODO: 이미지 업로드 로직 구현
+    // 파일 선택 다이얼로그 열기
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file && tribeId) {
+        sendMessage(
+          {
+            tribeId: Number(tribeId),
+            boardId: 1, // TODO: 실제 boardId 가져오기
+            file,
+          },
+          {
+            onSuccess: () => {
+              console.log("✅ Message sent successfully");
+            },
+            onError: () => {
+              console.error("❌ Failed to send message");
+            },
+          },
+        );
+      }
+    };
+
+    fileInput.click();
   };
 
   return (
@@ -287,15 +211,20 @@ const TribechatRoomPage = () => {
 
         {/* 태그 이름 */}
         <h1 className="H2 absolute left-1/2 -translate-x-1/2 text-white">
-          #{tagId || "Raw"}
+          #{imageTag}
         </h1>
 
         {/* 사진 아이콘 */}
         <button
-          className="flex h-10 w-10 items-center justify-center"
+          className="flex h-10 w-10 items-center justify-center p-0"
           aria-label="사진 보기"
+          onClick={() =>
+            navigate("/tribe-chat/scrap", {
+              state: { tribeId: Number(tribeId) },
+            })
+          }
         >
-          <PicturesIcon className="h-6 w-6" />
+          <PicturesIcon className="h-6 w-6 text-white" />
         </button>
       </header>
 
@@ -306,60 +235,83 @@ const TribechatRoomPage = () => {
 
       {/* 메시지 리스트 - 역방향 스크롤 */}
       <div className="flex flex-1 flex-col-reverse overflow-y-auto px-4 pt-[115px] pb-[100px]">
-        {messages.map((message, index) => {
-          // 다음 메시지 (역방향이므로 index + 1이 실제로는 이전 메시지)
-          const nextMessage = messages[index + 1];
+        {isLoading ? (
+          <div className="flex h-full items-center justify-center">
+            <p className="ST2 text-gray-500">로딩 중...</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex h-full items-center justify-center">
+            <p className="ST2 text-gray-500">아직 채팅이 없어요</p>
+          </div>
+        ) : (
+          <>
+            {messages.map((message, index) => {
+              // 다음 메시지 (역방향이므로 index + 1이 실제로는 이전 메시지)
+              const nextMessage = messages[index + 1];
 
-          // 같은 사람이 연속으로 보낸 메시지인지 확인
-          const isSameSender =
-            nextMessage && nextMessage.isMine === message.isMine;
+              // 같은 사람이 연속으로 보낸 메시지인지 확인
+              const isSameSender =
+                nextMessage && nextMessage.isMine === message.isMine;
 
-          // 간격: 같은 사람이면 16px, 다른 사람이면 24px
-          const marginBottom = isSameSender ? "mb-4" : "mb-6";
+              // 간격: 같은 사람이면 16px, 다른 사람이면 24px
+              const marginBottom = isSameSender ? "mb-4" : "mb-6";
 
-          // 날짜가 바뀌었는지 확인 (역방향이므로 nextMessage가 이전 메시지)
-          const isDateChanged =
-            nextMessage && nextMessage.date !== message.date;
+              // 날짜가 바뀌었는지 확인 (역방향이므로 nextMessage가 이전 메시지)
+              const isDateChanged =
+                nextMessage && nextMessage.date !== message.date;
 
-          return (
-            <div key={message.id}>
-              {/* 날짜 구분선: 다음 메시지와 날짜가 다를 때 표시 */}
-              {isDateChanged && (
-                <div className="my-7">
-                  {" "}
-                  {/* 총 28px: 위아래 패딩 4px (py-1) + 채팅과의 간격 24px */}
-                  <DateDivider date={nextMessage.date} />
+              return (
+                <div key={message.id}>
+                  {/* 날짜 구분선: 다음 메시지와 날짜가 다를 때 표시 */}
+                  {isDateChanged && (
+                    <div className="my-7">
+                      {" "}
+                      {/* 총 28px: 위아래 패딩 4px (py-1) + 채팅과의 간격 24px */}
+                      <DateDivider date={nextMessage.date} />
+                    </div>
+                  )}
+
+                  {/* 채팅 메시지 */}
+                  <div className={marginBottom}>
+                    <ChatMessageItem
+                      message={message}
+                      onScrap={toggleScrap}
+                      onReaction={toggleReaction}
+                    />
+                  </div>
                 </div>
+              );
+            })}
+
+            {/* 상단 감지 영역 - 과거 메시지 로딩 트리거 */}
+            <div
+              ref={loadMoreRef}
+              className="flex h-4 w-full shrink-0 items-center justify-center"
+            >
+              {isFetchingNextPage && (
+                <span className="text-xs text-gray-500">
+                  과거 대화 불러오는 중...
+                </span>
               )}
-
-              {/* 채팅 메시지 */}
-              <div className={marginBottom}>
-                <ChatMessageItem
-                  message={message}
-                  onScrap={toggleScrap}
-                  onReaction={toggleReaction}
-                />
-              </div>
             </div>
-          );
-        })}
-
-        {/* 상단 감지 영역 - 과거 메시지 로딩 트리거 */}
-        <div
-          ref={loadMoreRef}
-          className="flex h-4 w-full shrink-0 items-center justify-center"
-        >
-          {isFetchingNextPage && (
-            <span className="text-xs text-gray-500">
-              과거 대화 불러오는 중...
-            </span>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
       {/* 하단 Drop Vibe 버튼 */}
       <div className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2">
-        <DropVibeButton label="Drop Your Vibe" onClick={handleDropVibe} />
+        <button
+          onClick={handleDropVibe}
+          className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+        >
+          <DropIcon className="h-5.25 w-5.25" />
+          <span
+            className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
+            style={{ WebkitTextFillColor: "transparent" }}
+          >
+            Drop Your Vibe
+          </span>
+        </button>
       </div>
     </div>
   );

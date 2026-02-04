@@ -12,6 +12,9 @@ import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
+import useJoinOrCreateTribe from "@/hooks/mutation/tribe-chat/useJoinOrCreateTribe";
+import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
+import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
@@ -63,6 +66,17 @@ export const QuickdropPage = () => {
   });
   const [paginationEl, setPaginationEl] = useState<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [uploadedTribeInfo, setUploadedTribeInfo] = useState<{
+    tribeId: number;
+    userTribeId: number;
+    isActivatable: boolean; // counts >= 5
+  } | null>(null);
+
+  // Tribe Chat Queries and Mutations
+  const { data: waitingTribesData } = useGetWaitingTribeList();
+  const { mutate: joinOrCreateTribe, isPending: isJoiningTribe } =
+    useJoinOrCreateTribe();
+  const { mutate: activateUserTribe } = useActivateUserTribe();
 
   useEffect(() => {
     return () => {
@@ -73,6 +87,61 @@ export const QuickdropPage = () => {
   }, [imageData.imageUrl]);
 
   const navigate = useNavigate();
+
+  // 트라이브 챗 입장 핸들러
+  const handleJoinTribe = (shouldActivate: boolean = false) => {
+    const imageTag =
+      imageData.tag.charAt(0).toUpperCase() +
+      imageData.tag.slice(1).toLowerCase();
+
+    if (!imageTag) {
+      console.error("Tag is missing");
+      alert("태그 정보가 없습니다.");
+      return;
+    }
+
+    console.log(
+      `📝 Joining tribe with tag: ${imageTag}, willActivate: ${shouldActivate}`,
+    );
+
+    // 1단계: 항상 joinOrCreateTribe 호출
+    joinOrCreateTribe(
+      { imageTag },
+      {
+        onSuccess: (response) => {
+          console.log("✅ Joined/Created Tribe:", response);
+          const { tribeId, userTribeId } = response.data;
+
+          // 2단계: shouldActivate가 true면 활성화 후 채팅방으로 이동
+          if (shouldActivate && userTribeId) {
+            console.log("🔄 Activating tribe...");
+            activateUserTribe(userTribeId, {
+              onSuccess: () => {
+                console.log("✅ Tribe activated, navigating to chat room");
+                navigate(`/tribe-chat/${tribeId}`, {
+                  state: { imageTag },
+                });
+              },
+              onError: (error) => {
+                console.error("❌ Failed to activate tribe:", error);
+                alert("트라이브 챗 활성화에 실패했습니다.");
+                // 활성화 실패해도 채팅방으로 이동
+                navigate(`/tribe-chat/${tribeId}`);
+              },
+            });
+          } else {
+            // 나중에 입장하기: 홈으로 이동
+            console.log("📌 Tribe joined, navigating to home");
+            navigate("/home");
+          }
+        },
+        onError: (error) => {
+          console.error("❌ Failed to join tribe:", error);
+          alert("트라이브 챗 입장에 실패했습니다. 다시 시도해주세요.");
+        },
+      },
+    );
+  };
 
   // 이미지 업로드 핸들러
   const handleBoardComplete = async (selectedBoard: Board) => {
@@ -86,8 +155,12 @@ export const QuickdropPage = () => {
       const originalFileName = file?.name || "image.jpg";
 
       // 2. Presigned URL 발급 API 호출
+      // Capitalize: 첫 글자만 대문자 (예: alone → Alone)
+      const capitalizedTagForPresigned =
+        imageData.tag.charAt(0).toUpperCase() +
+        imageData.tag.slice(1).toLowerCase();
       const response = await postPresignedUrl(
-        imageData.tag.toUpperCase(),
+        capitalizedTagForPresigned,
         originalFileName,
       );
       const presignedUrl = response.data.imageURL;
@@ -111,6 +184,28 @@ export const QuickdropPage = () => {
 
       // 4. 성공 시 보드 정보 저장하고 uploaded 단계로 이동
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
+
+      // 5. 대기 중인 트라이브 확인
+      const capitalizedTag =
+        imageData.tag.charAt(0).toUpperCase() +
+        imageData.tag.slice(1).toLowerCase();
+
+      const matchingTribe = waitingTribesData?.data?.items?.find(
+        (tribe: any) => tribe.imageTag === capitalizedTag,
+      );
+
+      if (matchingTribe) {
+        console.log("✅ Found matching tribe:", matchingTribe);
+        setUploadedTribeInfo({
+          userTribeId: matchingTribe.userTribeId || matchingTribe.id,
+          tribeId: matchingTribe.tribeId,
+          isActivatable: matchingTribe.counts >= 5, // 5명 이상이면 활성화 가능
+        });
+      } else {
+        console.log("📝 No matching tribe found");
+        setUploadedTribeInfo(null);
+      }
+
       setStep("uploaded");
     } catch (error) {
       console.error("Failed to upload image:", error);
@@ -251,17 +346,38 @@ export const QuickdropPage = () => {
                       </p>
                       <ImgTempUploaded />
                     </div>
-                    <div className="flex justify-center gap-2">
-                      <button className="w-30 cursor-pointer rounded-[5px] bg-gray-800 py-[6px]">
-                        <p className="B2 text-gray-300">나중에 입장하기</p>
-                      </button>
+                    {uploadedTribeInfo?.isActivatable ? (
+                      // 5명 이상: "나중에 입장하기" + "입장하기" 두 버튼
+                      <div className="flex justify-center gap-2">
+                        <button
+                          className="w-30 cursor-pointer rounded-[5px] bg-gray-800 py-[6px]"
+                          onClick={() => handleJoinTribe(false)}
+                          disabled={isJoiningTribe}
+                        >
+                          <p className="B2 text-gray-300">나중에 입장하기</p>
+                        </button>
+                        <button
+                          className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={() => handleJoinTribe(true)}
+                          disabled={isJoiningTribe}
+                        >
+                          <p className="B2 text-gray-800">
+                            {isJoiningTribe ? "입장 중..." : "입장하기"}
+                          </p>
+                        </button>
+                      </div>
+                    ) : (
+                      // 5명 미만 or 트라이브 없음: "나중에 입장하기" 버튼만 (w-full)
                       <button
-                        className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px]"
-                        onClick={() => navigate("/home")}
+                        className="w-full cursor-pointer rounded-[5px] bg-gray-800 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={() => handleJoinTribe(false)}
+                        disabled={isJoiningTribe}
                       >
-                        <p className="B2 text-gray-800">입장하기</p>
+                        <p className="B2 text-gray-300">
+                          {isJoiningTribe ? "입장 중..." : "나중에 입장하기"}
+                        </p>
                       </button>
-                    </div>
+                    )}
                   </div>
                 </div>
               </SwiperSlide>
