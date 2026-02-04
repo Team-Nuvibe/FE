@@ -26,7 +26,17 @@
   <img src="https://img.shields.io/badge/vconsole-1E1E28?style=flat-square&logo=vconsole&logoColor=white"/>
   <img src="https://img.shields.io/badge/REACT%20EASY%20CROP-00CBC6?style=flat-square">
 </p>
-  
+
+## 🔗 Migration History
+
+본 프로젝트는 원활한 협업을 위해 기존 프론트엔드 전용 레포지토리인 [nuvibe_frontend](https://github.com/j2nooh/nuvibe_frontend)를 통합하여 관리하고 있습니다. 
+
+- **이전 날짜:** 2026.01.06
+
+- **이전 사유:** FE-BE 간 프로젝트 관리 일원화 및 작업 효율 극대화
+
+- **작업 내용:** 기존 FE 전용 레포지토리의 커밋 히스토리 이관 및 환경 설정 최적화
+
 ## 📌 GitHub Convention
 ### 📝 Commit
 - 작은 단위로 커밋, 유형은 **영어 대문자** 작성
