@@ -25,6 +25,10 @@
   <img src="https://img.shields.io/badge/react intersection observer-FF4154?style=flat-square&logo=reactintersectionobserver&logoColor=white"/>
   <img src="https://img.shields.io/badge/vconsole-1E1E28?style=flat-square&logo=vconsole&logoColor=white"/>
   <img src="https://img.shields.io/badge/REACT%20EASY%20CROP-00CBC6?style=flat-square">
+  <img src="https://img.shields.io/badge/firebase-DD2C00?style=flat-square&logo=firebase&logoColor=white"/>
+  <img src="https://img.shields.io/badge/react query-FF4154?style=flat-square&logo=reactquery&logoColor=white"/>
+
+
 </p>
 
 ## 🔗 Migration History
