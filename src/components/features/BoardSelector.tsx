@@ -1,9 +1,10 @@
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?react";
-import IconQuickdropAdd from "@/assets/icons/icon_quickdrop_add.png";
+import IconQuickdropAdd from "@/assets/icons/icon_quickdrop_add.svg";
 import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
+import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
 import Union from "@/assets/icons/Union.svg?react";
 import { useState, useEffect } from "react";
 import { AddBoardModal } from "../quickdrop/AddBoardModal";
@@ -53,7 +54,7 @@ export const BoardSelector = ({
           const mappedBoards: Board[] = response.data.map((board) => ({
             id: board.boardId,
             name: board.name,
-            thumbnailUrl: board.thumbnailUrl || imageUrl || "",
+            thumbnailUrl: board.thumbnailUrl || "",
             tagCount: board.tagCount || 0,
           }));
 
@@ -146,26 +147,35 @@ export const BoardSelector = ({
               <img
                 src={IconQuickdropAdd}
                 alt=""
-                className="w-[110px] cursor-pointer"
+                className="h-[110px] w-[110px] cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               />
               {boards.map((board) => (
                 <div
+                  key={board.id}
                   className={`relative h-[110px] w-[110px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
                   onClick={() => setSelectedBoard(board)}
                 >
-                  {/* 이미지 레이어 */}
-                  <img
-                    src={board.thumbnailUrl}
-                    alt="thumbnail"
-                    className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
-                  />
-                  {/* 폴더 오버레이 */}
-                  <Union className="pointer-events-none absolute bottom-0 left-0 z-10 w-full translate-y-[0.5px]" />
-                  <div className="absolute inset-0 z-20 flex flex-col justify-between text-white">
-                    <p className="pt-11 pr-[6px] text-right text-[6px]">
-                      2025. 01. 01.
-                    </p>
+                  {board.thumbnailUrl && (
+                    <>
+                      {/* 이미지 레이어 */}
+                      <img
+                        src={board.thumbnailUrl}
+                        alt="thumbnail"
+                        className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
+                      />
+                      {/* 폴더 오버레이 */}
+                      <Union
+                        className="pointer-events-none absolute bottom-0 left-0 z-20 h-full w-full translate-y-[0.5px]"
+                        preserveAspectRatio="xMinYMax meet"
+                      />
+                    </>
+                  )}
+                  {board.thumbnailUrl === "" && (
+                    <IconBoardDefault className="h-[110px] w-[110px] cursor-pointer" />
+                  )}
+
+                  <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
                     <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
                       <p className="w-[70px] text-[10px] text-white">
                         {board.name}
@@ -230,7 +240,7 @@ export const BoardSelector = ({
                     />
                     {/* 폴더 오버레이 */}
                     <Union
-                      className="pointer-events-none absolute bottom-0 left-0 z-10 w-full translate-y-[0.5px]"
+                      className="pointer-events-none absolute bottom-0 left-0 z-10 h-full w-full translate-y-[0.5px]"
                       preserveAspectRatio="xMinYMax meet"
                     />
                     <div className="absolute inset-0 z-20 flex flex-col justify-between text-white" />
@@ -246,11 +256,9 @@ export const BoardSelector = ({
                     <p className="B2">{board.tagCount}개 태그</p>
                   </div>
                 </div>
-                <div className="h-[0.5px] w-full bg-gray-900" />
+                <div className="h-[0.5px] w-full bg-gray-700" />
               </div>
             ))}
-            <div className="h-[0.5px] w-full bg-gray-900" />
-            <div className="h-[0.5px] w-full bg-gray-900" />
           </div>
         </>
       )}

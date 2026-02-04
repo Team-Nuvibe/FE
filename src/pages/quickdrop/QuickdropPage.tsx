@@ -15,6 +15,7 @@ import { useNavbarActions } from "@/hooks/useNavbarStore";
 import useJoinOrCreateTribe from "@/hooks/mutation/tribe-chat/useJoinOrCreateTribe";
 import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
+import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
@@ -165,7 +166,7 @@ export const QuickdropPage = () => {
       );
       const presignedUrl = response.data.imageURL;
 
-      console.log("Presigned URL:", presignedUrl);
+      console.log(response);
 
       // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
       const uploadResponse = await fetch(presignedUrl, {
@@ -222,7 +223,6 @@ export const QuickdropPage = () => {
           initialState={editorState}
           onNext={(blob: Blob, currentState) => {
             const imageUrl = URL.createObjectURL(blob);
-            console.log(imageUrl, imageData.imageUrl);
             setImageData((prev) => {
               if (prev.imageUrl) {
                 URL.revokeObjectURL(prev.imageUrl);
