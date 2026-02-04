@@ -153,6 +153,7 @@ export const BoardSelector = ({
               />
               {boards.map((board) => (
                 <div
+                  key={board.id}
                   className={`relative h-[110px] w-[110px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
                   onClick={() => setSelectedBoard(board)}
                 >
