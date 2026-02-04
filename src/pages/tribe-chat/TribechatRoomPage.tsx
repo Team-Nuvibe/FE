@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import PicturesIcon from "@/assets/icons/icon_pictures.svg?react";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
@@ -188,11 +188,29 @@ const TribechatRoomPage = () => {
   const hasNextPage = false; // 임시
   const isFetchingNextPage = false; // 임시
 
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const targetMessageId = queryParams.get("messageId");
+
   // 페이지 진입 시 navbar 숨기기, 언마운트 시 다시 표시
   useEffect(() => {
     setNavbarVisible(false);
     return () => setNavbarVisible(true);
   }, [setNavbarVisible]);
+
+  // 특정 메시지(이미지)로 스크롤 이동 로직
+  useEffect(() => {
+    if (targetMessageId) {
+      // 렌더링 후 스크롤을 위해 약간의 지연시간 부여
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`msg-${targetMessageId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [targetMessageId, messages]);
 
   // 역방향 무한 스크롤: 상단 도달 시 과거 메시지 로드
   useEffect(() => {
@@ -298,12 +316,13 @@ const TribechatRoomPage = () => {
       {/* 메시지 리스트 - 역방향 스크롤 */}
       <div className="flex flex-1 flex-col-reverse gap-4 overflow-y-auto px-4 pt-[115px] pb-[100px]">
         {messages.map((message) => (
-          <ChatMessageItem
-            key={message.id}
-            message={message}
-            onScrap={toggleScrap}
-            onReaction={toggleReaction}
-          />
+          <div key={message.id} id={`msg-${message.id}`}>
+            <ChatMessageItem
+              message={message}
+              onScrap={toggleScrap}
+              onReaction={toggleReaction}
+            />
+          </div>
         ))}
 
         {/* 상단 감지 영역 - 과거 메시지 로딩 트리거 */}

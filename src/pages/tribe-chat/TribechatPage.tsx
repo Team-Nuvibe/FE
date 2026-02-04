@@ -6,16 +6,22 @@ import IconChatScrap from "@/assets/icons/icon_chat_scrap.svg?react";
 import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TribeChatExitModal } from "@/components/tribe-chat/TribeChatExitModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"ing" | "waiting">("ing");
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const initialTab = queryParams.get("tab") === "waiting" ? "waiting" : "ing";
+  const [activeTab, setActiveTab] = useState<"ing" | "waiting">(initialTab);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (message: string) => {
-    setToastMessage(message);
-  };
+  useEffect(() => {
+    // URL 파라미터가 바뀌면 탭 변경 연동
+    const tabParam = new URLSearchParams(search).get("tab");
+    if (tabParam === "waiting") setActiveTab("waiting");
+    else if (tabParam === "ing") setActiveTab("ing");
+  }, [search]);
 
   useEffect(() => {
     if (toastMessage) {
@@ -39,6 +45,10 @@ const TribechatPage = () => {
       setMyRooms((prev) => prev.filter((r) => r.id !== selectedRoomForExit));
       setSelectedRoomForExit(null);
     }
+  };
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
   };
 
   // 룸 액션 핸들러

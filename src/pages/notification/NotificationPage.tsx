@@ -16,7 +16,6 @@ export const NotificationPage = () => {
 
   // 날짜별 그룹화 로직
   const groupedNotifications = useMemo(() => {
-    // 낼짜 비교를 위해 현재 시점의 오늘과 어제 구하기
     const now = new Date();
     const today = startOfDay(now);
     const yesterday = startOfDay(subDays(now, 1));
@@ -27,7 +26,7 @@ export const NotificationPage = () => {
       { title: "이전 알림", items: [] },
     ];
 
-    notifications.forEach((noti) => {
+    notifications.forEach((noti: NotificationResponse) => {
       const notiDate = startOfDay(new Date(noti.createdAt));
       if (isSameDay(notiDate, today)) {
         groups[0].items.push(noti);
@@ -55,23 +54,23 @@ export const NotificationPage = () => {
     const { category, mainMessage, relatedId } = notification;
 
     if (category === "채팅") {
-      if (mainMessage.includes("열렸어요") || mainMessage.includes("기다리던")) {
-        // NOTI-01, 02: 비활성화 채팅목록(또는 메인)
-        navigate("/tribe-chat");
-      } else if (mainMessage.includes("바이브가 올라왔어요") || mainMessage.includes("닫혀요")) {
+      if (mainMessage.includes("열렸어요")) {
+        // NOTI-01, 02: 비활성화 채팅목록
+        navigate("/tribe-chat?tab=waiting");
+      } else if (mainMessage.includes("새 바이브가 올라왔어요") || mainMessage.includes("종료가 1시간 남았어요")) {
         // NOTI-03, 05: 해당 채팅방
         navigate(`/tribe-chat/${relatedId}`);
       } else if (mainMessage.includes("반응했어요")) {
-        // NOTI-04: 해당 채팅방
-        navigate(`/tribe-chat/${relatedId}`);
+        // NOTI-04: 해당 채팅방 속 해당 이미지로 이동
+        navigate(`/tribe-chat/${relatedId}?messageId=1`);
       }
     } else if (category === "미션") {
       if (mainMessage.includes("비어 있어요")) {
         // NOTI-07: 홈
         navigate("/home");
       } else if (mainMessage.includes("추천 태그")) {
-        // NOTI-08: 바이브 드랍 화면 (관련 태그 상세가 있다면 해당 상세로 이동하거나 퀵드랍 유도)
-        navigate("/quickdrop");
+        // NOTI-08: 바이브 드랍 화면 (추천 태그 고정)
+        navigate("/quickdrop", { state: { tag: "Minimal" } });
       }
     } else if (category === "알림") {
       if (mainMessage.includes("종료되었어요")) {
@@ -127,21 +126,25 @@ export const NotificationPage = () => {
               </p>
             </div>
           ) : (
-            groupedNotifications.map((group) => (
-              <div key={group.title} className="flex flex-col">
-                <div className="px-4 py-2 bg-black">
-                  <h3 className="text-[14px] font-semibold text-gray-400">{group.title}</h3>
+            <>
+              {groupedNotifications.map((group) => (
+                <div key={group.title} className="flex flex-col">
+                  <div className="px-4 py-2 bg-black">
+                    <h3 className="text-[14px] font-semibold text-gray-400">
+                      {group.title}
+                    </h3>
+                  </div>
+                  {group.items.map((it) => (
+                    <NotificationItem
+                      key={it.notificationId}
+                      notification={it}
+                      onDelete={handleDelete}
+                      onClick={handleClick}
+                    />
+                  ))}
                 </div>
-                {group.items.map((it) => (
-                  <NotificationItem
-                    key={it.notificationId}
-                    notification={it}
-                    onDelete={handleDelete}
-                    onClick={handleClick}
-                  />
-                ))}
-              </div>
-            ))
+              ))}
+            </>
           )}
         </div>
       </div>

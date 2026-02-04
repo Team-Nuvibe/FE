@@ -115,7 +115,11 @@ const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
 
 export const queryClient = new QueryClient();
 
+import { useFcmToken } from "./hooks/useFcmToken";
+
 function App() {
+  useFcmToken();
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

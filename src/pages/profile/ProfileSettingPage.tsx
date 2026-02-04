@@ -5,28 +5,33 @@ import { useUpdateUserSetting } from '@/hooks/mutation/user/useUpdateUserSetting
 import { BulletItem } from '@/components/common/BulletItem';
 import { NotificationSettingItem } from '@/components/profile/NotificationSettingItem';
 
-
 const ProfileSettingPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
     const { mutate: updateSettings } = useUpdateUserSetting();
 
-    // 초기 설정값 모두 true로 설정해두었음. (API에서 가져오는 로직 부재로 기본값 사용)
-    const [settings, setSettings] = useState({
-        service: true,
-        security: true,
-        recommend: true,
-        recap: true,
-        tribeCreation: true,
-        tribeChat: true,
-        imageReaction: true,
+    // LocalStorage에서 초기값 로드, 없으면 기본값(true) 사용
+    const [settings, setSettings] = useState(() => {
+        const saved = localStorage.getItem('user_notification_settings');
+        return saved ? JSON.parse(saved) : {
+            service: true,
+            security: true,
+            recommend: true,
+            recap: true,
+            tribeCreation: true,
+            tribeChat: true,
+            imageReaction: true,
+        };
     });
 
     const toggleSetting = (key: keyof typeof settings) => {
         const newSettings = { ...settings, [key]: !settings[key] };
         setSettings(newSettings);
 
-        // API 요청 규격에 맞게 매핑
+        // 로컬 저장소에 저장 (새로고침 시 유지용)
+        localStorage.setItem('user_notification_settings', JSON.stringify(newSettings));
+
+        // 서버에 업데이트 요청
         updateSettings({
             isServiceAlert: newSettings.service,
             isSecurityAlert: newSettings.security,
