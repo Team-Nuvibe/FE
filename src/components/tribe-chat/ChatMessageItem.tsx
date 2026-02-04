@@ -22,7 +22,7 @@ export interface ChatMessage {
     like: boolean;
     nice: boolean;
   };
-  isScraped: boolean;
+  isScrapped: boolean;
 }
 
 interface ChatMessageProps {
@@ -98,7 +98,7 @@ const ChatMessageItem = ({
                 className="shrink-0"
                 aria-label="스크랩"
               >
-                {message.isScraped ? (
+                {message.isScrapped ? (
                   <ActiveScrapButton className="h-8 w-8" />
                 ) : (
                   <InActiveScrapButton className="h-8 w-8" />
@@ -118,7 +118,7 @@ const ChatMessageItem = ({
             className="shrink-0"
             aria-label="스크랩"
           >
-            {message.isScraped ? (
+            {message.isScrapped ? (
               <ActiveScrapButton className="h-8 w-8" />
             ) : (
               <InActiveScrapButton className="h-8 w-8" />

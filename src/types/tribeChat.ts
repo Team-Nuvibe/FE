@@ -52,7 +52,7 @@ export interface ChatTimelineItem {
     count: number;
   }>;
   myReactionType: string | null;
-  isScraped: boolean; // 스크랩 여부
+  isScrapped: boolean; // 스크랩 여부
 }
 
 // 채팅 타임라인 목록 조회 응답
@@ -110,6 +110,7 @@ export interface TribeReadResponse {
 // 대기 중인 트라이브 아이템
 export interface WaitingTribeItem {
   tribeId: number;
+  userTribeId: number;
   imageTag: string;
   counts: number;
 }
@@ -124,13 +125,12 @@ export interface WaitingTribeListResponse {
 // 활성화된 트라이브 아이템
 export interface ActiveTribeItem {
   tribeId: number;
+  userTribeId: number;
   imageTag: string;
+  counts: number;
   isFavorite: boolean;
   lastActivityAt: string;
-  lastChatId: number;
-  complete: boolean;
   unreadCount: number;
-  counts: number;
 }
 
 // 활성화된 트라이브 목록 조회 응답
@@ -142,6 +142,7 @@ export interface ActiveTribeListResponse {
     lastActivityAt: string;
     unread: boolean;
     lastChatId: number;
+    complete: boolean;
   };
 }
 

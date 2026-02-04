@@ -113,7 +113,7 @@ const TribechatPage = () => {
   const activeRooms =
     activeTribeData?.data.items.map((item) => ({
       id: item.tribeId.toString(),
-      userTribeId: item.tribeId, // API에서 userTribeId가 필요할 수 있음
+      userTribeId: item.userTribeId, // API response now has userTribeId
       title: `#${item.imageTag}`,
       memberCount: item.counts ?? 0,
       isPinned: item.isFavorite,
@@ -127,7 +127,7 @@ const TribechatPage = () => {
   const waitingRooms =
     waitingTribeData?.data.items.map((item) => ({
       id: item.tribeId.toString(),
-      userTribeId: item.tribeId,
+      userTribeId: item.userTribeId,
       title: `#${item.imageTag}`,
       memberCount: item.counts,
       isPinned: false,

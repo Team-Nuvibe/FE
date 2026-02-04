@@ -111,7 +111,7 @@ const TribechatRoomPage = () => {
           like: item.myReactionType === "LIKE",
           nice: item.myReactionType === "COOL",
         },
-        isScraped: item.isScraped ?? false, // API 값을 사용하거나 기본값 false
+        isScrapped: item.isScrapped ?? false, // API 값을 사용하거나 기본값 false
       };
     }) ?? [];
 
@@ -156,7 +156,7 @@ const TribechatRoomPage = () => {
                 ...oldData.data,
                 items: oldData.data.items.map((item) =>
                   item.chatId === Number(messageId)
-                    ? { ...item, isScraped: !item.isScraped }
+                    ? { ...item, isScrapped: !item.isScrapped }
                     : item,
                 ),
               },
