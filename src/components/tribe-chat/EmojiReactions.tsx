@@ -130,7 +130,7 @@ const EmojiReactions = ({
 
               {/* 숫자 표시 */}
               {reactions[type] > 0 && (
-                <span className="Label text-white">{reactions[type]}</span>
+                <span className="B2 text-white">{reactions[type]}</span>
               )}
             </button>
           );

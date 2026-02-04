@@ -52,6 +52,7 @@ export interface ChatTimelineItem {
     count: number;
   }>;
   myReactionType: string | null;
+  isScraped: boolean; // 스크랩 여부
 }
 
 // 채팅 타임라인 목록 조회 응답

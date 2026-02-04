@@ -27,7 +27,7 @@ export const activateUserTribe = async (
 ): Promise<ApiResponse<UserTribeActivateResponse>> => {
   const { data } = await axiosInstance.patch<
     ApiResponse<UserTribeActivateResponse>
-  >(`/api/userTribe/${userTribeId}/activate`);
+  >(`/api/userTribe/${userTribeId}/activate`, {});
   return data;
 };
 

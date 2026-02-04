@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "@/constants/key";
+import { type ApiResponse } from "@/types/common";
+import { type ChatTimelineResponse } from "@/types/tribeChat";
 import PicturesIcon from "@/assets/icons/icon_pictures.svg?react";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
 import DropVibeButton from "@/components/common/DropVibeButton";
@@ -16,12 +20,15 @@ import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap
 import { DropYourVibe } from "@/components/common/DropYourVibe";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
+import { useUserStore } from "@/hooks/useUserStore";
 
 const TribechatRoomPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { tribeId } = useParams<{ tribeId: string }>();
+  const queryClient = useQueryClient();
   const { setNavbarVisible } = useNavbarActions();
+  const { nickname } = useUserStore();
 
   // Active Tribe List for fallback tag
   const { data: activeTribeList } = useGetActiveTribeList();
@@ -73,9 +80,9 @@ const TribechatRoomPage = () => {
         nice: 0,
       };
       item.reactionSummary?.forEach((reaction) => {
-        if (reaction.type === "WOW") reactions.amazing = reaction.count;
-        if (reaction.type === "LIKE") reactions.like = reaction.count;
-        if (reaction.type === "COOL") reactions.nice = reaction.count;
+        if (reaction.type === "WOW") reactions.amazing += reaction.count;
+        if (reaction.type === "LIKE") reactions.like += reaction.count;
+        if (reaction.type === "COOL") reactions.nice += reaction.count;
       });
 
       return {
@@ -84,13 +91,14 @@ const TribechatRoomPage = () => {
         timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
         }),
         date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
         }),
-        isMine: !item.sender, // sender가 없으면 내가 보낸 메시지
+        isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
         userProfile: item.sender
           ? {
               name: item.sender.nickname || "Unknown",
@@ -103,7 +111,7 @@ const TribechatRoomPage = () => {
           like: item.myReactionType === "LIKE",
           nice: item.myReactionType === "COOL",
         },
-        isScraped: false, // TODO: API에 isScraped 필드 확인 필요
+        isScraped: item.isScraped ?? false, // API 값을 사용하거나 기본값 false
       };
     }) ?? [];
 
@@ -137,6 +145,28 @@ const TribechatRoomPage = () => {
     toggleScrapMutation(Number(messageId), {
       onSuccess: () => {
         console.log("✅ Scrap toggled successfully");
+        // 현재 페이지의 타임라인 캐시 업데이트 (optimistic UI update effect)
+        queryClient.setQueryData<ApiResponse<ChatTimelineResponse>>(
+          [QUERY_KEY.chatTimeline, Number(tribeId), undefined, 20],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                items: oldData.data.items.map((item) =>
+                  item.chatId === Number(messageId)
+                    ? { ...item, isScraped: !item.isScraped }
+                    : item,
+                ),
+              },
+            };
+          },
+        );
+        // 다른 관련 쿼리 무효화 (detail, grid 등)
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY.scrapedImages],
+        });
       },
       onError: () => {
         console.error("❌ Failed to toggle scrap");
@@ -248,12 +278,8 @@ const TribechatRoomPage = () => {
               // 다음 메시지 (역방향이므로 index + 1이 실제로는 이전 메시지)
               const nextMessage = messages[index + 1];
 
-              // 같은 사람이 연속으로 보낸 메시지인지 확인
-              const isSameSender =
-                nextMessage && nextMessage.isMine === message.isMine;
-
-              // 간격: 같은 사람이면 16px, 다른 사람이면 24px
-              const marginBottom = isSameSender ? "mb-4" : "mb-6";
+              // 간격: 항상 24px
+              const marginBottom = "mb-6";
 
               // 날짜가 바뀌었는지 확인 (역방향이므로 nextMessage가 이전 메시지)
               const isDateChanged =

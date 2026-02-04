@@ -1,6 +1,7 @@
 import type {
   ChatDetailResponse,
   ChatGridResponse,
+  ChatTimelineResponse,
   EmojiType,
   ImageStatusResponse,
 } from "@/types/tribeChat";
