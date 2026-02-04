@@ -31,6 +31,7 @@ export const TagDetailPage = () => {
       alert("파일을 선택하지 않았습니다.");
       return;
     }
+    // 태그 정보도 함께 전달
     navigate("/quickdrop", {
       state: { file: file, tag: tagDetails?.data.tag },
     });
