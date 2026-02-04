@@ -171,3 +171,9 @@ export interface ScrapedImageListResponse {
   nextCursorId: number;
   hasNext: boolean;
 }
+
+// 이미지 상태 조회 응답
+export interface ImageStatusResponse {
+  imageId: number;
+  status: string;
+}

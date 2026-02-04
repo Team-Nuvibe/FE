@@ -11,11 +11,11 @@ import ChatMessageItem, {
 import DateDivider from "@/components/tribe-chat/DateDivider";
 // React Query Hooks
 import useGetChatTimeline from "@/hooks/queries/tribe-chat/useGetChatTimeline";
-import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
 import useReactToChatEmoji from "@/hooks/mutation/tribe-chat/useReactToChatEmoji";
 import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
+import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 
 const TribechatRoomPage = () => {
   const navigate = useNavigate();
@@ -23,9 +23,16 @@ const TribechatRoomPage = () => {
   const { tribeId } = useParams<{ tribeId: string }>();
   const { setNavbarVisible } = useNavbarActions();
 
+  // Active Tribe List for fallback tag
+  const { data: activeTribeList } = useGetActiveTribeList();
+
   // Get imageTag from location state passed during navigation
-  const imageTag =
-    (location.state as { imageTag?: string })?.imageTag || "Tribe";
+  // If not in state, look it up in the active tribe list
+  const stateImageTag = (location.state as { imageTag?: string })?.imageTag;
+  const foundTribe = activeTribeList?.data?.items.find(
+    (t) => t.tribeId === Number(tribeId),
+  );
+  const imageTag = stateImageTag || foundTribe?.imageTag || "Tribe";
 
   // React Query - Timeline Data
   const {
@@ -41,7 +48,6 @@ const TribechatRoomPage = () => {
   // React Query - Mutations
   const { mutate: toggleScrapMutation } = useToggleImageScrap();
   const { mutate: reactToEmoji } = useReactToChatEmoji();
-  const { mutate: sendMessage } = useSendChatMessage();
 
   // API 응답 로그 (디버깅용)
   useEffect(() => {
@@ -66,7 +72,7 @@ const TribechatRoomPage = () => {
         like: 0,
         nice: 0,
       };
-      item.reactionSummary.forEach((reaction) => {
+      item.reactionSummary?.forEach((reaction) => {
         if (reaction.type === "WOW") reactions.amazing = reaction.count;
         if (reaction.type === "LIKE") reactions.like = reaction.count;
         if (reaction.type === "COOL") reactions.nice = reaction.count;
@@ -175,21 +181,14 @@ const TribechatRoomPage = () => {
     fileInput.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file && tribeId) {
-        sendMessage(
-          {
-            tribeId: Number(tribeId),
-            boardId: 1, // TODO: 실제 boardId 가져오기
+        navigate("/quickdrop", {
+          state: {
             file,
+            tag: imageTag, // TribeChat의 현재 태그 전달
+            fromTribe: true,
+            tribeId: Number(tribeId),
           },
-          {
-            onSuccess: () => {
-              console.log("✅ Message sent successfully");
-            },
-            onError: () => {
-              console.error("❌ Failed to send message");
-            },
-          },
-        );
+        });
       }
     };
 
@@ -204,7 +203,7 @@ const TribechatRoomPage = () => {
         <button
           className="flex h-10 w-10 items-center justify-center"
           aria-label="뒤로가기"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/tribe-chat")}
         >
           <BackButton className="h-6 w-6" />
         </button>

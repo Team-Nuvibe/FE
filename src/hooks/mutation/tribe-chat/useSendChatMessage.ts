@@ -5,15 +5,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface SendChatMessageParams {
   tribeId: number;
   boardId: number;
-  file: File;
+  imageId: number;
 }
 
 function useSendChatMessage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ tribeId, boardId, file }: SendChatMessageParams) =>
-      sendChatMessage(tribeId, boardId, file),
+    mutationFn: ({ tribeId, boardId, imageId }: SendChatMessageParams) =>
+      sendChatMessage(tribeId, boardId, imageId),
     onSuccess: (_, variables) => {
       // 해당 트라이브의 채팅 타임라인과 그리드 갱신
       queryClient.invalidateQueries({

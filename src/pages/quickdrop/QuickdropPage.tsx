@@ -15,7 +15,8 @@ import { useNavbarActions } from "@/hooks/useNavbarStore";
 import useJoinOrCreateTribe from "@/hooks/mutation/tribe-chat/useJoinOrCreateTribe";
 import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
-import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
+import { checkImageStatus } from "@/apis/tribe-chat/chat";
+import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
@@ -27,7 +28,12 @@ interface Board {
 
 export const QuickdropPage = () => {
   const location = useLocation();
-  const { file, tag: preSelectedTag } = location.state || {};
+  const {
+    file,
+    tag: preSelectedTag,
+    fromTribe,
+    tribeId,
+  } = location.state || {};
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
     setNavbarVisible(false);
@@ -47,7 +53,7 @@ export const QuickdropPage = () => {
   }>({
     image: null,
     imageUrl: null,
-    tag: preSelectedTag || "",
+    tag: preSelectedTag === "Tribe" ? "" : preSelectedTag || "",
     board: null,
   });
   const [editorState, setEditorState] = useState<{
@@ -78,6 +84,7 @@ export const QuickdropPage = () => {
   const { mutate: joinOrCreateTribe, isPending: isJoiningTribe } =
     useJoinOrCreateTribe();
   const { mutate: activateUserTribe } = useActivateUserTribe();
+  const { mutate: sendChatMessage } = useSendChatMessage();
 
   useEffect(() => {
     return () => {
@@ -164,9 +171,13 @@ export const QuickdropPage = () => {
         capitalizedTagForPresigned,
         originalFileName,
       );
-      const presignedUrl = response.data.imageURL;
+      console.log("Presigned URL Response:", response.data);
+      const { imageURL: presignedUrl, imageId } = response.data;
+      console.log("Extracted imageId:", imageId);
 
-      console.log(response);
+      if (!imageId) {
+        console.error("❌ Critical: imageId is missing from response!");
+      }
 
       // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
       const uploadResponse = await fetch(presignedUrl, {
@@ -183,10 +194,60 @@ export const QuickdropPage = () => {
 
       console.log("Image uploaded successfully to S3");
 
-      // 4. 성공 시 보드 정보 저장하고 uploaded 단계로 이동
+      // 4. TribeChat에서 왔을 경우: 이미지 상태 확인 후 메시지 전송 및 복귀
+      if (fromTribe && tribeId) {
+        // 이미지가 ACTIVE 상태가 될 때까지 폴링
+        let isImageActive = false;
+        while (!isImageActive) {
+          try {
+            console.log(`Checking status for imageId: ${imageId}`);
+            if (!imageId)
+              throw new Error("imageId is missing before status check");
+
+            const statusResponse = await checkImageStatus(imageId);
+            console.log("Image Status:", statusResponse.data.status);
+            if (statusResponse.data.status === "ACTIVE") {
+              isImageActive = true;
+            } else {
+              // 1초 대기 후 재시도
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+          } catch (statusError) {
+            console.error("Failed to check image status:", statusError);
+            // 에러 발생 시에도 잠시 대기 후 재시도 (또는 중단 정책 결정 필요)
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
+
+        // 이미지 상태가 ACTIVE가 되면 메시지 전송
+        // sendChatMessage는 이제 imageId를 사용합니다.
+        sendChatMessage(
+          {
+            tribeId: tribeId,
+            boardId: selectedBoard.id,
+            imageId: imageId,
+          },
+          {
+            onSuccess: () => {
+              console.log("✅ Message sent successfully, navigating back");
+              navigate(`/tribe-chat/${tribeId}`, {
+                state: { imageTag: imageData.tag },
+              });
+            },
+            onError: (error) => {
+              console.error("❌ Failed to send message:", error);
+              alert("메시지 전송에 실패했습니다.");
+              navigate(`/tribe-chat/${tribeId}`);
+            },
+          },
+        );
+        return; // uploaded 단계로 넘어가지 않음
+      }
+
+      // 5. 일반 흐름: 성공 시 보드 정보 저장하고 uploaded 단계로 이동
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
 
-      // 5. 대기 중인 트라이브 확인
+      // 6. 대기 중인 트라이브 확인
       const capitalizedTag =
         imageData.tag.charAt(0).toUpperCase() +
         imageData.tag.slice(1).toLowerCase();

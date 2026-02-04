@@ -1,8 +1,8 @@
 import type {
   ChatDetailResponse,
-  ChatTimelineResponse,
   ChatGridResponse,
   EmojiType,
+  ImageStatusResponse,
 } from "@/types/tribeChat";
 import { axiosInstance } from "../axios";
 import type { ApiResponse } from "@/types/common";
@@ -11,19 +11,10 @@ import type { ApiResponse } from "@/types/common";
 export const sendChatMessage = async (
   tribeId: number,
   boardId: number,
-  file: File,
+  imageId: number,
 ): Promise<ApiResponse<string>> => {
-  const formData = new FormData();
-  formData.append("file", file);
-
   const { data } = await axiosInstance.post<ApiResponse<string>>(
-    `/api/chat/tribe/${tribeId}/send`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
+    `/api/chat/tribe/${tribeId}/send?imageId=${imageId}&boardId=${boardId}`,
   );
   return data;
 };
@@ -101,6 +92,16 @@ export const reactToChatEmoji = async (
 ): Promise<ApiResponse<Record<string, never>>> => {
   const { data } = await axiosInstance.post<ApiResponse<Record<string, never>>>(
     `/api/emoji/chat/${chatId}?type=${type}`,
+  );
+  return data;
+};
+
+// 이미지 상태 조회
+export const checkImageStatus = async (
+  imageId: number,
+): Promise<ApiResponse<ImageStatusResponse>> => {
+  const { data } = await axiosInstance.get<ApiResponse<ImageStatusResponse>>(
+    `/api/images/${imageId}/status`,
   );
   return data;
 };
