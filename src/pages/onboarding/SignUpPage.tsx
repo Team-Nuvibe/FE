@@ -161,6 +161,7 @@ const SignUpPage = () => {
       {
         onSuccess: () => {
           setShowSplash(true);
+          sessionStorage.setItem("isNewUser", "true");
           setTimeout(() => {
             navigate("/login", {
               state: {

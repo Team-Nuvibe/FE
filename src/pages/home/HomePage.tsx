@@ -14,6 +14,9 @@ import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
 import Union from "@/assets/icons/Union.svg?react";
 import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
 import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
+import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
+import { createArchiveBoard } from "@/apis/archive-board/archive";
+import { useNavbarActions } from "@/hooks/useNavbarStore";
 
 const tagImages = import.meta.glob(
   "@/assets/images/tag-default-images/**/*.{png,jpg,jpeg}",
@@ -24,6 +27,7 @@ const tagImages = import.meta.glob(
 ) as Record<string, string>;
 
 const imageMap: Record<string, Record<string, string>> = {};
+const allTagImages: Record<string, string> = {};
 
 Object.entries(tagImages).forEach(([path, imageUrl]) => {
   const parts = path.split("/");
@@ -38,21 +42,30 @@ Object.entries(tagImages).forEach(([path, imageUrl]) => {
       imageMap[category] = {};
     }
     imageMap[category][tagName] = imageUrl;
+    allTagImages[tagName] = imageUrl;
   }
 });
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const tabsContainerRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const navigate = useNavigate();
+  const { setNavbarVisible } = useNavbarActions();
 
   const { categories, categoryQueries } = useGetAllCategoriesTags();
   const { data: dropMission } = useGetDropMission();
-  const { data: archiveListData } = useGetArchiveList();
+  const { data: archiveListData, refetch: refetchArchiveList } =
+    useGetArchiveList();
+
+  useEffect(() => {
+    setNavbarVisible(!isCreateBoardModalOpen);
+  }, [isCreateBoardModalOpen, setNavbarVisible]);
 
   const isSuccess = categoryQueries.every((query) => query.isSuccess);
 
@@ -62,6 +75,14 @@ const HomePage = () => {
       swiperRef.current.updateAutoHeight(150);
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    const isNewUser = sessionStorage.getItem("isNewUser");
+    if (isNewUser === "true") {
+      setShowTutorial(true);
+      sessionStorage.removeItem("isNewUser");
+    }
+  }, []);
 
   const handleCategoryClick = (index: number) => {
     swiperRef.current?.slideTo(index);
@@ -83,6 +104,8 @@ const HomePage = () => {
     }
   };
 
+  console.log(archiveListData);
+
   const inputImageRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +117,22 @@ const HomePage = () => {
     navigate("/quickdrop", { state: { file, tag: dropMission?.data.tag } });
   };
 
+  const handleCreateBoardSave = async (boardName: string) => {
+    if (!boardName || boardName.trim() === "") return;
+
+    try {
+      const response = await createArchiveBoard(boardName.trim());
+      if (response.data) {
+        await refetchArchiveList();
+      }
+    } catch (error) {
+      console.error("Failed to create archive board:", error);
+      // TODO: Show error toast to user
+    } finally {
+      setIsCreateBoardModalOpen(false);
+    }
+  };
+
   return (
     <div className="flex min-h-full w-full flex-col">
       {/* 헤더 */}
@@ -101,7 +140,11 @@ const HomePage = () => {
         <div
           className="absolute inset-0 h-full w-full bg-cover bg-bottom bg-no-repeat object-cover"
           style={{
-            backgroundImage: `url(${dropMission?.data.imageUrl || Img_3})`,
+            backgroundImage: `url(${
+              (dropMission?.data.tag &&
+                allTagImages[dropMission.data.tag.toLowerCase()]) ||
+              dropMission?.data.imageUrl
+            })`,
             maskImage:
               "linear-gradient(to bottom, black 70%, transparent 100%)",
             WebkitMaskImage:
@@ -127,10 +170,12 @@ const HomePage = () => {
             </div>
           </div>
           <div className="relative z-10 mr-4 mb-9 cursor-pointer">
-            <Icon_shortcut_quickdrop onClick={() => navigate("/quickdrop")} />
+            <Icon_shortcut_quickdrop
+              onClick={() => inputImageRef.current?.click()}
+            />
             <input
               type="file"
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              className="hidden"
               accept="image/*"
               ref={inputImageRef}
               onChange={handleImageChange}
@@ -141,9 +186,12 @@ const HomePage = () => {
       {/* My Trace */}
       <section className="flex flex-col gap-3 px-4 pt-4 pb-4">
         <h2 className="H2 tracking-tight text-gray-200">나의 기록</h2>
-        <div className="flex">
+        <div className="scrollbar-hide flex gap-[10px] overflow-x-auto">
           {archiveListData?.data.length === 0 && (
-            <div className="flex h-[123px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
+            <div
+              className="flex h-[123px] w-[123px] shrink-0 cursor-pointer items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-800 bg-gray-900"
+              onClick={() => setIsCreateBoardModalOpen(true)}
+            >
               <Icon_plus className="h-[16px]" />
             </div>
           )}
@@ -168,8 +216,8 @@ const HomePage = () => {
                   />
                 </>
               )}
-              {board.thumbnailUrl === "" && (
-                <IconBoardDefault className="h-[110px] w-[110px] cursor-pointer" />
+              {!board.thumbnailUrl && (
+                <IconBoardDefault className="h-[123px] w-[123px] cursor-pointer" />
               )}
 
               <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
@@ -193,7 +241,7 @@ const HomePage = () => {
             <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-full bg-gray-400" />
             <div
               ref={tabsContainerRef}
-              className="scrollbar-hide flex gap-4 overflow-x-auto"
+              className="scrollbar-hide flex gap-3 overflow-x-auto"
               style={{
                 maskImage:
                   "linear-gradient(to right, black 90%, transparent 100%)",
@@ -208,7 +256,7 @@ const HomePage = () => {
                     tabRefs.current[index] = el;
                   }}
                   onClick={() => handleCategoryClick(index)}
-                  className={`relative flex shrink-0 cursor-pointer flex-col items-center px-1 pb-1 transition-colors`}
+                  className={`relative flex shrink-0 cursor-pointer flex-col items-center px-[6px] pb-1 transition-colors`}
                 >
                   <p
                     className={`ST2 tracking-tight transition-colors duration-200 ${
@@ -282,8 +330,8 @@ const HomePage = () => {
                         backgroundPosition: "center",
                       }}
                     >
-                      <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
-                        <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
+                      <div className="mb-[10px] flex w-fit min-w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
+                        <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[1.4] tracking-tight text-transparent">
                           #{item.tag}
                         </p>
                       </div>
@@ -296,8 +344,33 @@ const HomePage = () => {
         </Swiper>
       </section>
       <div className="pointer-events-none fixed bottom-0 left-0 z-50 h-[12dvh] w-full bg-gradient-to-b from-transparent to-[#121212]" />
+      {showTutorial && (
+        <div
+          className="animate-fade-in fixed inset-0 z-50 flex h-full w-full touch-none justify-center bg-black/70"
+          onClick={() => setShowTutorial(false)}
+        >
+          <div className="relative h-full w-full max-w-[393px]">
+            <div className="absolute right-4 bottom-30 rounded-[5px] border-[1px] border-gray-800 bg-gray-600/80 bg-gradient-to-t from-gray-900/80 to-gray-900/80 px-4 py-3">
+              <p className="B2 text-right tracking-tight text-gray-100">
+                바이브 드랍을 통해
+                <br />
+                오늘의 바이브를 드랍해보세요!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="h-[calc(env(safe-area-inset-bottom)+12rem)] w-full shrink-0" />
+      <BoardBottomSheet
+        isOpen={isCreateBoardModalOpen}
+        initialTitle=""
+        toptext="아카이브 보드 추가"
+        buttontext="추가하기"
+        placeholderText="추가할 보드명을 입력해주세요."
+        onClose={() => setIsCreateBoardModalOpen(false)}
+        onClick={handleCreateBoardSave}
+      />
     </div>
   );
 };
