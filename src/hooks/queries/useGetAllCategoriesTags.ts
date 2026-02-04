@@ -7,6 +7,8 @@ function useGetAllCategoriesTags() {
     queries: categoriesList.map((category) => ({
       queryKey: ["homeTags", category],
       queryFn: () => getTagsByCategory(category),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
     })),
   });
   const categories = categoriesList.map((category, index) => ({

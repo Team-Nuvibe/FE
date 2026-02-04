@@ -9,6 +9,11 @@ import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
+import useGetDropMission from "@/hooks/queries/useGetDropMission";
+import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
+import Union from "@/assets/icons/Union.svg?react";
+import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
+import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 
 const tagImages = import.meta.glob(
   "@/assets/images/tag-default-images/**/*.{png,jpg,jpeg}",
@@ -46,6 +51,8 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const { categories, categoryQueries } = useGetAllCategoriesTags();
+  const { data: dropMission } = useGetDropMission();
+  const { data: archiveListData } = useGetArchiveList();
 
   const isSuccess = categoryQueries.every((query) => query.isSuccess);
 
@@ -84,7 +91,7 @@ const HomePage = () => {
       alert("파일을 선택하지 않았습니다.");
       return;
     }
-    navigate("/quickdrop", { state: { file } });
+    navigate("/quickdrop", { state: { file, tag: dropMission?.data.tag } });
   };
 
   return (
@@ -94,7 +101,7 @@ const HomePage = () => {
         <div
           className="absolute inset-0 h-full w-full bg-cover bg-bottom bg-no-repeat object-cover"
           style={{
-            backgroundImage: `url(${Img_3})`,
+            backgroundImage: `url(${dropMission?.data.imageUrl || Img_3})`,
             maskImage:
               "linear-gradient(to bottom, black 70%, transparent 100%)",
             WebkitMaskImage:
@@ -115,7 +122,7 @@ const HomePage = () => {
             </div>
             <div className="H1 z-10 px-4 pt-[10px] pb-4">
               <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] tracking-tight text-transparent">
-                #Minimal
+                #{dropMission?.data.tag}
               </h1>
             </div>
           </div>
@@ -135,9 +142,48 @@ const HomePage = () => {
       <section className="flex flex-col gap-3 px-4 pt-4 pb-4">
         <h2 className="H2 tracking-tight text-gray-200">나의 기록</h2>
         <div className="flex">
-          <div className="flex h-[123px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
-            <Icon_plus className="h-[16px]" />
-          </div>
+          {archiveListData?.data.length === 0 && (
+            <div className="flex h-[123px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
+              <Icon_plus className="h-[16px]" />
+            </div>
+          )}
+          {archiveListData?.data.map((board) => (
+            <div
+              key={board.boardId}
+              className={`relative h-[123px] w-[123px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
+              onClick={() => navigate(`/archive-board/${board.boardId}`)}
+            >
+              {board.thumbnailUrl && (
+                <>
+                  {/* 이미지 레이어 */}
+                  <img
+                    src={board.thumbnailUrl}
+                    alt="thumbnail"
+                    className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
+                  />
+                  {/* 폴더 오버레이 */}
+                  <Union
+                    className="pointer-events-none absolute bottom-0 left-0 z-20 h-full w-full translate-y-[0.5px]"
+                    preserveAspectRatio="xMinYMax meet"
+                  />
+                </>
+              )}
+              {board.thumbnailUrl === "" && (
+                <IconBoardDefault className="h-[110px] w-[110px] cursor-pointer" />
+              )}
+
+              <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
+                <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
+                  <p className="w-[70px] text-[10px] text-white">
+                    {board.name}
+                  </p>
+                  <p className="text-[7px] text-gray-300">
+                    {board.tagCount} 태그
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
       {/* Categories */}
@@ -147,7 +193,7 @@ const HomePage = () => {
             <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-full bg-gray-400" />
             <div
               ref={tabsContainerRef}
-              className="scrollbar-hide flex gap-3 overflow-x-auto"
+              className="scrollbar-hide flex gap-4 overflow-x-auto"
               style={{
                 maskImage:
                   "linear-gradient(to right, black 90%, transparent 100%)",
@@ -162,19 +208,16 @@ const HomePage = () => {
                     tabRefs.current[index] = el;
                   }}
                   onClick={() => handleCategoryClick(index)}
-                  className={`relative flex shrink-0 cursor-pointer flex-col items-center pb-2 transition-colors`}
+                  className={`relative flex shrink-0 cursor-pointer flex-col items-center px-1 pb-1 transition-colors`}
                 >
                   <p
                     className={`ST2 tracking-tight transition-colors duration-200 ${
                       activeIndex === index
-                        ? "B2 text-white"
-                        : "B2 text-gray-400"
+                        ? "B1 text-gray-200"
+                        : "B1 text-gray-600"
                     }`}
                   >
-                    {"\u00A0" +
-                      category.name[0] +
-                      category.name.slice(1).toLowerCase() +
-                      "\u00A0"}
+                    {category.name[0] + category.name.slice(1).toLowerCase()}
                   </p>
                   {activeIndex === index && (
                     <motion.div
