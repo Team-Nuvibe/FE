@@ -47,7 +47,7 @@ export interface ChatTimelineItem {
     nickname: string;
     profileImage: string;
   };
-  reactionSummary: Array<{
+  reactionsSummary: Array<{
     type: string;
     count: number;
   }>;

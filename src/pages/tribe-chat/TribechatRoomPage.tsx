@@ -79,7 +79,7 @@ const TribechatRoomPage = () => {
         like: 0,
         nice: 0,
       };
-      item.reactionSummary?.forEach((reaction) => {
+      item.reactionsSummary?.forEach((reaction) => {
         if (reaction.type === "WOW") reactions.amazing += reaction.count;
         if (reaction.type === "LIKE") reactions.like += reaction.count;
         if (reaction.type === "COOL") reactions.nice += reaction.count;
