@@ -10,6 +10,32 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 
+const tagImages = import.meta.glob(
+  "@/assets/images/tag-default-images/**/*.{png,jpg,jpeg}",
+  {
+    eager: true,
+    import: "default",
+  },
+) as Record<string, string>;
+
+const imageMap: Record<string, Record<string, string>> = {};
+
+Object.entries(tagImages).forEach(([path, imageUrl]) => {
+  const parts = path.split("/");
+  const category = parts[parts.length - 2].toLowerCase();
+  const fileName = parts[parts.length - 1];
+
+  if (fileName.length > 4) {
+    const tagNameWithExt = fileName.substring(4);
+    const tagName = tagNameWithExt.split(".")[0].toLowerCase();
+
+    if (!imageMap[category]) {
+      imageMap[category] = {};
+    }
+    imageMap[category][tagName] = imageUrl;
+  }
+});
+
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -188,32 +214,39 @@ const HomePage = () => {
           {categories.map((category, index) => (
             <SwiperSlide key={index}>
               <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
-                {category.items.map((item, itemIndex) => (
-                  <div
-                    key={itemIndex}
-                    className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
-                    onClick={() =>
-                      navigate(`/tag/${item.tag}`, {
-                        state: { imageUrl: item.imageUrl },
-                      })
-                    }
-                    style={{
-                      backgroundImage: item.imageUrl
-                        ? `url(${item.imageUrl})`
-                        : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
-                      <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
-                        #
-                        {item.tag &&
-                          item.tag[0] + item.tag.slice(1).toLowerCase()}
-                      </p>
+                {category.items.map((item, itemIndex) => {
+                  const localImage =
+                    imageMap[category.name.toLowerCase()]?.[
+                      item.tag.toLowerCase()
+                    ];
+
+                  return (
+                    <div
+                      key={itemIndex}
+                      className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
+                      onClick={() =>
+                        navigate(`/tag/${item.tag}`, {
+                          state: { imageUrl: localImage || item.imageUrl },
+                        })
+                      }
+                      style={{
+                        backgroundImage: localImage
+                          ? `url(${localImage})`
+                          : item.imageUrl
+                            ? `url(${item.imageUrl})`
+                            : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      <div className="mb-[10px] flex h-[27px] w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-9">
+                        <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text py-3 tracking-tight text-transparent">
+                          #{item.tag}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </SwiperSlide>
           ))}
