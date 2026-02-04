@@ -5,7 +5,7 @@ import { useQueries } from "@tanstack/react-query";
 function useGetAllCategoriesTags() {
   const categoryQueries = useQueries({
     queries: categoriesList.map((category) => ({
-      queryKey: ["tags", category],
+      queryKey: ["homeTags", category],
       queryFn: () => getTagsByCategory(category),
     })),
   });

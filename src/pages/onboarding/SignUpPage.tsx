@@ -230,7 +230,7 @@ const SignUpPage = () => {
 
   return (
     <>
-      <div className="relative flex min-h-[100dvh] w-full flex-col items-center px-4 pt-[60px] pb-15 text-white">
+      <div className="relative flex min-h-[100dvh] w-full flex-col items-center overflow-hidden px-4 pt-[60px] pb-15 text-white">
         {/* Navigation Header */}
         <div className="relative mb-6 flex w-full items-center justify-center">
           <button

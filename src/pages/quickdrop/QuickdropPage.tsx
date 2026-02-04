@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ImageEditor } from "../../components/features/image-editor/ImageEditor";
 import { useEffect, useState } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
+import { postPresignedUrl } from "@/apis/vibedrop";
 import { BoardSelector } from "../../components/features/BoardSelector";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -11,19 +12,19 @@ import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
+import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
   id: number;
   name: string;
-  createdAt: string;
   thumbnailUrl: string;
   tagCount: number;
 }
 
 export const QuickdropPage = () => {
   const location = useLocation();
-  const { file } = location.state || {};
+  const { file, tag: preSelectedTag } = location.state || {};
   const { setNavbarVisible } = useNavbarActions();
   useEffect(() => {
     setNavbarVisible(false);
@@ -43,7 +44,7 @@ export const QuickdropPage = () => {
   }>({
     image: null,
     imageUrl: null,
-    tag: "",
+    tag: preSelectedTag || "",
     board: null,
   });
   const [editorState, setEditorState] = useState<{
@@ -74,6 +75,53 @@ export const QuickdropPage = () => {
 
   const navigate = useNavigate();
 
+  // 이미지 업로드 핸들러
+  const handleBoardComplete = async (selectedBoard: Board) => {
+    if (!imageData.image || !imageData.tag) {
+      console.error("Image or tag is missing");
+      return;
+    }
+
+    try {
+      // 1. 파일명 추출 (원본 파일명 또는 기본값)
+      const originalFileName = file?.name || "image.jpg";
+
+      // 2. Presigned URL 발급 API 호출
+      const response = await postPresignedUrl(imageData.tag, originalFileName);
+      const presignedUrl = response.data.imageURL;
+
+      console.log(response);
+
+      // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        body: imageData.image,
+        headers: {
+          "Content-Type": imageData.image.type,
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`S3 upload failed: ${uploadResponse.status}`);
+      }
+
+      console.log("Image uploaded successfully to S3");
+
+      // 4. 성공 시 보드 정보 저장하고 uploaded 단계로 이동
+      setImageData((prev) => ({ ...prev, board: selectedBoard }));
+      const addImageToBoardResponse = await addImageToArchiveBoard(
+        selectedBoard.id,
+        response.data.imageId,
+      );
+      console.log("Image added to archive board:", addImageToBoardResponse);
+      setStep("uploaded");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      // TODO: 사용자에게 에러 메시지 표시
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
   return (
     <div className="flex h-dvh w-full flex-col">
       {step === "edit" && (
@@ -82,7 +130,6 @@ export const QuickdropPage = () => {
           initialState={editorState}
           onNext={(blob: Blob, currentState) => {
             const imageUrl = URL.createObjectURL(blob);
-            console.log(imageUrl, imageData.imageUrl);
             setImageData((prev) => {
               if (prev.imageUrl) {
                 URL.revokeObjectURL(prev.imageUrl);
@@ -90,7 +137,11 @@ export const QuickdropPage = () => {
               return { ...prev, image: blob, imageUrl };
             });
             setEditorState(currentState);
-            setStep("tag");
+            if (preSelectedTag) {
+              setStep("board");
+            } else {
+              setStep("tag");
+            }
           }}
         />
       )}
@@ -108,11 +159,8 @@ export const QuickdropPage = () => {
           image={imageData.image}
           imageUrl={imageData.imageUrl}
           tag={imageData.tag}
-          onNext={(selectedBoard: Board) => {
-            setImageData((prev) => ({ ...prev, board: selectedBoard }));
-            setStep("uploaded");
-          }}
-          onPrevious={() => setStep("tag")}
+          onNext={handleBoardComplete}
+          onPrevious={() => setStep(preSelectedTag ? "edit" : "tag")}
         />
       )}
       {step === "uploaded" && (
@@ -185,8 +233,9 @@ export const QuickdropPage = () => {
                     <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text tracking-tight text-transparent">
                       #{imageData.tag}
                     </p>
-                    <p className="text-[10px]">
-                      {imageData.board?.createdAt} / 09:41
+                    <p className="font-[Montserrat] text-[10px] font-light italic">
+                      2025. 03. 21.
+                      {"\u00A0\u00A0\u00A0"}|{"\u00A0\u00A0\u00A0"}09:41
                     </p>
                   </div>
                 </div>

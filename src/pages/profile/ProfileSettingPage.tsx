@@ -6,12 +6,14 @@ import ImgPersonalInfo3 from '@/assets/images/img_personal_info3.svg?react';
 import NotificationOnIcon from '@/assets/icons/icon_notification_on.svg?react';
 import NotificationOffIcon from '@/assets/icons/icon_notification_off.svg?react';
 import { useState } from 'react';
+import { useUpdateUserSetting } from '@/hooks/mutation/user/useUpdateUserSetting';
 
 const ProfileSettingPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
+    const { mutate: updateSettings } = useUpdateUserSetting();
 
-    // 초기 설정값 모두 true로 설정해두었음.
+    // 초기 설정값 모두 true로 설정해두었음. (API에서 가져오는 로직 부재로 기본값 사용)
     const [settings, setSettings] = useState({
         service: true,
         security: true,
@@ -23,7 +25,19 @@ const ProfileSettingPage = () => {
     });
 
     const toggleSetting = (key: keyof typeof settings) => {
-        setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+        const newSettings = { ...settings, [key]: !settings[key] };
+        setSettings(newSettings);
+
+        // API 요청 규격에 맞게 매핑
+        updateSettings({
+            isServiceAlert: newSettings.service,
+            isSecurityAlert: newSettings.security,
+            isRecommendAlert: newSettings.recommend,
+            isRecapAlert: newSettings.recap,
+            isTribeCreateAlert: newSettings.tribeCreation,
+            isTribeChatAlert: newSettings.tribeChat,
+            isReactionAlert: newSettings.imageReaction,
+        });
     };
 
     const getTitle = () => {

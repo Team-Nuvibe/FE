@@ -42,6 +42,7 @@ const ProfileEditPage = () => {
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+    const [nextAvailableDate, setNextAvailableDate] = useState<string | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [verificationError, setVerificationError] = useState<string | null>(null);
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail);
@@ -109,9 +110,12 @@ const ProfileEditPage = () => {
                         }, 100);
                     },
                     onError: (error: any) => {
-                        let message = error.response?.data?.message || error.message;
-                        // 14일 제한 에러 메시지 커스텀
-                        if (message.includes('14일')) {
+                        const message = error.response?.data?.message || error.message;
+                        const nextDate = error.response?.data?.data?.nextAvailableDate;
+
+                        // 14일 제한 에러인 경우
+                        if (message.includes('14일') && nextDate) {
+                            setNextAvailableDate(nextDate);
                             setIsNicknameModalOpen(true);
                             return;
                         }
@@ -227,7 +231,7 @@ const ProfileEditPage = () => {
                 setPasswordStep('change');
                 setPasswordError('');
             } catch (error: any) {
-                setPasswordError('비밀번호가 일치하지 않습니다.');
+                setPasswordError('비밀번호가 일치하지 않아요.');
                 console.error('비밀번호 확인 실패:', error.response?.data?.message || error.message);
             }
         }
@@ -536,13 +540,11 @@ const ProfileEditPage = () => {
 
                     {/* Nickname Restriction Modal */}
                     {(() => {
-                        // TODO: 백엔드에서 마지막 변경일(nicknameUpdatedAt)을 받아오면 이 부분을 수정해야 합니다.
-                        // 현재는 테스트를 위해 '오늘'을 마지막 변경일로 가정합니다.
-                        const nicknameUpdatedAt = new Date();
-                        const availableDate = new Date(nicknameUpdatedAt);
-                        availableDate.setDate(availableDate.getDate() + 14);
+                        if (!nextAvailableDate) return null;
 
-                        const formattedDate = `${availableDate.getMonth() + 1}월 ${availableDate.getDate()} 일`;
+                        // nextAvailableDate는 "2026-02-17" 형식
+                        const availableDate = new Date(nextAvailableDate);
+                        const formattedDate = `${availableDate.getMonth() + 1}월 ${availableDate.getDate()}일`;
 
                         return (
                             <BaseModal
