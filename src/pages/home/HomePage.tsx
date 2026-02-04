@@ -106,10 +106,10 @@ const HomePage = () => {
         </div>
       </header>
       {/* My Trace */}
-      <section className="flex flex-col gap-4 px-4 pt-4 pb-4">
+      <section className="flex flex-col gap-3 px-4 pt-4 pb-4">
         <h2 className="H2 tracking-tight text-gray-200">나의 기록</h2>
         <div className="flex">
-          <div className="flex h-[116px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
+          <div className="flex h-[123px] w-[123px] cursor-pointer items-center justify-center rounded-[5px] border-1 border-dashed border-gray-800 bg-gray-900">
             <Icon_plus className="h-[16px]" />
           </div>
         </div>

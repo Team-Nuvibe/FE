@@ -13,6 +13,7 @@ import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
+import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
@@ -90,13 +91,10 @@ export const QuickdropPage = () => {
       const originalFileName = file?.name || "image.jpg";
 
       // 2. Presigned URL 발급 API 호출
-      const response = await postPresignedUrl(
-        imageData.tag.toUpperCase(),
-        originalFileName,
-      );
+      const response = await postPresignedUrl(imageData.tag, originalFileName);
       const presignedUrl = response.data.imageURL;
 
-      console.log("Presigned URL:", presignedUrl);
+      console.log(response);
 
       // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
       const uploadResponse = await fetch(presignedUrl, {
@@ -115,6 +113,11 @@ export const QuickdropPage = () => {
 
       // 4. 성공 시 보드 정보 저장하고 uploaded 단계로 이동
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
+      const addImageToBoardResponse = await addImageToArchiveBoard(
+        selectedBoard.id,
+        response.data.imageId,
+      );
+      console.log("Image added to archive board:", addImageToBoardResponse);
       setStep("uploaded");
     } catch (error) {
       console.error("Failed to upload image:", error);
@@ -133,7 +136,6 @@ export const QuickdropPage = () => {
           initialState={editorState}
           onNext={(blob: Blob, currentState) => {
             const imageUrl = URL.createObjectURL(blob);
-            console.log(imageUrl, imageData.imageUrl);
             setImageData((prev) => {
               if (prev.imageUrl) {
                 URL.revokeObjectURL(prev.imageUrl);
