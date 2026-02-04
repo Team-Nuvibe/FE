@@ -77,11 +77,11 @@ export const getVibeToneTags = async (): Promise<
 // 아카이브 보드에 이미지 추가
 export const addImageToArchiveBoard = async (
   boardId: number,
-  imageIds: number,
+  imageId: number,
 ): Promise<ApiResponse<null>> => {
   const { data } = await axiosInstance.post<ApiResponse<null>>(
     `/api/archive/${boardId}/images`,
-    { imageIds },
+    { imageId },
   );
   return data;
 };

@@ -1,5 +1,6 @@
 import ChevronRightIcon2 from "@/assets/icons/icon_chevron_right2.svg?react";
-import ChangeProfileIcon from "@/assets/icons/icon_change_profile_picture.svg?react";
+import CameraFrame from "@/assets/icons/icon-camera-frame.svg";
+import CameraInside from "@/assets/icons/icon-camera-inside.svg";
 import { useUserStore } from "@/hooks/useUserStore";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
 import { ProfileImageDisplay } from "@/components/common/ProfileImageDisplay";
@@ -7,14 +8,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { LogoutModal } from "@/components/profile/LogoutModal";
 import useLogout from "@/hooks/mutation/auth/useLogout";
-import useDeleteUser from "@/hooks/mutation/auth/useDeleteUser";
-import { useUserProfileImage } from "@/hooks/queries/useUserProfileImage";
+import { deleteUser } from "@/apis/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import { useUserProfileImage, useUserNickname } from "@/hooks/queries/useUser";
 import { useUpdateProfileImage } from "@/hooks/mutation/user/useUpdateProfileImage";
 
 import { DeleteAccountModal } from "@/components/profile/DeleteAccountModal";
 
 const ProfilePage = () => {
-  const { nickname, profileImage, setProfileImage, reset } = useUserStore();
+  const { nickname, profileImage, setProfileImage, setNickname, reset } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -22,10 +25,14 @@ const ProfilePage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
   const { mutate: logout } = useLogout();
-  const { mutate: deleteUser } = useDeleteUser();
+  const queryClient = useQueryClient();
+  const { clearSession } = useAuth();
 
   // 프로필 이미지 조회
   const { data: profileData } = useUserProfileImage();
+  // 닉네임 조회
+  const { data: nicknameData } = useUserNickname();
+
   const { mutate: updateImage } = useUpdateProfileImage();
 
   // API로부터 프로필 이미지 동기화
@@ -34,6 +41,17 @@ const ProfilePage = () => {
       setProfileImage(profileData.data.profileImage);
     }
   }, [profileData, setProfileImage]);
+
+  // API로부터 닉네임 동기화
+  useEffect(() => {
+    if (nicknameData?.data?.nickname) {
+      // useUserStore의 setNickname 사용
+      // 하지만 useUserStore는 export되지 않은 set함수들만 있음 -> destructuring 필요
+      // 이미 useUserStore()에서 nickname 등 가져옴. 
+      // 여기서 setNickname을 가져와야 함.
+      setNickname(nicknameData.data.nickname);
+    }
+  }, [nicknameData, setNickname]);
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -81,10 +99,26 @@ const ProfilePage = () => {
     logout();
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     setIsDeleteModalOpen(false);
-    reset(); // 저장된 데이터 초기화
-    deleteUser();
+    try {
+      await deleteUser();
+      // 성공 시 세션 정리 및 로그인 페이지로 이동
+      reset();
+      clearSession();
+      queryClient.clear();
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          toastMessage: "계정이 삭제되었습니다."
+        }
+      });
+    } catch (error) {
+      console.error("Account deletion failed:", error);
+      setToastMessage("계정 삭제에 실패했습니다.");
+      setTimeout(() => setToastMessage(null), 3000);
+    }
   };
 
   const menuGroups = [
@@ -148,9 +182,9 @@ const ProfilePage = () => {
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-black text-white">
       <div className="mt-[38.06px] mb-8 flex flex-col items-center">
-        <div className="relative mb-[12px]">
+        <div className="relative mb-[12px] w-[89.79px] h-[89.79px]">
           {profileImage === DefaultProfileImage ? (
-            <div className="h-[89.79px] w-[89.79px] overflow-visible">
+            <div className="h-full w-full overflow-visible">
               <img
                 src={profileImage}
                 alt="profile"
@@ -160,7 +194,7 @@ const ProfilePage = () => {
           ) : (
             <ProfileImageDisplay
               src={profileImage}
-              className="h-[89.79px] w-[89.79px]"
+              className="h-full w-full"
             />
           )}
           <input
@@ -172,10 +206,15 @@ const ProfilePage = () => {
           />
           <button
             onClick={handleCameraClick}
-            className="absolute right-0 bottom-0 flex h-[21.22px] w-[21.22px] items-center justify-center rounded-full bg-[#9C9C9C]"
+            className="absolute left-[71.58px] top-[68.37px] h-[24px] w-[24px] p-0 bg-transparent block"
             aria-label="Change profile picture"
           >
-            <ChangeProfileIcon className="h-[14px] w-[14px] text-black" />
+            <img src={CameraFrame} alt="" className="absolute inset-0 w-full h-full" />
+            <img
+              src={CameraInside}
+              alt=""
+              className="absolute z-10 w-[16.6px] h-[16.8px] left-[3.53px] top-[3.84px]"
+            />
           </button>
         </div>
 

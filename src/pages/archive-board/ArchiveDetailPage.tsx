@@ -74,7 +74,6 @@ const ArchiveDetailPage = () => {
         return;
       }
       try {
-        setIsLoadingDetail(true);
         const response = await getArchiveBoardDetail(boardIdNum);
 
         if (response.data) {
@@ -84,7 +83,7 @@ const ArchiveDetailPage = () => {
           const mappedItems: ModelItem[] = detail.images.map((img) => ({
             id: String(img.boardImageId),
             tag: img.imageTag,
-            thumbnail: img.imageUrl
+            thumbnail: img.imageUrl,
           }));
 
           // Extract unique tags for filters
@@ -166,8 +165,6 @@ const ArchiveDetailPage = () => {
     setIsMoveMode(false);
     setSelectedIds([]);
   };
-
-
 
   // Rename Logic
   const handleEditNameSave = async (newTitle: string) => {
@@ -263,10 +260,11 @@ const ArchiveDetailPage = () => {
                     selectedFilter === filter ? "최신순" : filter,
                   )
                 }
-                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${selectedFilter === filter
-                  ? "bg-gray-200 text-black"
-                  : "bg-gray-900 text-gray-200"
-                  }`}
+                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${
+                  selectedFilter === filter
+                    ? "bg-gray-200 text-black"
+                    : "bg-gray-900 text-gray-200"
+                }`}
               >
                 {filter === "최신순" ? filter : `#${filter}`}
               </button>
@@ -307,8 +305,9 @@ const ArchiveDetailPage = () => {
 
                 {isSelectMode && (
                   <div
-                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${isSelected ? "bg-black/40" : "bg-black/10"
-                      }`}
+                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${
+                      isSelected ? "bg-black/40" : "bg-black/10"
+                    }`}
                   >
                     {isSelected ? (
                       <SelectedImageIcon className="h-[42px] w-[42px]" />
@@ -332,8 +331,8 @@ const ArchiveDetailPage = () => {
             onDelete={
               !isMoveMode
                 ? () => {
-                  if (selectedIds.length > 0) setIsDeleteModalOpen(true);
-                }
+                    if (selectedIds.length > 0) setIsDeleteModalOpen(true);
+                  }
                 : undefined
             }
             onMove={isMoveMode ? handleOpenBoardSelector : undefined}

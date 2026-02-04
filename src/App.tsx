@@ -25,6 +25,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TribeChatPage from "./pages/tribe-chat/TribechatPage";
 import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 import { SplashLayout } from "./layouts/SplashLayout";
+import ResetPasswordPage from "./pages/onboarding/ResetPasswordPage";
+import OAuthCallbackPage from "./pages/oauth/OAuthCallbackPage";
+import SocialSignUpCompletePage from "./pages/oauth/SocialSignUpCompletePage";
 import VConsole from "vconsole";
 
 if (import.meta.env.DEV) {
@@ -42,8 +45,11 @@ const publicRoutes: RouteObject[] = [
       { path: "login", element: <LoginPage /> },
       { path: "signup", element: <SignUpPage /> },
       { path: "onboarding", element: <OnboardingPage /> },
+      { path: "reset-password", element: <ResetPasswordPage /> },
     ],
   },
+  { path: "oauth/callback", element: <OAuthCallbackPage /> },
+  { path: "oauth/signup-complete", element: <SocialSignUpCompletePage /> },
 ];
 
 // 인증이 필요한 라우트
@@ -73,7 +79,7 @@ const protectedRoutes: RouteObject[] = [
         path: "tribe-chat",
         children: [
           { index: true, element: <TribeChatPage /> },
-          { path: "/tribe-chat:tagid", element: <TribechatRoomPage /> },
+          { path: "/tribe-chat/:tagid", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
         ],
       },
@@ -107,7 +113,7 @@ const protectedRoutes: RouteObject[] = [
 
 const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 function App() {
   return (

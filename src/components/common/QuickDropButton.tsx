@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import IconQuickDrop from "../../assets/icons/icon_quickdrop.svg?react";
 import { useRef } from "react";
 
@@ -18,13 +18,16 @@ const QuickDropButton = () => {
 
   return (
     <button
-      className="relative z-50 flex h-[65px] w-[65px] cursor-pointer items-center justify-center rounded-[40px] bg-[var(--color-gray-900)]/90 transition-transform"
+      className="z-50 flex h-[65px] w-[65px] cursor-pointer items-center justify-center rounded-[40px] bg-[var(--color-gray-900)]/90 transition-transform"
       aria-label="Quick Drop"
     >
-      <IconQuickDrop className="h-full w-full" />
+      <IconQuickDrop
+        className="h-full w-full"
+        onClick={() => inputImageRef.current?.click()}
+      />
       <input
         type="file"
-        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        className="hidden"
         accept="image/*"
         ref={inputImageRef}
         onChange={handleImageChange}

@@ -1,18 +1,22 @@
 import { useNavigate } from "react-router";
-import NuvibeLogo from "@/assets/logos/Nuvibe.svg?react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { BackButton } from "../../components/onboarding/BackButton";
-import InputBox from "../../components/onboarding/InputBox";
+import BackbuttonIcon from "@/assets/icons/icon_chevron_left.svg?react";
 import { BaseModal } from "@/components/onboarding/BaseModal";
 import { OTPBottomSheet } from "@/components/onboarding/OTPBottomSheet";
-import VerifiedIcon from "@/assets/icons/icon_select_image_white.svg?react";
 import useSignup from "@/hooks/mutation/auth/useSignup";
 import WelcomeSplash from "@/components/onboarding/WelcomeSplash";
 import { sendVerificationEmail, confirmVerificationCode } from "@/apis/auth";
+
+// Components
+import ProgressBar from "@/components/onboarding/ProgressBar";
+import NameStep from "@/components/onboarding/signup/NameStep";
+import EmailStep from "@/components/onboarding/signup/EmailStep";
+import PasswordStep from "@/components/onboarding/signup/PasswordStep";
+import NicknameStep from "@/components/onboarding/signup/NicknameStep";
 
 const schema = z
   .object({
@@ -36,10 +40,13 @@ const schema = z
     path: ["passwordCheck"],
   });
 
-type FormFields = z.infer<typeof schema>;
+export type FormFields = z.infer<typeof schema>;
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 4;
+
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,7 +58,9 @@ const SignUpPage = () => {
     register,
     watch,
     getValues,
-    formState: { errors, isValid },
+    trigger,
+    setFocus,
+    formState: { errors },
   } = useForm<FormFields>({
     defaultValues: {
       email: "",
@@ -70,7 +79,6 @@ const SignUpPage = () => {
   useEffect(() => {
     if (searchParams.get("verified") === "true") {
       setIsEmailVerified(true);
-      // URL에서 verified 파라미터 제거 (깔끔한 URL 유지)
       searchParams.delete("verified");
       setSearchParams(searchParams, { replace: true });
     }
@@ -80,14 +88,10 @@ const SignUpPage = () => {
   const passwordValue = watch("password");
   const passwordCheckValue = watch("passwordCheck");
 
-  // 코드 검증 함수 (OTPBottomSheet에서 호출)
   const handleVerifyCode = async (code: string) => {
     setIsVerifying(true);
     try {
-      const response = await confirmVerificationCode(emailValue, code);
-      console.log("인증 성공:", response.message);
-
-      // 성공 시
+      await confirmVerificationCode(emailValue, code);
       setIsEmailVerified(true);
       setIsModalOpen(false);
     } catch (error: any) {
@@ -98,12 +102,12 @@ const SignUpPage = () => {
         subtext: errorMessage,
       });
       setIsErrorModalOpen(true);
-      throw error; // OTPBottomSheet에서 에러 처리를 위해 throw
+      throw error;
     } finally {
       setIsVerifying(false);
     }
   };
-  // 이메일 형식 유효성 검사
+
   const isEmailValid = () => {
     try {
       z.string().email().parse(emailValue);
@@ -113,7 +117,6 @@ const SignUpPage = () => {
     }
   };
 
-  // 비밀번호 형식 유효성 검사
   const isPasswordValid = () => {
     try {
       schema.shape.password.parse(passwordValue);
@@ -123,25 +126,20 @@ const SignUpPage = () => {
     }
   };
 
-  // 비밀번호 확인 유효성 검사
   const isPasswordCheckValid = () => {
     return (
-      passwordCheckValue &&
+      !!passwordCheckValue &&
       passwordCheckValue.length >= 8 &&
       passwordValue === passwordCheckValue
     );
   };
 
-  // 이메일 인증 버튼 핸들러
   const handleEmailVerification = async () => {
     if (!isEmailValid() || isEmailVerified || isEmailSending) return;
 
     setIsEmailSending(true);
     try {
-      const response = await sendVerificationEmail(emailValue);
-      console.log("이메일 발송 성공:", response.message);
-
-      // 성공 시 바텀시트 열기
+      await sendVerificationEmail(emailValue);
       setIsModalOpen(true);
     } catch (error: any) {
       const errorMessage =
@@ -158,12 +156,12 @@ const SignUpPage = () => {
 
   const handleSignupSubmit = () => {
     const { email, password, passwordCheck, name, nickname } = getValues();
-
     signup(
       { email, password, name, nickname, confirmPassword: passwordCheck },
       {
         onSuccess: () => {
           setShowSplash(true);
+          sessionStorage.setItem("isNewUser", "true");
           setTimeout(() => {
             navigate("/login", {
               state: {
@@ -186,95 +184,134 @@ const SignUpPage = () => {
     );
   };
 
+  const handleNext = async () => {
+    let stepValid = false;
+
+    if (currentStep === 1) {
+      stepValid = await trigger("name");
+    } else if (currentStep === 2) {
+      const emailFormValid = await trigger("email");
+      if (emailFormValid && !isEmailVerified) {
+        setErrorModalContent({
+          maintext: "이메일 인증 필요",
+          subtext: "이메일 인증을 완료해주세요.",
+        });
+        setIsErrorModalOpen(true);
+        return;
+      }
+      stepValid = emailFormValid && isEmailVerified;
+    } else if (currentStep === 3) {
+      const p1 = await trigger("password");
+      const p2 = await trigger("passwordCheck");
+      stepValid = p1 && p2 && isPasswordCheckValid();
+    } else if (currentStep === 4) {
+      stepValid = await trigger("nickname");
+    }
+
+    if (stepValid) {
+      if (currentStep < totalSteps) {
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        handleSignupSubmit();
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+    } else {
+      navigate(-1);
+    }
+  };
+
   if (showSplash) {
     return <WelcomeSplash />;
   }
 
   return (
     <>
-      <div className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center pb-15 text-white">
-        <BackButton className="absolute top-[60.82px] left-[30.42px] z-50 p-2" />
-        <div className="mb-12">
-          <NuvibeLogo className="h-[25.4px] w-[130.3px]" />
+      <div className="relative flex min-h-[100dvh] w-full flex-col items-center overflow-hidden px-4 pt-[60px] pb-15 text-white">
+        {/* Navigation Header */}
+        <div className="relative mb-6 flex w-full items-center justify-center">
+          <button
+            onClick={handleBack}
+            type="button"
+            className="absolute left-0 -ml-2 h-[44px] w-[44px] p-2"
+          >
+            <BackbuttonIcon className="h-full w-full" />
+          </button>
+          <span className="H2 text-[20px] leading-[150%] tracking-[-0.5px] text-gray-200">
+            회원가입
+          </span>
         </div>
-        <form className="mb-9 flex flex-col gap-3">
-          <InputBox
-            {...register("name")}
-            type="name"
-            placeholder="이름"
-            hasError={!!errors?.name}
-            errorMessage={errors.name?.message}
-          />
 
-          {/* 이메일 입력 필드 with 인증 버튼 */}
-          <InputBox
-            {...register("email")}
-            type="email"
-            placeholder="이메일"
-            hasError={!!errors?.email}
-            errorMessage={errors.email?.message}
-            rightElement={
-              <button
-                type="button"
-                onClick={handleEmailVerification}
-                disabled={!isEmailValid() || isEmailVerified || isEmailSending}
-                className={`ml-2 flex h-[28px] shrink-0 items-center justify-center rounded-[5px] px-2 py-1 text-[10px] leading-[1.5] font-normal tracking-[-0.25px] whitespace-nowrap transition-colors ${isEmailVerified
-                  ? "cursor-not-allowed bg-gray-700 text-gray-300"
-                  : isEmailValid()
-                    ? "bg-[#b9bdc2] text-[#212224]"
-                    : "cursor-not-allowed bg-gray-700 text-gray-300"
-                  }`}
-              >
-                {isEmailVerified
-                  ? "인증 완료"
-                  : isEmailSending
-                    ? "발송 중..."
-                    : "이메일 인증"}
-              </button>
-            }
-          />
-          <InputBox
-            {...register("password")}
-            type="password"
-            placeholder="비밀번호"
-            hasError={!!errors?.password}
-            errorMessage={errors.password?.message}
-            guideText="8~20자/영문,숫자,특수문자 혼합"
-            rightElement={
-              isPasswordValid() && !errors?.password ? <VerifiedIcon /> : null
-            }
-          />
-          <InputBox
-            {...register("passwordCheck")}
-            type="password"
-            placeholder="비밀번호 확인"
-            hasError={!!errors?.passwordCheck}
-            errorMessage={errors.passwordCheck?.message}
-            rightElement={
-              isPasswordCheckValid() && !errors?.passwordCheck ? (
-                <VerifiedIcon />
-              ) : null
-            }
-          />
-          <InputBox
-            {...register("nickname")}
-            type="text"
-            placeholder="닉네임"
-            hasError={!!errors?.nickname}
-            errorMessage={errors.nickname?.message}
-            guideText="(추후 변경할 수 있어요)"
-          />
+        <div className="mb-5 w-full">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+
+        <form className="flex w-full flex-1 flex-col justify-between">
+          <div className="w-full">
+            {currentStep === 1 && (
+              <NameStep
+                register={register}
+                errors={errors}
+                setFocus={setFocus}
+              />
+            )}
+            {currentStep === 2 && (
+              <EmailStep
+                register={register}
+                errors={errors}
+                isEmailVerified={isEmailVerified}
+                isEmailSending={isEmailSending}
+                handleEmailVerification={handleEmailVerification}
+                isEmailValid={isEmailValid()}
+                setFocus={setFocus}
+              />
+            )}
+            {currentStep === 3 && (
+              <PasswordStep
+                register={register}
+                errors={errors}
+                isPasswordValid={isPasswordValid}
+                isPasswordCheckValid={isPasswordCheckValid}
+                setFocus={setFocus}
+              />
+            )}
+            {currentStep === 4 && (
+              <NicknameStep
+                register={register}
+                errors={errors}
+                setFocus={setFocus}
+              />
+            )}
+          </div>
+
+          <div className="mt-10 mb-8 w-full">
+            <button
+              type="button"
+              className="H4 flex h-[48px] w-full items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500"
+              onClick={handleNext}
+              disabled={
+                isPending ||
+                (currentStep === 1 && (!watch("name") || !!errors.name)) ||
+                (currentStep === 2 && (!isEmailValid() || !isEmailVerified)) ||
+                (currentStep === 3 &&
+                  (!isPasswordValid() || !isPasswordCheckValid())) ||
+                (currentStep === 4 && (!watch("nickname") || !!errors.nickname))
+              }
+            >
+              {isPending
+                ? "가입 중..."
+                : currentStep === totalSteps
+                  ? "회원가입"
+                  : "다음"}
+            </button>
+          </div>
         </form>
-        <button
-          className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
-          disabled={!isValid || isPending}
-          onClick={handleSignupSubmit}
-        >
-          {isPending ? "가입 중..." : "회원가입"}
-        </button>
       </div>
 
-      {/* OTP 인증 바텀시트 */}
       <OTPBottomSheet
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -284,7 +321,6 @@ const SignUpPage = () => {
         isResending={isEmailSending}
       />
 
-      {/* 에러 모달 */}
       <BaseModal
         isOpen={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}

@@ -72,7 +72,7 @@ export const OTPBottomSheet = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 bottom-0 left-0 z-101 flex flex-col rounded-t-[20px] bg-gray-900 px-6 pt-6 pb-8"
+            className="absolute right-0 bottom-0 left-0 z-101 mx-auto flex max-w-[393px] flex-col rounded-t-[20px] bg-gray-900 px-6 pt-6 pb-8"
           >
             {/* Close Button */}
             <button
@@ -112,9 +112,9 @@ export const OTPBottomSheet = ({
               <button
                 onClick={handleResendClick}
                 disabled={isResending}
-                className="text-gray-300 underline transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-gray-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isResending ? "발송 중..." : "재발송"}
+                {isResending ? "발송 중..." : "새 코드 받기"}
               </button>
             </div>
 
@@ -122,7 +122,7 @@ export const OTPBottomSheet = ({
             <button
               onClick={handleVerifyClick}
               disabled={verificationCode.length < 6 || isVerifying}
-              className="h-12 w-full rounded-[5px] bg-gray-600 text-[14px] leading-[150%] font-semibold tracking-[-0.025em] text-gray-900 transition-colors disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-500"
+              className="h-12 w-full rounded-[5px] bg-gray-100 text-[14px] leading-[150%] font-semibold tracking-[-0.025em] text-gray-800 transition-colors disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-500"
             >
               {isVerifying ? "인증 중..." : "인증하기"}
             </button>

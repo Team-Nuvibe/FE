@@ -51,6 +51,12 @@ export const AdjustmentToolbar = ({
       label: "밝기",
     },
     {
+      id: "exposure",
+      icon: IconExposure,
+      activeIcon: IconExposureActive,
+      label: "노출",
+    },
+    {
       id: "contrast",
       icon: IconContrast,
       activeIcon: IconContrastActive,
@@ -74,18 +80,11 @@ export const AdjustmentToolbar = ({
       activeIcon: IconSaturationActive,
       label: "채도",
     },
-
-    {
-      id: "exposure",
-      icon: IconExposure,
-      activeIcon: IconExposureActive,
-      label: "노출",
-    },
   ];
 
   return (
-    <div className="flex flex-col z-10 pb-11">
-      <div className="relative h-[15px] flex justify-center items-center">
+    <div className="z-10 flex flex-col pb-11">
+      <div className="relative flex h-[15px] items-center justify-center">
         <input
           type="range"
           min={-50}
@@ -97,17 +96,16 @@ export const AdjustmentToolbar = ({
               [activeAdjustmentTool]: Number(e.target.value),
             })
           }
-          className="w-[345px] h-[1px] appearance-none bg-gray-700 rounded-[10px] accent-white cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100
-          [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 cursor-pointer z-10"
+          className="z-10 h-[1px] w-[345px] cursor-pointer appearance-none rounded-[10px] bg-gray-700 accent-white [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100"
         />
-        <div className="absolute top-[4.5px] w-[6px] h-[6px] bg-gray-700 rounded-full" />
+        <div className="absolute top-[4.5px] h-[6px] w-[6px] rounded-full bg-gray-700" />
       </div>
-      <div className="flex gap-5 pt-[21px] overflow-x-auto scrollbar-hide">
+      <div className="scrollbar-hide flex gap-5 overflow-x-auto pt-[21px]">
         {adjustmentTools.map((tool) => (
           <div
-            className={`flex flex-col gap-[10px] items-center ST2 ${
+            className={`ST2 flex flex-col items-center gap-[10px] ${
               tool.id === "brightness" && `pl-6`
-            } ${tool.id === "exposure" && `pr-6`}`}
+            } ${tool.id === "saturation" && `pr-6`}`}
           >
             <p className="text-[12px]">{tool.label}</p>
             <button
@@ -120,13 +118,19 @@ export const AdjustmentToolbar = ({
                 <tool.icon />
               )}
             </button>
-            <div
-              className={`w-[8px] h-[8px] rounded-full ${
-                levels[tool.id as keyof typeof levels] === 0
-                  ? `opacity-0`
-                  : `bg-white`
-              }`}
-            />
+            {activeAdjustmentTool !== tool.id && (
+              <div className="flex h-[18px] items-center justify-center">
+                <div
+                  className={`h-[8px] w-[8px] rounded-full ${levels[tool.id as keyof typeof levels] === 0 ? `opacity-0` : `bg-white`}`}
+                />
+              </div>
+            )}
+            {activeAdjustmentTool === tool.id && (
+              <p className="text-[12px] font-medium tracking-tight text-white">
+                {levels[tool.id as keyof typeof levels] !== 0 &&
+                  levels[tool.id as keyof typeof levels]}
+              </p>
+            )}
           </div>
         ))}
       </div>

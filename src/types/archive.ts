@@ -3,6 +3,7 @@ export interface ArchiveBoardItem {
   boardId: number;
   name: string;
   thumbnailUrl: string;
+  tagCount: number;
 }
 
 // 생성된 아카이브 보드 타입
@@ -42,6 +43,9 @@ export interface ArchiveImagesResponse {
   size: number;
   numberOfElements: number;
 }
+
+// Recap 이미지 목록 응답 타입 (ArchiveImagesResponse와 동일)
+export type RecapImagesResponse = ArchiveImagesResponse;
 
 // 바이브톤 태그 조회 응답 타입
 export interface VibeToneTagsResponse {

@@ -4,7 +4,7 @@ import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetTagDetails from "@/hooks/queries/useGetTagDetails";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
 import { VibeDropModal } from "@/components/home/VibeDropModal";
 
@@ -20,10 +20,23 @@ export const TagDetailPage = () => {
     location.state?.imageUrl ||
     categories.flatMap((cat) => cat.items).find((item) => item.tag === tagid)
       ?.imageUrl;
-
   const { data: tagDetails } = useGetTagDetails(tagid || "");
-
   const { setNavbarVisible } = useNavbarActions();
+
+  const inputImageRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      alert("파일을 선택하지 않았습니다.");
+      return;
+    }
+    // 태그 정보도 함께 전달
+    navigate("/quickdrop", {
+      state: { file: file, tag: tagDetails?.data.tag },
+    });
+  };
+
   useEffect(() => {
     setNavbarVisible(false);
     return () => {
@@ -57,11 +70,7 @@ export const TagDetailPage = () => {
             <div className="flex flex-col px-4">
               <div className="z-10 mb-2">
                 <h1 className="inline-block bg-[linear-gradient(to_right,white_70%,#8F9297_100%)] bg-clip-text text-[28px] font-medium tracking-tight text-transparent">
-                  #
-                  {tagDetails?.data.tag
-                    ? tagDetails.data.tag[0] +
-                      tagDetails.data.tag.slice(1).toLowerCase()
-                    : ""}
+                  #{tagDetails?.data.tag}
                 </h1>
               </div>
               <div className="z-10">
@@ -80,14 +89,7 @@ export const TagDetailPage = () => {
           {tagDetails?.data.hasImages && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
-              <p>
-                첫 번째 #
-                {tagDetails?.data.tag
-                  ? tagDetails.data.tag[0] +
-                    tagDetails.data.tag.slice(1).toLowerCase()
-                  : ""}
-                을 드랍해보세요!
-              </p>
+              <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
             </div>
           )}
           {!tagDetails?.data.hasImages && (
@@ -105,7 +107,14 @@ export const TagDetailPage = () => {
         </section>
       </main>
       <footer className="flex flex-col items-center justify-center pb-7">
-        <button className="">
+        <input
+          type="file"
+          accept="image/*"
+          ref={inputImageRef}
+          onChange={handleImageChange}
+          className="hidden"
+        />
+        <button className="" onClick={() => inputImageRef.current?.click()}>
           <DropYourVibe />
         </button>
       </footer>
