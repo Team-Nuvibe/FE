@@ -85,7 +85,7 @@ export const ScrapPage = () => {
           {tribeId ? "사진 모아보기" : "스크랩 모아보기"}
         </h2>
         <button
-          className="absolute left-0 mt-[50px] h-6 w-6 cursor-pointer"
+          className="absolute left-0 h-6 w-6 cursor-pointer"
           onClick={() => navigate(-1)}
         >
           <IconChevronLeft className="text-white" />
