@@ -206,7 +206,7 @@ const ProfilePage = () => {
           />
           <button
             onClick={handleCameraClick}
-            className="absolute left-[71.58px] top-[68.37px] h-[24px] w-[24px] p-0 bg-transparent block"
+            className="absolute left-[68.58px] top-[67.37px] h-[24px] w-[24px] p-0 bg-transparent block"
             aria-label="Change profile picture"
           >
             <img src={CameraFrame} alt="" className="absolute inset-0 w-full h-full" />

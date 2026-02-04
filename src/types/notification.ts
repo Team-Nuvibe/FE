@@ -25,14 +25,21 @@ export type NotificationSubType =
     | AlertNotificationType;
 
 export interface Notification {
-    id: number;
-    category: NotificationCategory;
-    type: NotificationSubType;
-    image: string;
-    tribeName?: string;        // 채팅일 경우 트라이브 이름 (예: "Grain", "비싼")
-    title: string;
-    description: string;
+    notificationId: number;
+    category: string;
+    mainMessage: string;
+    actionMessage: string;
+    relatedId: number;
     isRead: boolean;
     createdAt: string;
-    relatedId?: string;        // 연관된 채팅방/게시글 ID
+}
+
+export interface NotificationResponse {
+    notificationId: number;
+    category: string;
+    mainMessage: string;
+    actionMessage: string;
+    relatedId: number;
+    isRead: boolean;
+    createdAt: string;
 }

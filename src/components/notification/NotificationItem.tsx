@@ -5,14 +5,15 @@ import IconChatlineRead from "@/assets/icons/icon_chatline_read.svg?react";
 import IconChatlineUnread from "@/assets/icons/icon_chatline_unread.svg?react";
 import IconNotificationDelete from "@/assets/icons/icon_notification_delete.svg?react";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
-import type { Notification } from "@/types/notification";
+import type { NotificationResponse } from "@/types/notification";
 
 interface NotificationItemProps {
-    notification: Notification;
+    notification: NotificationResponse;
     onDelete: (id: number) => void;
+    onClick: (notification: NotificationResponse) => void;
 }
 
-export const NotificationItem = ({ notification, onDelete }: NotificationItemProps) => {
+export const NotificationItem = ({ notification, onDelete, onClick }: NotificationItemProps) => {
     const controls = useAnimation();
     const [swipedState, setSwipedState] = useState<"none" | "left">("none");
     const swipeWidth = 68;
@@ -32,19 +33,6 @@ export const NotificationItem = ({ notification, onDelete }: NotificationItemPro
 
     return (
         <div className={`relative w-[361px] mx-auto h-[89px] select-none overflow-hidden ${notification.isRead ? "opacity-60" : ""}`}>
-            {/* 삭제 버튼 배경 */}
-            <div className="absolute inset-0 flex justify-end bg-black">
-                <button
-                    className="flex h-full w-[68px] items-center justify-center p-0"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(notification.id);
-                    }}
-                >
-                    <IconNotificationDelete className="h-full w-full" />
-                </button>
-            </div>
-
             {/* 알림 컨텐츠 (스와이프 가능) */}
             <motion.div
                 drag="x"
@@ -58,6 +46,8 @@ export const NotificationItem = ({ notification, onDelete }: NotificationItemPro
                         e.stopPropagation();
                         controls.start({ x: 0 });
                         setSwipedState("none");
+                    } else {
+                        onClick(notification);
                     }
                 }}
             >
@@ -76,13 +66,13 @@ export const NotificationItem = ({ notification, onDelete }: NotificationItemPro
                             </span>
                         </span>
                     </div>
-                    {/* 제목 */}
+                    {/* 제목 (메인 메시지) */}
                     <p className="text-[16px] font-semibold leading-[150%] tracking-[-0.025em] text-gray-100 mt-0.5">
-                        {notification.title}
+                        {notification.mainMessage}
                     </p>
-                    {/* 설명 (태그 포함) */}
+                    {/* 설명 (액션 메시지) */}
                     <p className="text-[10px] font-normal leading-[150%] tracking-[-0.025em] text-gray-100">
-                        {notification.description}
+                        {notification.actionMessage}
                     </p>
                 </div>
 
@@ -97,7 +87,21 @@ export const NotificationItem = ({ notification, onDelete }: NotificationItemPro
                         <IconChatlineRead className="w-full" />
                     )}
                 </div>
+
+                {/* 오른쪽에서 따라오는 삭제 버튼 */}
+                <div className="absolute top-0 -right-[68px] h-full w-[68px] bg-black flex items-center justify-center">
+                    <button
+                        className="flex h-full w-full items-center justify-center p-0"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(notification.notificationId);
+                        }}
+                    >
+                        <IconNotificationDelete className="h-full w-full" />
+                    </button>
+                </div>
             </motion.div>
         </div>
     );
 };
+
