@@ -1,72 +1,69 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon_backbutton from "@/assets/icons/icon_backbutton.svg?react";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
-import Img_3 from "@/assets/images/img_3.png";
-import type { Notification } from "@/types/notification";
+import type { NotificationResponse } from "@/types/notification";
 import { NotificationItem } from "@/components/notification/NotificationItem";
-
-const dummyNotifications: Notification[] = [
-  {
-    id: 1,
-    category: "채팅",
-    type: "TRIBE_CHAT_OPENED",
-    tribeName: "비싼",
-    image: Img_3,
-    title: "트라이브챗이 열렸어요",
-    description: "#비싼 | 지금 입장해보세요!",
-    isRead: false,
-    createdAt: "2026-02-03T18:00:00Z",
-  },
-  {
-    id: 2,
-    category: "미션",
-    type: "MISSION_COMPLETED",
-    image: Img_3,
-    title: "미션이 달성되었어요",
-    description: "보상을 확인하세요!",
-    isRead: true,
-    createdAt: "2026-02-03T17:30:00Z",
-  },
-  {
-    id: 3,
-    category: "알림",
-    type: "ARCHIVE_COMMENT",
-    image: Img_3,
-    title: "아이디어에 댓글이 달렸어요",
-    description: "지금 확인해보세요!",
-    isRead: true,
-    createdAt: "2026-02-03T16:00:00Z",
-  },
-  {
-    id: 4,
-    category: "채팅",
-    type: "TRIBE_CHAT_CLOSING",
-    tribeName: "Grain",
-    image: Img_3,
-    title: "트라이브챗이 1시간 후 종료돼요",
-    description: "#Grain | 마지막 대화를 나눠보세요",
-    isRead: true,
-    createdAt: "2026-02-03T15:00:00Z",
-  },
-  {
-    id: 5,
-    category: "알림",
-    type: "ACCOUNT_NICKNAME",
-    image: Img_3,
-    title: "닉네임이 변경되었어요",
-    description: "새로운 닉네임을 확인하세요",
-    isRead: true,
-    createdAt: "2026-02-03T14:00:00Z",
-  },
-];
+import { getNotifications, deleteNotification, readNotification } from "@/apis/notification";
 
 export const NotificationPage = () => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<Notification[]>(dummyNotifications);
+  const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
 
-  const handleDelete = (id: number) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotifications();
+        setNotifications(data.data);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteNotification(id);
+      setNotifications((prev) => prev.filter((n) => n.notificationId !== id));
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  };
+
+  const handleClick = async (notification: NotificationResponse) => {
+    try {
+      // 읽음 처리 (API 호출)
+      if (!notification.isRead) {
+        await readNotification(notification.notificationId);
+        // UI 업데이트 (읽음 상태 반영)
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
+          )
+        );
+      }
+
+      // 페이지 이동 로직
+      const { category, relatedId } = notification;
+      if (relatedId) {
+        if (category === "채팅") {
+          navigate(`/tribe-chat/${relatedId}`);
+        } else if (category === "미션") {
+          // 미션 관련 페이지 (예: 홈 또는 미션 탭)
+          navigate("/");
+        } else if (category === "알림") {
+          // 아카이브/게시글 관련 알림일 수 있음 (추후 구체화 필요)
+          navigate(`/archive/${relatedId}`);
+        } else {
+          // 기본 이동
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to process notification click:", error);
+    }
   };
 
   return (
@@ -88,14 +85,25 @@ export const NotificationPage = () => {
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center pt-[200px]">
               <div className="flex h-[48px] w-[48px] items-center justify-center mb-[12px]">
-                <img src={DefaultProfileImage} alt="no notifications" className="h-full w-full opacity-40" />
+                <img
+                  src={DefaultProfileImage}
+                  alt="no notifications"
+                  className="h-full w-full opacity-40"
+                />
               </div>
               <p className="text-[16px] font-medium leading-[150%] tracking-[-0.025em] text-gray-500">
                 새로운 알림이 없습니다.
               </p>
             </div>
           ) : (
-            notifications.map((it) => <NotificationItem key={it.id} notification={it} onDelete={handleDelete} />)
+            notifications.map((it) => (
+              <NotificationItem
+                key={it.notificationId}
+                notification={it}
+                onDelete={handleDelete}
+                onClick={handleClick}
+              />
+            ))
           )}
         </div>
       </div>

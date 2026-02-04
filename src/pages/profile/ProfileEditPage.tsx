@@ -18,14 +18,12 @@ import {
 } from '@/hooks/mutation/user/useUpdateEmail';
 import { useUpdatePassword } from '@/hooks/mutation/user/useUpdatePassword';
 import { checkPassword } from '@/apis/auth';
-import { useNavbarActions } from '@/hooks/useNavbarStore';
 
 const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
-    const { email } = useUserStore();
+    const { email, nickname } = useUserStore();
     console.log('Current Email in State:', email);
-    const { setNavbarVisible } = useNavbarActions();
 
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -82,14 +80,6 @@ const ProfileEditPage = () => {
             setIsConfirmFocused(false);
         }
     }, [type]);
-
-    // Hide Navbar on mount, show on unmount
-    useEffect(() => {
-        setNavbarVisible(false);
-        return () => {
-            setNavbarVisible(true);
-        };
-    }, [setNavbarVisible]);
 
     const handleSave = () => {
         // 모바일 키보드 닫기
@@ -269,7 +259,7 @@ const ProfileEditPage = () => {
 
                 <div className="flex-1 w-full">
                     {type === 'nickname' && (
-                        <div className="flex flex-col h-full">
+                        <div className="flex flex-col h-full pb-[calc(120px+env(safe-area-inset-bottom))]">
                             <div className="flex flex-col mt-[24px]">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">닉네임 변경</label>
 
@@ -291,29 +281,32 @@ const ProfileEditPage = () => {
                                 </p>
                             </div>
 
-                            <div className="flex-1" />
-
-                            <div className="fixed bottom-0 left-0 right-0 w-full max-w-[393px] mx-auto pb-[env(safe-area-inset-bottom)] px-[16px] bg-black">
-                                <div className="w-full h-[20px] bg-gradient-to-b from-transparent to-black" />
-                                <button
-                                    disabled={newNickname.length === 0 || isSaving}
-                                    onClick={handleSave}
-                                    className={`
-                                        w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center mb-[32px]
-                                        ${newNickname.length > 0
-                                            ? 'bg-gray-200 text-gray-900'
-                                            : 'bg-gray-700 text-gray-900 cursor-not-allowed'
-                                        }
-                                    `}
-                                >
-                                    저장하기
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => {
+                                    if (newNickname.length === 0) return;
+                                    if (isSaving) return;
+                                    if (newNickname === nickname) {
+                                        setToastMessage('동일한 닉네임입니다. 새로운 닉네임을 입력해주세요.');
+                                        setTimeout(() => setToastMessage(null), 3000);
+                                        return;
+                                    }
+                                    handleSave();
+                                }}
+                                className={`
+                                    mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                    ${newNickname.length > 0 && newNickname !== nickname && !isSaving
+                                        ? 'bg-gray-200 text-gray-900'
+                                        : 'bg-gray-700 text-gray-900 cursor-not-allowed'
+                                    }
+                                `}
+                            >
+                                저장하기
+                            </button>
                         </div>
                     )}
 
                     {type === 'email' && (
-                        <div className="flex flex-col h-full">
+                        <div className="flex flex-col h-full pb-[calc(120px+env(safe-area-inset-bottom))]">
                             <div className="flex flex-col mt-[24px]">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
                                     현재 이메일
@@ -360,23 +353,18 @@ const ProfileEditPage = () => {
                                 )}
                             </div>
 
-                            <div className="flex-1" />
-
-                            <div className="fixed bottom-0 left-0 right-0 w-full max-w-[393px] mx-auto pb-[env(safe-area-inset-bottom)] px-[16px] bg-black">
-                                <div className="w-full h-[20px] bg-gradient-to-b from-transparent to-black" />
-                                <button
-                                    className={`w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center mb-[32px]
-                                        ${isEmailVerified
-                                            ? 'bg-gray-200 text-gray-900'
-                                            : 'bg-gray-700 text-gray-900 cursor-not-allowed'
-                                        }
-                                    `}
-                                    disabled={!isEmailVerified || isSaving}
-                                    onClick={handleSave}
-                                >
-                                    저장하기
-                                </button>
-                            </div>
+                            <button
+                                className={`mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                    ${isEmailVerified
+                                        ? 'bg-gray-200 text-gray-900'
+                                        : 'bg-gray-700 text-gray-900 cursor-not-allowed'
+                                    }
+                                `}
+                                disabled={!isEmailVerified || isSaving}
+                                onClick={handleSave}
+                            >
+                                저장하기
+                            </button>
                             <EmailVerificationModal
                                 isOpen={isModalOpen}
                                 title="메일함을 확인해주세요"
@@ -387,155 +375,150 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'password' && (
-                        <>
-                            <div className="flex-1 overflow-y-auto">
-                                {/* Progress Bar */}
-                                <div className="w-full mt-[23.5px] mb-[20px]">
-                                    {passwordStep === 'verify' ? (
-                                        <PwChangeProcess1 className="w-full h-auto" />
-                                    ) : (
-                                        <PwChangeProcess2 className="w-full h-auto" />
-                                    )}
-                                </div>
-
+                        <div className="flex flex-col pb-[calc(120px+env(safe-area-inset-bottom))]">
+                            {/* Progress Bar */}
+                            <div className="w-full mt-[23.5px] mb-[20px]">
                                 {passwordStep === 'verify' ? (
-                                    <>
-                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
-                                            현재 비밀번호
-                                        </label>
-                                        <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center border ${passwordError ? 'border-gray-300' : 'border-transparent'} `}>
-                                            <input
-                                                type={showCurrentPw ? 'text' : 'password'}
-                                                value={currentPassword}
-                                                onChange={(e) => {
-                                                    setCurrentPassword(e.target.value);
-                                                    if (passwordError) setPasswordError('');
-                                                }}
-                                                placeholder="현재 비밀번호를 입력해주세요."
-                                                className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
-                                            />
-                                            <button onClick={() => setShowCurrentPw(!showCurrentPw)} type="button">
-                                                {showCurrentPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
-                                            </button>
-                                        </div>
-                                        {passwordError && (
-                                            <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
-                                                {passwordError}
-                                            </p>
-                                        )}
-                                    </>
+                                    <PwChangeProcess1 className="w-full h-auto" />
                                 ) : (
-                                    <>
-                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
-                                            새 비밀번호
-                                        </label>
-                                        <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred ? 'border-gray-300' : 'border-transparent'}`}>
-                                            <input
-                                                type={showNewPw ? 'text' : 'password'}
-                                                value={newPassword}
-                                                onChange={(e) => {
-                                                    setNewPassword(e.target.value);
-                                                    setIsConfirmBlurred(false); // input change resets blur state
-                                                    setIsNewPwBlurred(false);
-                                                }}
-                                                onFocus={() => setIsNewPwFocused(true)}
-                                                onBlur={() => {
-                                                    setIsNewPwFocused(false);
-                                                    setIsNewPwBlurred(true);
-                                                }}
-                                                placeholder="8~20자의 영문, 숫자, 특수문자를 조합해 주세요."
-                                                className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
-                                            />
-                                            {isValidPassword && !isNewPwFocused && (!isConfirmBlurred || isPasswordMatch) && !isSameAsCurrent ? (
-                                                <IconPasswordAvailable className="w-6 h-6" />
-                                            ) : (
-                                                <button
-                                                    onClick={() => setShowNewPw(!showNewPw)}
-                                                    type="button"
-                                                    onMouseDown={(e) => e.preventDefault()}
-                                                >
-                                                    {showNewPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
-                                                </button>
-                                            )}
-                                        </div>
-                                        {newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred && (
-                                            <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
-                                                {isSameAsCurrent ? "현재 비밀번호와 다른 비밀번호를 입력해 주세요." :
-                                                    newPassword.length < 8 ? "비밀번호는 8자 이상 입력해 주세요." :
-                                                        newPassword.length > 20 ? "비밀번호는 20자 이하 입력해 주세요." :
-                                                            "영문, 숫자, 특수문자를 모두 포함해 주세요."}
-                                            </p>
-                                        )}
-                                        {/* Spacer */}
-                                        {!(newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred) ? <div className="mb-[16px]"></div> : null}
-
-                                        <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
-                                            새 비밀번호 확인
-                                        </label>
-                                        <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred ? 'border-gray-300' : 'border-transparent'}`}>
-                                            <input
-                                                type={showConfirmPw ? 'text' : 'password'}
-                                                value={confirmPassword}
-                                                onChange={(e) => {
-                                                    setConfirmPassword(e.target.value);
-                                                    if (isConfirmBlurred) setIsConfirmBlurred(false);
-                                                }}
-                                                onFocus={() => setIsConfirmFocused(true)}
-                                                onBlur={() => {
-                                                    setIsConfirmBlurred(true);
-                                                    setIsConfirmFocused(false);
-                                                }}
-                                                placeholder="동일한 비밀번호를 입력해주세요."
-                                                className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
-                                            />
-                                            {isPasswordMatch && confirmPassword.length > 0 && !isConfirmFocused ? (
-                                                <IconPasswordAvailable className="w-6 h-6" />
-                                            ) : (
-                                                <button
-                                                    onClick={() => setShowConfirmPw(!showConfirmPw)}
-                                                    type="button"
-                                                    onMouseDown={(e) => e.preventDefault()}
-                                                >
-                                                    {showConfirmPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred && (
-                                            <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
-                                                비밀번호를 다시 확인해 주세요.
-                                            </p>
-                                        )}
-                                        {confirmPassword.length === 0 && <div className="mb-[24px]"></div>}
-                                    </>
+                                    <PwChangeProcess2 className="w-full h-auto" />
                                 )}
                             </div>
 
-                            {/* Fixed Bottom Button */}
-                            <div className="fixed bottom-0 left-0 right-0 w-full max-w-[393px] mx-auto pb-[calc(32px+env(safe-area-inset-bottom))] px-[16px] bg-black">
-                                <button
-                                    onClick={passwordStep === 'verify' ? handleNextStep : handleSave}
-                                    disabled={
+                            {passwordStep === 'verify' ? (
+                                <>
+                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                        현재 비밀번호
+                                    </label>
+                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center border ${passwordError ? 'border-gray-300' : 'border-transparent'} `}>
+                                        <input
+                                            type={showCurrentPw ? 'text' : 'password'}
+                                            value={currentPassword}
+                                            onChange={(e) => {
+                                                setCurrentPassword(e.target.value);
+                                                if (passwordError) setPasswordError('');
+                                            }}
+                                            placeholder="현재 비밀번호를 입력해주세요."
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                        />
+                                        <button onClick={() => setShowCurrentPw(!showCurrentPw)} type="button">
+                                            {showCurrentPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
+                                        </button>
+                                    </div>
+                                    {passwordError && (
+                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
+                                            {passwordError}
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                        새 비밀번호
+                                    </label>
+                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred ? 'border-gray-300' : 'border-transparent'}`}>
+                                        <input
+                                            type={showNewPw ? 'text' : 'password'}
+                                            value={newPassword}
+                                            onChange={(e) => {
+                                                setNewPassword(e.target.value);
+                                                setIsConfirmBlurred(false); // input change resets blur state
+                                                setIsNewPwBlurred(false);
+                                            }}
+                                            onFocus={() => setIsNewPwFocused(true)}
+                                            onBlur={() => {
+                                                setIsNewPwFocused(false);
+                                                setIsNewPwBlurred(true);
+                                            }}
+                                            placeholder="8~20자의 영문, 숫자, 특수문자를 조합해 주세요."
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                        />
+                                        {isValidPassword && !isNewPwFocused && (!isConfirmBlurred || isPasswordMatch) && !isSameAsCurrent ? (
+                                            <IconPasswordAvailable className="w-6 h-6" />
+                                        ) : (
+                                            <button
+                                                onClick={() => setShowNewPw(!showNewPw)}
+                                                type="button"
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showNewPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
+                                            </button>
+                                        )}
+                                    </div>
+                                    {newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred && (
+                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
+                                            {isSameAsCurrent ? "현재 비밀번호와 다른 비밀번호를 입력해 주세요." :
+                                                newPassword.length < 8 ? "비밀번호는 8자 이상 입력해 주세요." :
+                                                    newPassword.length > 20 ? "비밀번호는 20자 이하 입력해 주세요." :
+                                                        "영문, 숫자, 특수문자를 모두 포함해 주세요."}
+                                        </p>
+                                    )}
+                                    {/* Spacer */}
+                                    {!(newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred) ? <div className="mb-[16px]"></div> : null}
+
+                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                        새 비밀번호 확인
+                                    </label>
+                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred ? 'border-gray-300' : 'border-transparent'}`}>
+                                        <input
+                                            type={showConfirmPw ? 'text' : 'password'}
+                                            value={confirmPassword}
+                                            onChange={(e) => {
+                                                setConfirmPassword(e.target.value);
+                                                if (isConfirmBlurred) setIsConfirmBlurred(false);
+                                            }}
+                                            onFocus={() => setIsConfirmFocused(true)}
+                                            onBlur={() => {
+                                                setIsConfirmBlurred(true);
+                                                setIsConfirmFocused(false);
+                                            }}
+                                            placeholder="동일한 비밀번호를 입력해주세요."
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                        />
+                                        {isPasswordMatch && confirmPassword.length > 0 && !isConfirmFocused ? (
+                                            <IconPasswordAvailable className="w-6 h-6" />
+                                        ) : (
+                                            <button
+                                                onClick={() => setShowConfirmPw(!showConfirmPw)}
+                                                type="button"
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showConfirmPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred && (
+                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
+                                            비밀번호를 다시 확인해 주세요.
+                                        </p>
+                                    )}
+                                    {confirmPassword.length === 0 && <div className="mb-[24px]"></div>}
+                                </>
+                            )}
+
+                            <button
+                                onClick={passwordStep === 'verify' ? handleNextStep : handleSave}
+                                disabled={
+                                    passwordStep === 'verify'
+                                        ? currentPassword.length < 8 || !!passwordError
+                                        : !isValidPassword || !isPasswordMatch || isSameAsCurrent || isSaving
+                                }
+                                className={`
+                                    mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                    ${(
                                         passwordStep === 'verify'
-                                            ? currentPassword.length < 8 || !!passwordError
-                                            : !isValidPassword || !isPasswordMatch || isSameAsCurrent || isSaving
+                                            ? currentPassword.length >= 8 && !passwordError
+                                            : isValidPassword && isPasswordMatch && !isSameAsCurrent
+                                    )
+                                        ? 'bg-gray-200 text-gray-900'
+                                        : 'bg-gray-700 text-gray-900 cursor-not-allowed'
                                     }
-                                    className={`
-                                        w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
-                                        ${(
-                                            passwordStep === 'verify'
-                                                ? currentPassword.length >= 8 && !passwordError
-                                                : isValidPassword && isPasswordMatch && !isSameAsCurrent
-                                        )
-                                            ? 'bg-gray-200 text-gray-900'
-                                            : 'bg-gray-700 text-gray-900 cursor-not-allowed'
-                                        }
-                                    `}
-                                >
-                                    {passwordStep === 'verify' ? '다음' : '저장하기'}
-                                </button>
-                            </div>
-                        </>
+                                `}
+                            >
+                                {passwordStep === 'verify' ? '다음' : '저장하기'}
+                            </button>
+                        </div>
                     )}
 
                     {/* Nickname Restriction Modal */}

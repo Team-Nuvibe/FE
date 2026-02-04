@@ -15,16 +15,19 @@ interface AuthContextType {
   login: (signinData: LogInRequest) => Promise<void>;
   logout: () => Promise<void>;
   clearSession: () => void;
-  setSocialLoginTokens: (accessToken: string, refreshToken: string) => void;
+  setSocialLoginTokens: (
+    accessToken: string,
+    refreshToken: string,
+  ) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  login: async () => {},
-  logout: async () => {},
-  clearSession: () => {},
-  setSocialLoginTokens: () => {},
+  login: async () => { },
+  logout: async () => { },
+  clearSession: () => { },
+  setSocialLoginTokens: () => { },
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {

@@ -109,38 +109,6 @@ export const ChatListItem = ({ room, isActiveTab, onAction, onClick }: ChatListI
     return (
         <div className="relative w-full h-[124px] select-none overflow-hidden bg-black">
 
-            <div className="absolute inset-0 flex justify-between bg-[#2C2C2C]">
-                <div className="flex h-full" style={{ width: activeSwipeWidth }}>
-                    <button
-                        className="flex-1 h-full flex items-center justify-center bg-gray-500 text-gray-100"
-                        onClick={() => { onAction?.('pin'); controls.start({ x: 0 }); }}
-                    >
-                        <IconChatPin width={24} height={24} />
-                    </button>
-                    <button
-                        className="flex-1 h-full flex items-center justify-center bg-gray-600 text-gray-100"
-                        onClick={() => { onAction?.('mute'); controls.start({ x: 0 }); }}
-                    >
-                        <IconChatSilent width={24} height={24} color="#e2e2e2" />
-                    </button>
-                </div>
-
-                <div className="flex h-full ml-auto" style={{ width: activeSwipeWidth }}>
-                    <button
-                        className="flex-1 h-full flex items-center justify-center bg-gray-700 text-gray-100"
-                        onClick={() => { onAction?.('read'); controls.start({ x: 0 }); }}
-                    >
-                        <span className="B2 leading-[150%] tracking-[-0.025em]">읽음</span>
-                    </button>
-                    <button
-                        className="flex-1 h-full flex items-center justify-center bg-gray-800 text-gray-100"
-                        onClick={() => { onAction?.('exit'); controls.start({ x: 0 }); }}
-                    >
-                        <span className="B2 leading-[150%] tracking-[-0.025em]">나가기</span>
-                    </button>
-                </div>
-            </div>
-
             <motion.div
                 drag="x"
                 dragConstraints={{ left: -activeSwipeWidth, right: activeSwipeWidth }}
@@ -157,6 +125,22 @@ export const ChatListItem = ({ room, isActiveTab, onAction, onClick }: ChatListI
                     }
                 }}
             >
+                {/* 왼쪽에서 따라오는 버튼들 (오른쪽으로 스와이프 시 보임) */}
+                <div className="absolute top-0 right-full h-full flex" style={{ width: activeSwipeWidth }}>
+                    <button
+                        className="flex-1 h-full flex items-center justify-center bg-gray-500 text-gray-100"
+                        onClick={() => { onAction?.('pin'); controls.start({ x: 0 }); }}
+                    >
+                        <IconChatPin width={24} height={24} />
+                    </button>
+                    <button
+                        className="flex-1 h-full flex items-center justify-center bg-gray-600 text-gray-100"
+                        onClick={() => { onAction?.('mute'); controls.start({ x: 0 }); }}
+                    >
+                        <IconChatSilent width={24} height={24} color="#e2e2e2" />
+                    </button>
+                </div>
+
                 {room.thumbnailUrl ? (
                     <img
                         src={room.thumbnailUrl}
@@ -202,6 +186,21 @@ export const ChatListItem = ({ room, isActiveTab, onAction, onClick }: ChatListI
                     )}
                 </div>
 
+                {/* 오른쪽에서 따라오는 버튼들 (왼쪽으로 스와이프 시 보임) */}
+                <div className="absolute top-0 left-full h-full flex ml-auto" style={{ width: activeSwipeWidth }}>
+                    <button
+                        className="flex-1 h-full flex items-center justify-center bg-gray-700 text-gray-100"
+                        onClick={() => { onAction?.('read'); controls.start({ x: 0 }); }}
+                    >
+                        <span className="B2 leading-[150%] tracking-[-0.025em]">읽음</span>
+                    </button>
+                    <button
+                        className="flex-1 h-full flex items-center justify-center bg-gray-800 text-gray-100"
+                        onClick={() => { onAction?.('exit'); controls.start({ x: 0 }); }}
+                    >
+                        <span className="B2 leading-[150%] tracking-[-0.025em]">나가기</span>
+                    </button>
+                </div>
             </motion.div>
         </div>
     );
