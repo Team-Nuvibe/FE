@@ -195,12 +195,9 @@ export const QuickdropPage = () => {
 
       console.log("Image uploaded successfully to S3");
 
-      // S3 업로드 성공 시 아카이브 보드에 이미지 추가
-      await addImageToArchiveBoard(selectedBoard.id, imageId);
-      console.log("✅ Image added to archive board successfully");
-
       // 4. TribeChat에서 왔을 경우: 이미지 상태 확인 후 메시지 전송 및 복귀
       if (fromTribe && tribeId) {
+        // TribeChat에서 온 경우 addImageToArchiveBoard 호출 생략 (sendChatMessage에서 처리됨)
         // 이미지가 ACTIVE 상태가 될 때까지 폴링
         let isImageActive = false;
         while (!isImageActive) {
@@ -250,6 +247,10 @@ export const QuickdropPage = () => {
       }
 
       // 5. 일반 흐름: 성공 시 보드 정보 저장
+      // S3 업로드 성공 시 아카이브 보드에 이미지 추가 (일반 흐름일 때만 여기서 수행)
+      await addImageToArchiveBoard(selectedBoard.id, imageId);
+      console.log("✅ Image added to archive board successfully");
+
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
 
       // 6. 트라이브 입장/생성 및 정보 조회
