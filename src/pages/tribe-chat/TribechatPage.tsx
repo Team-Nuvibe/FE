@@ -48,6 +48,11 @@ const TribechatPage = () => {
       console.log("⏳ 대기 중인 트라이브 items:", waitingTribeData.data?.items);
     }
   }, [waitingTribeData]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -143,38 +148,46 @@ const TribechatPage = () => {
         <div className="flex items-center justify-center">
           {/* 활성화 탭 */}
           <div
-            className={`flex h-[32px] w-[79px] cursor-pointer items-center justify-center transition-all duration-200 select-none ${
-              activeTab === "ing"
-                ? "border-b-[2px] border-gray-200"
-                : "border-b-[1px] border-gray-700"
-            }`}
+            className="relative flex h-[32px] w-[79px] cursor-pointer items-center justify-center border-b-[1px] border-gray-700 select-none"
             onClick={() => setActiveTab("ing")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] ${
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
                 activeTab === "ing" ? "text-gray-200" : "text-gray-600"
               }`}
             >
               활성화
             </span>
+            {activeTab === "ing" && (
+              <motion.div
+                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                className="absolute right-0 bottom-[-1px] left-0 z-10 h-[1.5px] bg-white"
+                transition={{ stiffness: 500, damping: 30 }}
+                initial={false}
+              />
+            )}
           </div>
 
           {/* 비활성화 탭 */}
           <div
-            className={`flex h-[32px] w-[79px] cursor-pointer items-center justify-center transition-all duration-200 select-none ${
-              activeTab === "waiting"
-                ? "border-b-[2px] border-gray-200"
-                : "border-b-[1px] border-gray-700"
-            }`}
+            className="relative flex h-[32px] w-[79px] cursor-pointer items-center justify-center border-b-[1px] border-gray-700 select-none"
             onClick={() => setActiveTab("waiting")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] ${
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
                 activeTab === "waiting" ? "text-gray-200" : "text-gray-600"
               }`}
             >
               비활성화
             </span>
+            {activeTab === "waiting" && (
+              <motion.div
+                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                className="absolute right-0 bottom-[-1px] left-0 z-10 h-[1.5px] bg-white"
+                transition={{ stiffness: 500, damping: 30 }}
+                initial={false}
+              />
+            )}
           </div>
         </div>
 

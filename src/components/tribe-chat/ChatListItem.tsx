@@ -130,8 +130,35 @@ export const ChatListItem = ({
 
   return (
     <div className="relative h-[124px] w-full overflow-hidden bg-black select-none">
-      <div className="absolute inset-0 flex justify-between bg-[#2C2C2C]">
-        <div className="flex h-full" style={{ width: activeSwipeWidth }}>
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -activeSwipeWidth, right: activeSwipeWidth }}
+        dragElastic={0.1}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        animate={controls}
+        className="relative z-10 flex h-full w-full items-center bg-black px-[10px]"
+        onClickCapture={(e) => {
+          // If dragging occurred, stop propagation to prevent parent clicks if any
+          if (isDragging.current) {
+            e.stopPropagation();
+          }
+        }}
+        onClick={() => {
+          if (isDragging.current) return;
+          if (swipedState !== "none") {
+            controls.start({ x: 0 });
+            setSwipedState("none");
+          } else {
+            onClick?.();
+          }
+        }}
+      >
+        {/* 왼쪽에서 따라오는 버튼들 (오른쪽으로 스와이프 시 보임) */}
+        <div
+          className="absolute top-0 right-full flex h-full"
+          style={{ width: activeSwipeWidth }}
+        >
           <button
             className="flex h-full flex-1 items-center justify-center bg-gray-500 text-gray-100"
             onClick={() => {
@@ -152,58 +179,6 @@ export const ChatListItem = ({
           </button>
         </div>
 
-        <div
-          className="ml-auto flex h-full"
-          style={{ width: activeSwipeWidth }}
-        >
-          <button
-            className="flex h-full flex-1 items-center justify-center bg-gray-700 text-gray-100"
-            onClick={() => {
-              onAction?.("read");
-              controls.start({ x: 0 });
-            }}
-          >
-            <span className="B2 leading-[150%] tracking-[-0.025em]">읽음</span>
-          </button>
-          <button
-            className="flex h-full flex-1 items-center justify-center bg-gray-800 text-gray-100"
-            onClick={() => {
-              onAction?.("exit");
-              controls.start({ x: 0 });
-            }}
-          >
-            <span className="B2 leading-[150%] tracking-[-0.025em]">
-              나가기
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -activeSwipeWidth, right: activeSwipeWidth }}
-        dragElastic={0.1}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        className="relative z-10 flex h-full w-full items-center bg-black px-[10px]"
-        onClickCapture={(e) => {
-          // If dragging occurred, stop propagation to prevent parent clicks if any
-          if (isDragging.current) {
-            e.stopPropagation();
-          }
-        }}
-        onClick={() => {
-          if (isDragging.current) return;
-
-          if (swipedState !== "none") {
-            controls.start({ x: 0 });
-            setSwipedState("none");
-          } else {
-            onClick?.();
-          }
-        }}
-      >
         {room.thumbnailUrl ? (
           <img
             src={room.thumbnailUrl}
@@ -249,6 +224,33 @@ export const ChatListItem = ({
           ) : (
             <IconChatlineRead className="w-full" />
           )}
+        </div>
+
+        {/* 오른쪽에서 따라오는 버튼들 (왼쪽으로 스와이프 시 보임) */}
+        <div
+          className="absolute top-0 left-full ml-auto flex h-full"
+          style={{ width: activeSwipeWidth }}
+        >
+          <button
+            className="flex h-full flex-1 items-center justify-center bg-gray-700 text-gray-100"
+            onClick={() => {
+              onAction?.("read");
+              controls.start({ x: 0 });
+            }}
+          >
+            <span className="B2 leading-[150%] tracking-[-0.025em]">읽음</span>
+          </button>
+          <button
+            className="flex h-full flex-1 items-center justify-center bg-gray-800 text-gray-100"
+            onClick={() => {
+              onAction?.("exit");
+              controls.start({ x: 0 });
+            }}
+          >
+            <span className="B2 leading-[150%] tracking-[-0.025em]">
+              나가기
+            </span>
+          </button>
         </div>
       </motion.div>
     </div>
