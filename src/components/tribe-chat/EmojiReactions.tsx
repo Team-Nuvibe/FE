@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AmazingEmoji from "@/assets/icons/icon_emo_amazing.svg?react";
 import LikeEmoji from "@/assets/icons/icon_emo_like.svg?react";
 import NiceEmoji from "@/assets/icons/icon_emo_nice.svg?react";

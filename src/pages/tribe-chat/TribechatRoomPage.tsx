@@ -7,7 +7,6 @@ import { type ApiResponse } from "@/types/common";
 import { type ChatTimelineResponse } from "@/types/tribeChat";
 import PicturesIcon from "@/assets/icons/icon_pictures.svg?react";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
-import DropVibeButton from "@/components/common/DropVibeButton";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
 import ChatMessageItem, {
   type ChatMessage,
@@ -17,7 +16,6 @@ import DateDivider from "@/components/tribe-chat/DateDivider";
 import useGetChatTimeline from "@/hooks/queries/tribe-chat/useGetChatTimeline";
 import useReactToChatEmoji from "@/hooks/mutation/tribe-chat/useReactToChatEmoji";
 import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap";
-import { DropYourVibe } from "@/components/common/DropYourVibe";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import { useUserStore } from "@/hooks/useUserStore";
