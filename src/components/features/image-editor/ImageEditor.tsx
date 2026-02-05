@@ -6,11 +6,13 @@ import IconRotation from "@/assets/icons/icon_quickdrop_rotation.svg?react";
 import IconRotationActive from "@/assets/icons/icon_quickdrop_rotation_active.svg?react";
 import IconCrop from "@/assets/icons/icon_quickdrop_crop.svg?react";
 import IconCropActive from "@/assets/icons/icon_quickdrop_crop_active.svg?react";
+import IconReset from "@/assets/icons/icon_reset.svg?react";
 import { useNavigate } from "react-router-dom";
 import { AdjustmentToolbar } from "./AdjustmentToolbar";
 import { CropperView } from "./CropperView";
 import { CropToolbar } from "./CropToolbar";
 import { RotationToolbar } from "./RotationToolbar";
+import { set } from "zod";
 
 interface ImageEditorProps {
   file: File;
@@ -91,6 +93,7 @@ export const ImageEditor = ({
   const [cropMode, setCropMode] = useState<"original" | "fixedratio">(
     "fixedratio",
   );
+  const [fillColor, setFillColor] = useState(0);
 
   const navigate = useNavigate();
 
@@ -183,8 +186,9 @@ export const ImageEditor = ({
 
       if (!cropCtx) return;
 
-      // 배경을 색으로 채움 (여백) - 여기서는 검은색 (#000000)
-      cropCtx.fillStyle = "#575757";
+      // 배경을 색으로 채움 (여백)
+      const hex = Math.round(fillColor).toString(16).padStart(2, "0");
+      cropCtx.fillStyle = `#${hex}${hex}${hex}`;
       cropCtx.fillRect(0, 0, cropWidth, cropHeight);
 
       // 원본 이미지가 그려진 임시 캔버스(canvas)를 cropCanvas에 그림
@@ -285,7 +289,7 @@ export const ImageEditor = ({
   }, [initialState]);
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col border-1 border-white">
       {/* 헤더 & 툴바 */}
       <div className="flex-none">
         <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
@@ -301,17 +305,25 @@ export const ImageEditor = ({
             다음
           </p>
         </header>
-        <div className="flex justify-center gap-2">
-          {tools.map((tool) => (
+        <div className="flex justify-between gap-2 px-9">
+          <div className="flex gap-2">
+            {tools.map((tool) => (
             <button key={tool.id} onClick={() => setActiveTool(tool.id)}>
               {activeTool === tool.id ? <tool.activeIcon /> : <tool.icon />}
             </button>
           ))}
+          </div>
+          <button>
+            <IconReset className=""/>
+          </button>
         </div>
       </div>
       {/* 이미지 */}
-      <div className="mx-4 mt-5 mb-[53px] flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-        <div className="relative flex aspect-[3/4] h-auto max-h-full w-auto max-w-full items-center justify-center overflow-hidden bg-gray-500">
+      <div className="mx-9 mt-5 mb-[53px] flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+        <div
+          className="relative flex aspect-[3/4] h-auto max-h-full w-auto max-w-full items-center justify-center overflow-hidden transition-colors duration-100"
+          style={{ backgroundColor: `rgb(${fillColor}, ${fillColor}, ${fillColor})` }}
+        >
           {/* Dummy Image for Layout Sizing */}
           <img
             src={previewUrl!}
@@ -366,6 +378,7 @@ export const ImageEditor = ({
               },
             }));
           }}
+          onColorChange={(color) => setFillColor(color)}
         />
       )}
       {activeTool === "rotation" && (

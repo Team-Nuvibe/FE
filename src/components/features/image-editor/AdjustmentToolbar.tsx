@@ -96,7 +96,7 @@ export const AdjustmentToolbar = ({
               [activeAdjustmentTool]: Number(e.target.value),
             })
           }
-          className="z-10 h-[1px] w-[345px] cursor-pointer appearance-none rounded-[10px] bg-gray-700 accent-white [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100"
+          className="z-10 h-[1px] w-[321px] cursor-pointer appearance-none rounded-[10px] bg-gray-700 accent-white [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100"
         />
         <div className="absolute top-[4.5px] h-[6px] w-[6px] rounded-full bg-gray-700" />
       </div>

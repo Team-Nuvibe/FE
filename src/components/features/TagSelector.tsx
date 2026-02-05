@@ -33,7 +33,6 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   // 임시 최근 검색어 데이터
   const recentSearches = ["Grain", "Morning", "Mono"];
 
-  // 임시 카테고리 데이터
   const categories = [
     "MOOD",
     "LIGHT",
@@ -193,14 +192,14 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
                         onClick={() => setSelectedTag(tag)}
                       >
                         <span className="ST1 invisible block">
-                          #{tag[0] + tag.slice(1).toLowerCase()}
+                          #{tag}
                         </span>
                         <span
                           className={`absolute inset-0 flex items-center justify-center ${
                             selectedTag === tag ? "ST1" : "B0"
                           }`}
                         >
-                          #{tag[0] + tag.slice(1).toLowerCase()}
+                          #{tag}
                         </span>
                       </button>
                     ))}
