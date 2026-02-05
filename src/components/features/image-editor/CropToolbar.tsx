@@ -9,9 +9,11 @@ interface CropToolbarProps {
   onColorChange: (color: number) => void;
 }
 
-export const CropToolbar = ({ cropMode, onModeChange, onColorChange }: CropToolbarProps) => {
-  
-
+export const CropToolbar = ({
+  cropMode,
+  onModeChange,
+  onColorChange,
+}: CropToolbarProps) => {
   return (
     <div className="z-10 flex flex-col pb-11">
       <div className="relative flex h-[15px] items-center justify-center">
@@ -20,7 +22,7 @@ export const CropToolbar = ({ cropMode, onModeChange, onColorChange }: CropToolb
           min={0}
           max={255}
           className="z-10 h-[4.8px] w-[321px] cursor-pointer appearance-none rounded-[10px] bg-gradient-to-r from-[#FAFAFA] to-[var(--gray-900,#212224)] accent-white [&::-moz-range-thumb]:h-[15px] [&::-moz-range-thumb]:w-[15px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-100 [&::-webkit-slider-thumb]:h-[15px] [&::-webkit-slider-thumb]:w-[15px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-100"
-          onChange={(e) => onColorChange(255-Number(e.target.value))}
+          onChange={(e) => onColorChange(255 - Number(e.target.value))}
         />
       </div>
       <div className="scrollbar-hide flex items-center justify-center gap-5 overflow-x-auto pt-[21px]">
@@ -39,17 +41,12 @@ export const CropToolbar = ({ cropMode, onModeChange, onColorChange }: CropToolb
             )}
           </button>
           <div className="flex h-[18px] items-center justify-center">
-                <div
-                  className={`h-[8px] w-[8px] rounded-full bg-white`}
-                />
-              </div>
+            <div className={`h-[8px] w-[8px] rounded-full bg-white`} />
+          </div>
         </div>
         <div className={`ST2 flex flex-col items-center gap-[10px]`}>
           <p className="text-[12px]">3:4</p>
-          <button
-            key="fixedratio"
-            onClick={() => onModeChange("fixedratio")}
-          >
+          <button key="fixedratio" onClick={() => onModeChange("fixedratio")}>
             {cropMode === "fixedratio" ? (
               <IconFixedratioActive />
             ) : (

@@ -166,13 +166,15 @@ export const QuickdropPage = () => {
       {step === "uploaded" && (
         <div className="flex h-full items-center justify-center">
           <div className="flex flex-col items-center justify-center gap-4">
-            <p
-              className={`B2 text-white transition-opacity duration-200 ${
-                activeIndex === 0 ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              Viber의 첫 감각이 기록되었어요!
-            </p>
+            {imageData.board?.tagCount === 0 && (
+              <p
+                className={`B2 text-white transition-opacity duration-200 ${
+                  activeIndex === 0 ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {imageData.board.name}의 첫 감각이 기록되었어요!
+              </p>
+            )}
             <Swiper
               modules={[Pagination]}
               className="h-[388px] w-[291px]"

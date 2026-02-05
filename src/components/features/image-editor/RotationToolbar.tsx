@@ -2,6 +2,7 @@ import IconFlip from "@/assets/icons/icon_flip.svg?react";
 import IconFlipActive from "@/assets/icons/icon_flip_active.svg?react";
 import IconRotate from "@/assets/icons/icon_rotate.svg?react";
 import IconRotateActive from "@/assets/icons/icon_rotate_active.svg?react";
+import { useState } from "react";
 
 interface RotationToolbarProps {
   rotation: number;
@@ -16,6 +17,7 @@ export const RotationToolbar = ({
   onRotationChange,
   onFlipChange,
 }: RotationToolbarProps) => {
+  const [activeRotationTool, setActiveRotationTool] = useState<string>("");
   return (
     <div className="z-10 flex flex-col pb-11">
       <div className="relative flex h-[15px] items-center justify-center opacity-0" />
@@ -26,16 +28,17 @@ export const RotationToolbar = ({
             key="flip"
             onClick={() => {
               onFlipChange(!isFlipped);
+              setActiveRotationTool("flip");
             }}
             className="h-[54px] w-[54px]"
           >
-            {isFlipped ? <IconFlipActive /> : <IconFlip />}
+            {activeRotationTool === "flip" ? <IconFlipActive /> : <IconFlip />}
           </button>
-          <div
-            className={`h-[8px] w-[8px] rounded-full ${
-              isFlipped ? "bg-white" : "opacity-0"
-            }`}
-          />
+          <div className="flex h-[18px] items-center justify-center">
+            <div
+              className={`h-[8px] w-[8px] rounded-full ${isFlipped ? "bg-white" : "opacity-0"}`}
+            />
+          </div>
         </div>
         <div className={`ST2 flex flex-col items-center gap-[10px]`}>
           <p className="text-[12px]">회전</p>
@@ -44,16 +47,21 @@ export const RotationToolbar = ({
             onClick={() => {
               // 시계 반대 방향으로 90도 회전
               onRotationChange((rotation - 90) % 360);
+              setActiveRotationTool("rotate");
             }}
             className="h-[54px] w-[54px]"
           >
-            {rotation === 0 ? <IconRotate /> : <IconRotateActive />}
+            {activeRotationTool === "rotate" ? (
+              <IconRotateActive />
+            ) : (
+              <IconRotate />
+            )}
           </button>
-          <div
-            className={`h-[8px] w-[8px] rounded-full ${
-              rotation !== 0 ? "bg-white" : "opacity-0"
-            }`}
-          />
+          <div className="flex h-[18px] items-center justify-center">
+            <div
+              className={`h-[8px] w-[8px] rounded-full ${rotation === 0 ? "opacity-0" : "bg-white"}`}
+            />
+          </div>
         </div>
       </div>
     </div>

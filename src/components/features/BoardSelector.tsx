@@ -156,7 +156,7 @@ export const BoardSelector = ({
                   className={`relative h-[110px] w-[110px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
                   onClick={() => setSelectedBoard(board)}
                 >
-                  {board.thumbnailUrl && (
+                  {board.tagCount > 0 && (
                     <>
                       {/* 이미지 레이어 */}
                       <img
@@ -171,7 +171,7 @@ export const BoardSelector = ({
                       />
                     </>
                   )}
-                  {board.thumbnailUrl === "" && (
+                  {board.tagCount === 0 && (
                     <IconBoardDefault className="h-[110px] w-[110px] cursor-pointer" />
                   )}
 
