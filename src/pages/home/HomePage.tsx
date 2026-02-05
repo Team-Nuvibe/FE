@@ -106,16 +106,16 @@ const HomePage = () => {
 
   console.log(archiveListData);
 
-  const inputImageRef = useRef<HTMLInputElement>(null);
+  // const inputImageRef = useRef<HTMLInputElement>(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      alert("파일을 선택하지 않았습니다.");
-      return;
-    }
-    navigate("/quickdrop", { state: { file, tag: dropMission?.data.tag } });
-  };
+  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (!file) {
+  //     alert("파일을 선택하지 않았습니다.");
+  //     return;
+  //   }
+  //   navigate("/quickdrop", { state: { file, tag: dropMission?.data.tag } });
+  // };
 
   const handleCreateBoardSave = async (boardName: string) => {
     if (!boardName || boardName.trim() === "") return;
@@ -171,15 +171,15 @@ const HomePage = () => {
           </div>
           <div className="relative z-10 mr-4 mb-9 cursor-pointer">
             <Icon_shortcut_quickdrop
-              onClick={() => inputImageRef.current?.click()}
+              onClick={() => navigate(`/tag/${dropMission?.data.tag}`)}
             />
-            <input
+            {/* <input
               type="file"
               className="hidden"
               accept="image/*"
               ref={inputImageRef}
               onChange={handleImageChange}
-            />
+            /> */}
           </div>
         </div>
       </header>
