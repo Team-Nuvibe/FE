@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { useQueryClient } from "@tanstack/react-query";

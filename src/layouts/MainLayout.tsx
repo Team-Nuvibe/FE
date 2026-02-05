@@ -3,11 +3,14 @@ import Navbar from "../components/common/Navbar";
 import QuickDropButton from "../components/common/QuickDropButton";
 import { useNavbarInfo } from "../hooks/useNavbarStore";
 import { useAuth } from "@/context/AuthContext";
+import { useFcmToken } from "@/hooks/useFcmToken";
 
 const MainLayout = () => {
-  const isNavbarVisible = useNavbarInfo();
-
   const { accessToken, refreshToken } = useAuth();
+  const isAuthenticated = !!(accessToken || refreshToken);
+
+  useFcmToken(isAuthenticated);
+  const isNavbarVisible = useNavbarInfo();
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
   // AccessToken이 없더라도 RefreshToken이 있다면 갱신 시도를 위해 리다이렉트 보류

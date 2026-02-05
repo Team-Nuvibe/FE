@@ -91,10 +91,20 @@ export const reactToChatEmoji = async (
   chatId: number,
   type: EmojiType,
 ): Promise<ApiResponse<Record<string, never>>> => {
-  const { data } = await axiosInstance.post<ApiResponse<Record<string, never>>>(
-    `/api/emoji/chat/${chatId}?type=${type}`,
-  );
-  return data;
+  try {
+    const url = `/api/emoji/chat/${chatId}`;
+    console.log(`📤 Emoji Reaction Request: POST ${url} with body:`, { type });
+    const { data } = await axiosInstance.post<ApiResponse<Record<string, never>>>(
+      url,
+      null, // POST 요청이므로 Body는 비워둡니다 (null)
+      { params: { type } } // ?type=VALUE 형식으로 전달됨
+    );
+    console.log("Emoji Reaction Success:", data);
+    return data;
+  } catch (error) {
+    console.error("Emoji Reaction Error Detail:", error);
+    throw error;
+  }
 };
 
 // 이미지 상태 조회

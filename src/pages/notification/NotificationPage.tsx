@@ -7,7 +7,6 @@ import { NotificationItem } from "@/components/notification/NotificationItem";
 import { useGetNotifications } from "@/hooks/queries/useGetNotifications";
 import { useReadNotification, useDeleteNotification } from "@/hooks/mutation/useNotificationMutations";
 import { startOfDay, isSameDay, subDays } from "date-fns";
-
 export const NotificationPage = () => {
   const navigate = useNavigate();
   const { data: notifications = [], isLoading } = useGetNotifications();
@@ -57,7 +56,7 @@ export const NotificationPage = () => {
       if (mainMessage.includes("열렸어요")) {
         // NOTI-01, 02: 비활성화 채팅목록
         navigate("/tribe-chat?tab=waiting");
-      } else if (mainMessage.includes("새 바이브가 올라왔어요") || mainMessage.includes("종료가 1시간 남았어요")) {
+      } else if (mainMessage.includes("바이브가 올라왔어요") || mainMessage.includes("종료가 1시간 남았어요")) {
         // NOTI-03, 05: 해당 채팅방
         navigate(`/tribe-chat/${relatedId}`);
       } else if (mainMessage.includes("반응했어요")) {
@@ -70,12 +69,18 @@ export const NotificationPage = () => {
         navigate("/home");
       } else if (mainMessage.includes("추천 태그")) {
         // NOTI-08: 바이브 드랍 화면 (추천 태그 고정)
-        navigate("/quickdrop", { state: { tag: "Minimal" } });
+        // actionMessage: "#Minimal 태그로 바이브를 드랍해 볼까요?" 에서 태그 추출
+        const tagMatch = notification.actionMessage.match(/#(\S+)/);
+        const extractedTag = tagMatch ? tagMatch[1] : "Minimal";
+        navigate("/quickdrop", { state: { tag: extractedTag } });
       }
     } else if (category === "알림") {
       if (mainMessage.includes("종료되었어요")) {
         // NOTI-06: 홈
         navigate("/home");
+      } else if (mainMessage.includes("곧 닫혀요")) {
+        // NOTI-05: 해당 채팅방
+        navigate(`/tribe-chat/${relatedId}`);
       } else if (mainMessage.includes("이번 주의")) {
         // NOTI-09: 주간 리캡
         navigate("/archive-board/vibetone?tab=weekly");

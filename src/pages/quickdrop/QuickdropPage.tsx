@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImageEditor } from "../../components/features/image-editor/ImageEditor";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TagSelector } from "../../components/features/TagSelector";
 import { postPresignedUrl } from "@/apis/vibedrop";
 import { BoardSelector } from "../../components/features/BoardSelector";
@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import IconChevronRightWhiteSquare from "@/assets/icons/icon_chevron_right_white_square.svg?react";
 import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
+import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -34,7 +35,7 @@ interface Board {
 export const QuickdropPage = () => {
   const location = useLocation();
   const {
-    file,
+    file: initialFile,
     tag: preSelectedTag,
     fromTribe,
     tribeId,
@@ -47,9 +48,10 @@ export const QuickdropPage = () => {
     };
   }, [setNavbarVisible]);
 
-  const [step, setStep] = useState<"edit" | "tag" | "board" | "uploaded">(
-    "edit",
-  );
+  const [file, setFile] = useState<File | null>(initialFile);
+  const [step, setStep] = useState<
+    "pick" | "edit" | "tag" | "board" | "uploaded"
+  >(initialFile ? "edit" : "pick");
   const [imageData, setImageData] = useState<{
     image: Blob | null;
     imageUrl: string | null;
@@ -83,10 +85,10 @@ export const QuickdropPage = () => {
     userTribeId: number;
     isActivatable: boolean; // counts >= 5
     joinStatus?:
-      | "new_waiting"
-      | "new_active"
-      | "already_waiting"
-      | "already_active";
+    | "new_waiting"
+    | "new_active"
+    | "already_waiting"
+    | "already_active";
   } | null>(null);
 
   // Tribe Chat Queries and Mutations
@@ -97,6 +99,8 @@ export const QuickdropPage = () => {
     useActivateUserTribe();
   const { mutate: sendChatMessage } = useSendChatMessage();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     return () => {
       if (imageData.imageUrl) {
@@ -106,6 +110,14 @@ export const QuickdropPage = () => {
   }, [imageData.imageUrl]);
 
   const navigate = useNavigate();
+
+  const handleFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pickedFile = e.target.files?.[0];
+    if (pickedFile) {
+      setFile(pickedFile);
+      setStep("edit");
+    }
+  };
 
   // 트라이브 챗 입장 핸들러 (버튼 클릭 시)
   const handleJoinTribe = (shouldActivate: boolean = false) => {
@@ -279,7 +291,7 @@ export const QuickdropPage = () => {
             if (
               joinError.response?.status === 400 &&
               joinError.response?.data?.message ===
-                "이미 해당 태그의 트라이브에 가입되어 있습니다."
+              "이미 해당 태그의 트라이브에 가입되어 있습니다."
             ) {
               console.log("ℹ️ Already joined, checking lists...");
 
@@ -347,8 +359,38 @@ export const QuickdropPage = () => {
   };
 
   return (
-    <div className="flex h-dvh w-full flex-col">
-      {step === "edit" && (
+    <div className="flex h-dvh w-full flex-col bg-black">
+      {step === "pick" && (
+        <div className="flex h-full flex-col items-center justify-center gap-6 px-10 text-center">
+          <header className="fixed top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
+            <IconXbuttonGray3
+              className="cursor-pointer"
+              onClick={() => navigate(-1)}
+            />
+            <h2 className="H2 text-white">바이브 드랍</h2>
+            <div className="w-6" />
+          </header>
+          <p className="ST1 text-gray-300">
+            바이브를 기록하기 위해
+            <br />
+            먼저 사진을 선택해 주세요.
+          </p>
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="ST2 h-[52px] w-full rounded-[10px] bg-gray-200 text-black active:bg-gray-400"
+          >
+            사진 선택하기
+          </button>
+          <input
+            type="file"
+            ref={inputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFilePick}
+          />
+        </div>
+      )}
+      {step === "edit" && file && (
         <ImageEditor
           file={file}
           initialState={editorState}
@@ -391,9 +433,8 @@ export const QuickdropPage = () => {
         <div className="flex h-full items-center justify-center">
           <div className="flex flex-col items-center justify-center gap-4">
             <p
-              className={`B2 text-white transition-opacity duration-200 ${
-                activeIndex === 0 ? "opacity-100" : "opacity-0"
-              }`}
+              className={`B2 text-white transition-opacity duration-200 ${activeIndex === 0 ? "opacity-100" : "opacity-0"
+                }`}
             >
               Viber의 첫 감각이 기록되었어요!
             </p>

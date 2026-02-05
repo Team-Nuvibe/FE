@@ -148,7 +148,7 @@ const TribechatPage = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
-      <div className="absolute top-0 left-0 z-20 flex w-full items-center justify-center bg-black px-4 pt-[70px] pb-6">
+      <div className="absolute top-0 left-0 z-20 flex w-full items-center justify-center bg-black px-4 pt-[8px] pb-4">
         {/* 탭 전환 */}
         <div className="flex items-center justify-center">
           {/* 활성화 탭 */}
@@ -194,7 +194,7 @@ const TribechatPage = () => {
 
         {/* 우측 아이콘 (스크랩) - top 73px에 absolute 배치 */}
 
-        <div className="absolute top-[73px] right-4">
+        <div className="absolute top-[12px] right-4">
           <IconChatScrap
             className="h-[24px] w-[24px] text-white"
             onClick={() => {
@@ -210,7 +210,7 @@ const TribechatPage = () => {
       </div>
 
       {/* 리스트 콘텐츠 */}
-      <div className="flex-1 touch-auto overflow-y-auto px-[14px] pt-[115px] pb-24">
+      <div className="flex-1 touch-auto overflow-y-auto px-[14px] pt-[56px] pb-24">
         {activeTab === "ing" ? (
           isLoadingActive ? (
             <div className="flex h-full flex-col items-center justify-center">
