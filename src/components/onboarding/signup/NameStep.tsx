@@ -3,19 +3,24 @@ import type {
   UseFormRegister,
   FieldErrors,
   UseFormSetFocus,
+  FieldValues,
+  Path,
 } from "react-hook-form";
 import InputBox from "../InputBox";
-import type { FormFields } from "@/pages/onboarding/SignUpPage";
 
-interface NameStepProps {
-  register: UseFormRegister<FormFields>;
-  errors: FieldErrors<FormFields>;
-  setFocus: UseFormSetFocus<FormFields>;
+interface NameStepProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
+  setFocus: UseFormSetFocus<T>;
 }
 
-const NameStep = ({ register, errors, setFocus }: NameStepProps) => {
+const NameStep = <T extends FieldValues>({
+  register,
+  errors,
+  setFocus,
+}: NameStepProps<T>) => {
   useEffect(() => {
-    setFocus("name");
+    setFocus("name" as Path<T>);
   }, [setFocus]);
 
   return (
@@ -24,7 +29,7 @@ const NameStep = ({ register, errors, setFocus }: NameStepProps) => {
         이름
       </div>
       <InputBox
-        {...register("name")}
+        {...register("name" as Path<T>)}
         type="text"
         placeholder="이름을 입력해주세요."
         hasError={!!errors?.name}

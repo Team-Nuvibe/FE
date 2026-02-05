@@ -33,17 +33,19 @@ const OAuthCallbackPage = () => {
     // 에러 처리
     if (error) {
       if (error === "AUTH017") {
-        setErrorMessage({
-          maintext: "이미 가입된 이메일입니다",
-          subtext:
-            "다른 방식으로 가입된 계정이에요. 해당 방식으로 로그인해주세요.",
+        navigate("/login", {
+          replace: true,
+          state: {
+            toastMessage: "이미 다른 방식으로 가입된 이메일입니다.",
+          },
         });
-      } else {
-        setErrorMessage({
-          maintext: "로그인 실패",
-          subtext: "소셜 로그인 중 문제가 발생했습니다.",
-        });
+        return;
       }
+
+      setErrorMessage({
+        maintext: "로그인 실패",
+        subtext: "소셜 로그인 중 문제가 발생했습니다.",
+      });
       setIsErrorModalOpen(true);
       return;
     }

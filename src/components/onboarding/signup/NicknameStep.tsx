@@ -3,19 +3,24 @@ import type {
   UseFormRegister,
   FieldErrors,
   UseFormSetFocus,
+  FieldValues,
+  Path,
 } from "react-hook-form";
 import InputBox from "../InputBox";
-import type { FormFields } from "@/pages/onboarding/SignUpPage";
 
-interface NicknameStepProps {
-  register: UseFormRegister<FormFields>;
-  errors: FieldErrors<FormFields>;
-  setFocus: UseFormSetFocus<FormFields>;
+interface NicknameStepProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
+  setFocus: UseFormSetFocus<T>;
 }
 
-const NicknameStep = ({ register, errors, setFocus }: NicknameStepProps) => {
+const NicknameStep = <T extends FieldValues>({
+  register,
+  errors,
+  setFocus,
+}: NicknameStepProps<T>) => {
   useEffect(() => {
-    setFocus("nickname");
+    setFocus("nickname" as Path<T>);
   }, [setFocus]);
 
   return (
@@ -24,7 +29,7 @@ const NicknameStep = ({ register, errors, setFocus }: NicknameStepProps) => {
         닉네임
       </div>
       <InputBox
-        {...register("nickname")}
+        {...register("nickname" as Path<T>)}
         type="text"
         placeholder="닉네임을 입력해주세요."
         hasError={!!errors?.nickname}

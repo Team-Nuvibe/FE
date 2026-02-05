@@ -1,42 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { completeSocialSignUp } from "@/apis/auth";
-import InputBox from "@/components/onboarding/InputBox";
 import { BaseModal } from "@/components/onboarding/BaseModal";
-import useForm from "@/hooks/useForm";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import ProgressBar from "@/components/onboarding/ProgressBar";
+import NameStep from "@/components/onboarding/signup/NameStep";
+import NicknameStep from "@/components/onboarding/signup/NicknameStep";
 
-interface SocialSignUpForm {
-  name: string;
-  nickname: string;
-}
+const schema = z.object({
+  name: z.string().min(1, { message: "이름을 입력해주세요." }),
+  nickname: z
+    .string()
+    .min(1, { message: "닉네임을 입력해주세요." })
+    .min(2, { message: "닉네임은 최소 2자 이상이어야 합니다." })
+    .max(10, { message: "닉네임은 최대 10자까지 입력 가능합니다." }),
+});
 
-const validateSocialSignUp = (
-  values: SocialSignUpForm,
-): Record<keyof SocialSignUpForm, string> => {
-  const errors: Record<keyof SocialSignUpForm, string> = {
-    name: "",
-    nickname: "",
-  };
-
-  if (!values.name.trim()) {
-    errors.name = "이름을 입력해주세요.";
-  } else if (values.name.length < 2) {
-    errors.name = "이름은 최소 2자 이상이어야 합니다.";
-  }
-
-  if (!values.nickname.trim()) {
-    errors.nickname = "닉네임을 입력해주세요.";
-  } else if (values.nickname.length < 2) {
-    errors.nickname = "닉네임은 최소 2자 이상이어야 합니다.";
-  } else if (values.nickname.length > 10) {
-    errors.nickname = "닉네임은 최대 10자까지 입력 가능합니다.";
-  }
-
-  return errors;
-};
+export type SocialSignUpForm = z.infer<typeof schema>;
 
 const SocialSignUpCompletePage = () => {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 2;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState({
@@ -44,29 +31,50 @@ const SocialSignUpCompletePage = () => {
     subtext: "다시 시도해주세요.",
   });
 
-  const { values, errors, getInputProps } = useForm<SocialSignUpForm>({
-    initialValues: {
+  const {
+    register,
+    trigger,
+    getValues,
+    setFocus,
+    watch,
+    formState: { errors },
+  } = useForm<SocialSignUpForm>({
+    resolver: zodResolver(schema),
+    mode: "onChange",
+    defaultValues: {
       name: "",
       nickname: "",
     },
-    validate: validateSocialSignUp,
   });
 
-  const isDisabled =
-    Object.values(errors || {}).some((error) => error.length > 0) ||
-    Object.values(values).some((value) => value === "");
+  const handleNext = async () => {
+    let stepValid = false;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (currentStep === 1) {
+      stepValid = await trigger("name");
+    } else if (currentStep === 2) {
+      stepValid = await trigger("nickname");
+    }
 
-    if (isDisabled || isSubmitting) return;
+    if (stepValid) {
+      if (currentStep < totalSteps) {
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        handleSubmit();
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
+    const { name, nickname } = getValues();
 
     try {
       await completeSocialSignUp({
-        name: values.name,
-        nickname: values.nickname,
+        name,
+        nickname,
       });
 
       // 성공 시 홈으로 이동
@@ -96,46 +104,59 @@ const SocialSignUpCompletePage = () => {
 
   return (
     <>
-      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center text-white">
-        <div className="H0 flex w-full items-center justify-center p-9 text-white">
-          추가 정보 입력
+      <div className="relative flex min-h-[100dvh] flex-col items-center px-4 pt-[60px] pb-15 text-white">
+        <div className="relative mb-6 flex w-full items-center justify-center">
+          <div className="H2 text-[20px] leading-[150%] tracking-[-0.5px] text-gray-200">
+            추가 정보 입력
+          </div>
         </div>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-3">
-            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
-              이름
-            </div>
-            <InputBox
-              {...getInputProps("name")}
-              type="text"
-              placeholder="이름을 입력해주세요."
-            />
+        <div className="mb-5 w-full">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+
+        <form
+          className="flex w-full flex-1 flex-col justify-between"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleNext();
+          }}
+        >
+          <div className="w-full">
+            {currentStep === 1 && (
+              <NameStep
+                register={register}
+                errors={errors}
+                setFocus={setFocus}
+              />
+            )}
+            {currentStep === 2 && (
+              <NicknameStep
+                register={register}
+                errors={errors}
+                setFocus={setFocus}
+              />
+            )}
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
-              닉네임
-            </div>
-            <InputBox
-              {...getInputProps("nickname")}
-              type="text"
-              placeholder="닉네임을 입력해주세요."
-            />
+          <div className="mt-10 mb-8 w-full">
+            <button
+              type="submit"
+              className="H4 flex h-[48px] w-full items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500"
+              disabled={
+                isSubmitting ||
+                (currentStep === 1 && (!watch("name") || !!errors.name)) ||
+                (currentStep === 2 && (!watch("nickname") || !!errors.nickname))
+              }
+            >
+              {isSubmitting
+                ? "처리 중..."
+                : currentStep === totalSteps
+                  ? "완료"
+                  : "다음"}
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="H4 mt-12 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
-            disabled={isDisabled || isSubmitting}
-          >
-            {isSubmitting ? "처리 중..." : "완료"}
-          </button>
         </form>
-
-        <p className="mt-6 text-sm text-gray-400">
-          소셜 로그인을 완료하려면 추가 정보가 필요해요
-        </p>
       </div>
 
       <BaseModal
