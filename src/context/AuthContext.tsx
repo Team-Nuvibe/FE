@@ -8,6 +8,7 @@ import type { LogInRequest } from "@/types/auth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "@/constants/key";
 import { logIn, logOut } from "@/apis/auth";
+import { useUserStore } from "@/hooks/useUserStore";
 
 interface AuthContextType {
   accessToken: string | null;
@@ -18,16 +19,18 @@ interface AuthContextType {
   setSocialLoginTokens: (
     accessToken: string,
     refreshToken: string,
+    email: string,
+    provider: string,
   ) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  login: async () => { },
-  logout: async () => { },
-  clearSession: () => { },
-  setSocialLoginTokens: () => { },
+  login: async () => {},
+  logout: async () => {},
+  clearSession: () => {},
+  setSocialLoginTokens: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -113,12 +116,19 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const setSocialLoginTokens = (
     newAccessToken: string,
     newRefreshToken: string,
+    email: string,
+    provider: string,
   ) => {
     setAccessTokenInStorage(newAccessToken);
     setRefreshTokenInStorage(newRefreshToken);
 
     setAccessToken(newAccessToken);
     setRefreshToken(newRefreshToken);
+
+    // 스토어에 이메일과 provider 저장
+    const { setEmail, setProvider } = useUserStore.getState();
+    setEmail(email);
+    setProvider(provider);
   };
 
   return (
