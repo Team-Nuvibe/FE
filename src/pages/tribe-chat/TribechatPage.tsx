@@ -143,7 +143,7 @@ const TribechatPage = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
-      <div className="absolute top-0 left-0 z-10 flex w-full items-center justify-center bg-black px-4 pt-[70px] pb-6">
+      <div className="absolute top-0 left-0 z-20 flex w-full items-center justify-center bg-black px-4 pt-[70px] pb-6">
         {/* 탭 전환 */}
         <div className="flex items-center justify-center">
           {/* 활성화 탭 */}
