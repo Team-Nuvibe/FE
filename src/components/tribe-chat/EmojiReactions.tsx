@@ -17,23 +17,15 @@ interface EmojiReactionsProps {
   onReactionClick: (reactionType: "amazing" | "like" | "nice") => void;
 }
 
-// 애니메이션 입자(Particle) 타입 정의
-interface ReactionParticle {
-  id: number;
-  type: "amazing" | "like" | "nice";
-}
-
 const EmojiReactions = ({
   reactions,
   myReactions,
   onReactionClick,
 }: EmojiReactionsProps) => {
-  // 떠오르는 아이콘들을 관리하는 상태
-  const [particles, setParticles] = useState<ReactionParticle[]>([]);
   // 스포트라이트 효과를 위한 클릭된 버튼 추적
   const [clickedButton, setClickedButton] = useState<string | null>(null);
 
-  // 클릭 시 파티클 추가 및 핸들러 실행
+  // 클릭 시 핸들러 실행 및 스포트라이트 효과 트리거
   const handleReaction = (type: "amazing" | "like" | "nice") => {
     onReactionClick(type);
 
@@ -42,15 +34,6 @@ const EmojiReactions = ({
     setTimeout(() => {
       setClickedButton(null);
     }, 400); // 스포트라이트 100ms + 최종 상태 전환 300ms
-
-    // 현재 시간 기반의 고유 ID로 파티클 생성
-    const newParticle = { id: Date.now(), type };
-    setParticles((prev) => [...prev, newParticle]);
-
-    // 1초 뒤에 해당 파티클 제거 (메모리 누수 방지)
-    setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => p.id !== newParticle.id));
-    }, 1000);
   };
 
   // 버튼 설정 데이터 (중복 코드 제거용)
@@ -62,19 +45,6 @@ const EmojiReactions = ({
 
   return (
     <>
-      {/* Tailwind 설정 없이 바로 동작하도록 인라인 스타일로 키프레임 정의 */}
-      <style>
-        {`
-          @keyframes float-up {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-30px) scale(1.2); opacity: 0; }
-          }
-          .animate-float-up {
-            animation: float-up 0.8s ease-out forwards;
-          }
-        `}
-      </style>
-
       <div className="flex items-center gap-2">
         {buttonConfigs.map(({ type, Icon }) => {
           // 내가 반응했는지 확인

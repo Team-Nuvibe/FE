@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { useQueryClient } from "@tanstack/react-query";
@@ -71,49 +71,52 @@ const TribechatRoomPage = () => {
   }, [timelineData, isLoading, isError, error, tribeId]);
 
   // Transform API response to ChatMessage format
-  const messages: ChatMessage[] =
-    timelineData?.data.items.map((item) => {
-      // reactionSummary를 reactions 객체로 변환
-      const reactions = {
-        amazing: 0,
-        like: 0,
-        nice: 0,
-      };
-      item.reactionsSummary?.forEach((reaction) => {
-        if (reaction.type === "WOW") reactions.amazing += reaction.count;
-        if (reaction.type === "LIKE") reactions.like += reaction.count;
-        if (reaction.type === "COOL") reactions.nice += reaction.count;
-      });
+  const messages: ChatMessage[] = useMemo(() => {
+    return (
+      timelineData?.data.items.map((item) => {
+        // reactionSummary를 reactions 객체로 변환
+        const reactions = {
+          amazing: 0,
+          like: 0,
+          nice: 0,
+        };
+        item.reactionsSummary?.forEach((reaction) => {
+          if (reaction.type === "WOW") reactions.amazing += reaction.count;
+          if (reaction.type === "LIKE") reactions.like += reaction.count;
+          if (reaction.type === "COOL") reactions.nice += reaction.count;
+        });
 
-      return {
-        id: item.chatId.toString(),
-        imageUrl: item.imageUrl,
-        timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }),
-        date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        }),
-        isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
-        userProfile: item.sender
-          ? {
-              name: item.sender.nickname || "Unknown",
-              avatar: item.sender.profileImage || "#E2E2E2",
-            }
-          : undefined,
-        reactions,
-        myReactions: {
-          amazing: item.myReactionType === "WOW",
-          like: item.myReactionType === "LIKE",
-          nice: item.myReactionType === "COOL",
-        },
-        isScrapped: item.isScrapped ?? false, // API 값을 사용하거나 기본값 false
-      };
-    }) ?? [];
+        return {
+          id: item.chatId.toString(),
+          imageUrl: item.imageUrl,
+          timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
+          date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }),
+          isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
+          userProfile: item.sender
+            ? {
+                name: item.sender.nickname || "Unknown",
+                avatar: item.sender.profileImage || "#E2E2E2",
+              }
+            : undefined,
+          reactions,
+          myReactions: {
+            amazing: item.myReactionType === "WOW",
+            like: item.myReactionType === "LIKE",
+            nice: item.myReactionType === "COOL",
+          },
+          isScrapped: item.isScrapped ?? false, // API 값을 사용하거나 기본값 false
+        };
+      }) ?? []
+    );
+  }, [timelineData, nickname]);
 
   // 역방향 무한 스크롤: 상단 감지를 위한 useInView 훅
   const { ref: loadMoreRef, inView } = useInView({
@@ -166,6 +169,9 @@ const TribechatRoomPage = () => {
         // 다른 관련 쿼리 무효화 (detail, grid 등)
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEY.scrapedImages],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY.tribeScrapedImages],
         });
       },
       onError: () => {
@@ -283,7 +289,7 @@ const TribechatRoomPage = () => {
 
               // 날짜가 바뀌었는지 확인 (역방향이므로 nextMessage가 이전 메시지)
               const isDateChanged =
-                nextMessage && nextMessage.date !== message.date;
+                !nextMessage || nextMessage.date !== message.date;
 
               return (
                 <div key={message.id}>
@@ -292,7 +298,7 @@ const TribechatRoomPage = () => {
                     <div className="my-7">
                       {" "}
                       {/* 총 28px: 위아래 패딩 4px (py-1) + 채팅과의 간격 24px */}
-                      <DateDivider date={nextMessage.date} />
+                      <DateDivider date={message.date} />
                     </div>
                   )}
 

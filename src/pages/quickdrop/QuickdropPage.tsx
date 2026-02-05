@@ -93,7 +93,8 @@ export const QuickdropPage = () => {
   // const { data: waitingTribesData } = useGetWaitingTribeList(); // Refactored: No longer needed
   const { mutate: joinOrCreateTribe, isPending: isJoiningTribe } =
     useJoinOrCreateTribe();
-  const { mutate: activateUserTribe } = useActivateUserTribe();
+  const { mutate: activateUserTribe, isPending: isActivating } =
+    useActivateUserTribe();
   const { mutate: sendChatMessage } = useSendChatMessage();
 
   useEffect(() => {
@@ -175,6 +176,8 @@ export const QuickdropPage = () => {
 
       if (!imageId) {
         console.error("❌ Critical: imageId is missing from response!");
+        alert("이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
+        return;
       }
 
       // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
@@ -519,7 +522,7 @@ export const QuickdropPage = () => {
                         <button
                           className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={() => handleJoinTribe(true)}
-                          disabled={isJoiningTribe}
+                          disabled={isJoiningTribe || isActivating}
                         >
                           <p className="B2 text-gray-800">
                             {uploadedTribeInfo?.joinStatus === "already_active"
@@ -537,9 +540,7 @@ export const QuickdropPage = () => {
                         onClick={() => handleJoinTribe(false)}
                         disabled={isJoiningTribe}
                       >
-                        <p className="B2 text-gray-800">
-                          {isJoiningTribe ? "입장 중..." : "나중에 입장하기"}
-                        </p>
+                        <p className="B2 text-gray-800">나중에 입장하기</p>
                       </button>
                     )}
                   </div>
