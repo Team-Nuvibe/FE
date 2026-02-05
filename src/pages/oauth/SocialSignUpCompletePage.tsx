@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { completeSocialSignUp } from "@/apis/auth";
 import { BaseModal } from "@/components/onboarding/BaseModal";
@@ -8,6 +8,7 @@ import * as z from "zod";
 import ProgressBar from "@/components/onboarding/ProgressBar";
 import NameStep from "@/components/onboarding/signup/NameStep";
 import NicknameStep from "@/components/onboarding/signup/NicknameStep";
+import { useUserStore } from "@/hooks/useUserStore";
 
 const schema = z.object({
   name: z.string().min(1, { message: "이름을 입력해주세요." }),
@@ -30,6 +31,23 @@ const SocialSignUpCompletePage = () => {
     maintext: "회원가입 실패",
     subtext: "다시 시도해주세요.",
   });
+
+  useEffect(() => {
+    // 뒤로가기 방지
+    const currentUrl = window.location.href; // 현재 URL 저장
+
+    const preventGoBack = () => {
+      // 뒤로가기 시 저장된 현재 URL로 다시 푸시하여 페이지 유지
+      window.history.pushState(null, "", currentUrl);
+    };
+
+    window.history.pushState(null, "", currentUrl);
+    window.addEventListener("popstate", preventGoBack);
+
+    return () => {
+      window.removeEventListener("popstate", preventGoBack);
+    };
+  }, []);
 
   const {
     register,
@@ -70,12 +88,16 @@ const SocialSignUpCompletePage = () => {
 
     setIsSubmitting(true);
     const { name, nickname } = getValues();
+    const { setNickname } = useUserStore.getState(); // Assuming we access it this way or hook
 
     try {
       await completeSocialSignUp({
         name,
         nickname,
       });
+
+      // 로컬 스토어 업데이트 (닉네임 설정하여 MainLayout 리다이렉트 방지)
+      setNickname(nickname);
 
       // 성공 시 홈으로 이동
       navigate("/home", { replace: true });

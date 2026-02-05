@@ -21,7 +21,7 @@ interface AuthContextType {
     refreshToken: string,
     email: string,
     provider: string,
-  ) => void;
+  ) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -30,7 +30,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   clearSession: () => {},
-  setSocialLoginTokens: () => {},
+  setSocialLoginTokens: async () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const setSocialLoginTokens = (
+  const setSocialLoginTokens = async (
     newAccessToken: string,
     newRefreshToken: string,
     email: string,
@@ -126,9 +126,31 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setRefreshToken(newRefreshToken);
 
     // 스토어에 이메일과 provider 저장
-    const { setEmail, setProvider } = useUserStore.getState();
+    const { setEmail, setProvider, setNickname, setProfileImage } =
+      useUserStore.getState();
     setEmail(email);
     setProvider(provider);
+
+    // 사용자 프로필 정보 가져오기
+    try {
+      const { getUserNickname, getUserProfileImage } =
+        await import("@/apis/user");
+
+      const [nicknameData, profileImageData] = await Promise.all([
+        getUserNickname(),
+        getUserProfileImage(),
+      ]);
+
+      if (nicknameData.data?.nickname) {
+        setNickname(nicknameData.data.nickname);
+      }
+
+      if (profileImageData.data?.profileImage) {
+        setProfileImage(profileImageData.data.profileImage);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile during social login:", error);
+    }
   };
 
   return (

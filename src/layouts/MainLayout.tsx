@@ -3,16 +3,22 @@ import Navbar from "../components/common/Navbar";
 import QuickDropButton from "../components/common/QuickDropButton";
 import { useNavbarInfo } from "../hooks/useNavbarStore";
 import { useAuth } from "@/context/AuthContext";
+import { useUserStore } from "@/hooks/useUserStore";
 
 const MainLayout = () => {
   const isNavbarVisible = useNavbarInfo();
 
   const { accessToken, refreshToken } = useAuth();
+  const { provider, nickname } = useUserStore();
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-  // AccessToken이 없더라도 RefreshToken이 있다면 갱신 시도를 위해 리다이렉트 보류
   if (!accessToken && !refreshToken) {
     return <Navigate to="/login" replace />;
+  }
+
+  // 소셜 로그인 유저인데 닉네임이 없는 경우 (가입 미완료) 추가 정보 입력 페이지로 리다이렉트
+  if (provider && !nickname) {
+    return <Navigate to="/oauth/signup-complete" replace />;
   }
 
   return (
