@@ -29,6 +29,7 @@ interface ArchiveBoard {
   title: string;
   thumbnail?: string;
   image?: string;
+  tagCount: number;
 }
 
 interface ResentDrops {
@@ -112,6 +113,7 @@ const ArchivePage = () => {
             title: board.name,
             thumbnail: board.thumbnailUrl,
             image: board.thumbnailUrl,
+            tagCount: board.tagCount,
           }));
 
           setAllArchiveBoards(mappedBoards);
@@ -187,6 +189,7 @@ const ArchivePage = () => {
           title: response.data.name,
           thumbnail: "",
           image: "",
+          tagCount: 0,
         };
         setAllArchiveBoards((prev) => [...prev, newBoard]);
         setArciveboard((prev) => [...prev, newBoard]);
@@ -430,15 +433,16 @@ const ArchivePage = () => {
                         </p>
                         {/* 보드 내의 태그 갯수 */}
                         <p className="flex items-end text-[7px] font-normal text-gray-300">
-                          12tag
+                          {board.tagCount} tag
                         </p>
                       </div>
 
                       {/* 체크표시 */}
                       {isSelectMode && (
                         <div
-                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${isSelected ? "bg-white/30" : "bg-transparent"
-                            }`}
+                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
+                            isSelected ? "bg-white/30" : "bg-transparent"
+                          }`}
                         >
                           {isSelected && (
                             <SelectedImageIcon className="h-[32px] w-[32px]" />

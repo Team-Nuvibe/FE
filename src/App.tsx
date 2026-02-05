@@ -22,9 +22,10 @@ import ProfileSettingPage from "./pages/profile/ProfileSettingPage";
 import RevealImagePage from "./pages/archive-board/RevealImagePage";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TribeChatPage from "./pages/tribe-chat/TribechatPage";
+import TribechatPage from "./pages/tribe-chat/TribechatPage";
 import TribechatRoomPage from "./pages/tribe-chat/TribechatRoomPage";
 import { SplashLayout } from "./layouts/SplashLayout";
+import { ScrapPage } from "./pages/tribe-chat/ScrapPage";
 import ResetPasswordPage from "./pages/onboarding/ResetPasswordPage";
 import OAuthCallbackPage from "./pages/oauth/OAuthCallbackPage";
 import SocialSignUpCompletePage from "./pages/oauth/SocialSignUpCompletePage";
@@ -78,9 +79,10 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "tribe-chat",
         children: [
-          { index: true, element: <TribeChatPage /> },
-          { path: "/tribe-chat/:tagid", element: <TribechatRoomPage /> },
+          { index: true, element: <TribechatPage /> },
+          { path: "/tribe-chat/:tribeId", element: <TribechatRoomPage /> },
           // {path: "/tribe-chat:tagid/album", element: </> },
+          { path: "/tribe-chat/scrap", element: <ScrapPage /> },
         ],
       },
       {
