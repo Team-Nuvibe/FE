@@ -165,7 +165,15 @@ export const QuickdropPage = () => {
       )}
       {step === "uploaded" && (
         <div className="flex h-full items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-4">
+          <div className="relative flex flex-col items-center justify-center gap-4">
+            {/* 배경 조명 효과 */}
+            <div
+              className="absolute -bottom-50 left-1/2 -translate-x-1/2 w-full h-dvh pointer-events-none"
+              style={{
+                background: "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
+                filter: "blur(30px)",
+              }}
+            />
             {imageData.board?.tagCount === 0 && (
               <p
                 className={`B2 text-white transition-opacity duration-200 ${

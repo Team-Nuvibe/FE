@@ -67,7 +67,7 @@ export const CropperView = ({
     return `brightness(${
       finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
-        : (finalBrightness - 100) * 4 + 100
+        : (finalBrightness - 100) * 1.8 + 100
     }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
       levels.temperature > 0 ? levels.temperature : 0
     }%) hue-rotate(${
