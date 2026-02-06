@@ -58,6 +58,22 @@ const VibeTonePage = () => {
     queryFn: () => getUserUsagePattern(period),
   });
 
+  const handleDropVibe = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        alert("파일을 선택하지 않았습니다.");
+        return;
+      }
+      navigate("/quickdrop", { state: { file } });
+    };
+    fileInput.click();
+  };
+
   // 전체 로딩 상태
   const isLoading = tagLoading || boardLoading || patternLoading;
 
@@ -190,7 +206,10 @@ const VibeTonePage = () => {
         {isEmpty ? (
           /* Drop Your Vibe 버튼 */
           // TODO : onClick에 Dropvibe 연동
-          <button className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]">
+          <button
+            className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+            onClick={handleDropVibe}
+          >
             <DropIcon className="h-5.25 w-5.25" />
             <span
               className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
