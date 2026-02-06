@@ -390,14 +390,24 @@ export const QuickdropPage = () => {
       )}
       {step === "uploaded" && (
         <div className="flex h-full items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-4">
-            <p
-              className={`B2 text-white transition-opacity duration-200 ${
-                activeIndex === 0 ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              Viber의 첫 감각이 기록되었어요!
-            </p>
+          <div className="relative flex flex-col items-center justify-center gap-4">
+            {/* 배경 조명 효과 */}
+            <div
+              className="absolute -bottom-50 left-1/2 -translate-x-1/2 w-full h-dvh pointer-events-none"
+              style={{
+                background: "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
+                filter: "blur(30px)",
+              }}
+            />
+            {imageData.board?.tagCount === 0 && (
+              <p
+                className={`B2 text-white transition-opacity duration-200 ${
+                  activeIndex === 0 ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {imageData.board.name}의 첫 감각이 기록되었어요!
+              </p>
+            )}
             <Swiper
               modules={[Pagination]}
               className="h-[388px] w-[291px]"
