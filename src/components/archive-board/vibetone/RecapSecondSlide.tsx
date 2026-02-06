@@ -34,12 +34,12 @@ const RecapSecondSlide = ({
 
   const weekDate = data
     ? {
-      start: formatDate(data.startDate),
-      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
-    }
+        start: formatDate(data.startDate),
+        end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+      }
     : { start: "", end: "" };
 
-  const dropCount = data?.totalDropCount || 0;
+  const dropCount = data?.totalDropsCount || 0;
   const boardName = data?.boardName || "";
 
   // 슬라이드가 활성화되거나 activeTab이 변경될 때 애니메이션 시작

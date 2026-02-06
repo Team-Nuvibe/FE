@@ -66,7 +66,7 @@ export interface TagUsageRankingResponse {
   period: string;
   startDate: string;
   endDate: string;
-  totalDropCount: number;
+  totalDropsCount: number;
   ranks: TagRankItem[];
 }
 
@@ -96,7 +96,7 @@ export interface MostUsedBoardResponse {
   period: string;
   startDate: string;
   endDate: string;
-  totalDropCount: number;
+  totalDropsCount: number;
   boardId: number;
   boardName: string;
   boardImages: string[];
