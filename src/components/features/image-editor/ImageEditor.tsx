@@ -12,7 +12,6 @@ import { AdjustmentToolbar } from "./AdjustmentToolbar";
 import { CropperView } from "./CropperView";
 import { CropToolbar } from "./CropToolbar";
 import { RotationToolbar } from "./RotationToolbar";
-import { set } from "zod";
 
 interface ImageEditorProps {
   file: File;
@@ -37,8 +36,6 @@ interface ImageEditorProps {
     },
   ) => void;
 }
-
-interface EditStateProps {}
 
 export const ImageEditor = ({
   file,
