@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { AxiosError } from "axios";
 import { BackButton } from "../../components/onboarding/BackButton";
 import RecapFirstSlide from "../../components/archive-board/vibetone/RecapFirstSlide";
 import RecapSecondSlide from "../../components/archive-board/vibetone/RecapSecondSlide";
@@ -38,6 +39,12 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["tagRanking", period],
     queryFn: () => getTagUsageRanking(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const {
@@ -47,6 +54,12 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["mostUsedBoard", period],
     queryFn: () => getMostUsedBoard(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const {
@@ -56,6 +69,12 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["usagePattern", period],
     queryFn: () => getUserUsagePattern(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const handleDropVibe = () => {
