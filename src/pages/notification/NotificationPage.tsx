@@ -6,37 +6,15 @@ import type { NotificationResponse } from "@/types/notification";
 import { NotificationItem } from "@/components/notification/NotificationItem";
 import { useGetNotifications } from "@/hooks/queries/useGetNotifications";
 import { useReadNotification, useDeleteNotification } from "@/hooks/mutation/useNotificationMutations";
-import { startOfDay, isSameDay, subDays } from "date-fns";
 export const NotificationPage = () => {
   const navigate = useNavigate();
   const { data: notifications = [], isLoading } = useGetNotifications();
   const { mutate: readNoti } = useReadNotification();
   const { mutate: deleteNoti } = useDeleteNotification();
 
-  // 날짜별 그룹화 로직
-  const groupedNotifications = useMemo(() => {
-    const now = new Date();
-    const today = startOfDay(now);
-    const yesterday = startOfDay(subDays(now, 1));
-
-    const groups: { title: string; items: NotificationResponse[] }[] = [
-      { title: "오늘", items: [] },
-      { title: "어제", items: [] },
-      { title: "이전 알림", items: [] },
-    ];
-
-    notifications.forEach((noti: NotificationResponse) => {
-      const notiDate = startOfDay(new Date(noti.createdAt));
-      if (isSameDay(notiDate, today)) {
-        groups[0].items.push(noti);
-      } else if (isSameDay(notiDate, yesterday)) {
-        groups[1].items.push(noti);
-      } else {
-        groups[2].items.push(noti);
-      }
-    });
-
-    return groups.filter((group) => group.items.length > 0);
+  // 시간순(최신순) 정렬만 적용
+  const sortedNotifications = useMemo(() => {
+    return [...notifications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [notifications]);
 
   const handleDelete = (id: number) => {
@@ -50,7 +28,7 @@ export const NotificationPage = () => {
     }
 
     // 페이지 이동 로직 (기능 명세 반영)
-    const { category, mainMessage, relatedId } = notification;
+    const { category, mainMessage, relatedId, tribeId } = notification;
 
     if (category === "채팅") {
       if (mainMessage.includes("열렸어요")) {
@@ -61,7 +39,8 @@ export const NotificationPage = () => {
         navigate(`/tribe-chat/${relatedId}`);
       } else if (mainMessage.includes("반응했어요")) {
         // NOTI-04: 해당 채팅방 속 해당 이미지로 이동
-        navigate(`/tribe-chat/${relatedId}?messageId=1`);
+        const roomId = tribeId || relatedId;
+        navigate(`/tribe-chat/${roomId}?target=${relatedId}`);
       }
     } else if (category === "미션") {
       if (mainMessage.includes("비어 있어요")) {
@@ -132,22 +111,13 @@ export const NotificationPage = () => {
             </div>
           ) : (
             <>
-              {groupedNotifications.map((group) => (
-                <div key={group.title} className="flex flex-col">
-                  <div className="px-4 py-2 bg-black">
-                    <h3 className="text-[14px] font-semibold text-gray-400">
-                      {group.title}
-                    </h3>
-                  </div>
-                  {group.items.map((it) => (
-                    <NotificationItem
-                      key={it.notificationId}
-                      notification={it}
-                      onDelete={handleDelete}
-                      onClick={handleClick}
-                    />
-                  ))}
-                </div>
+              {sortedNotifications.map((it) => (
+                <NotificationItem
+                  key={it.notificationId}
+                  notification={it}
+                  onDelete={handleDelete}
+                  onClick={handleClick}
+                />
               ))}
             </>
           )}

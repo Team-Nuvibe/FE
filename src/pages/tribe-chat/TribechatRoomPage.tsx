@@ -128,7 +128,7 @@ const TribechatRoomPage = () => {
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const targetMessageId = queryParams.get("messageId");
+  const targetMessageId = queryParams.get("target");
 
   // 페이지 진입 시 navbar 숨기기, 언마운트 시 다시 표시
   useEffect(() => {

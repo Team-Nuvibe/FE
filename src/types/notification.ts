@@ -40,6 +40,7 @@ export interface NotificationResponse {
     mainMessage: string;
     actionMessage: string;
     relatedId: number;
+    tribeId: number;
     isRead: boolean;
     createdAt: string;
 }
