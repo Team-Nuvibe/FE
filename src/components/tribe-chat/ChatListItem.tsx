@@ -17,6 +17,8 @@ interface ChatListItemProps {
   onClick?: () => void;
 }
 
+import { allTagImages } from "@/utils/imageMap";
+
 export const ChatListItem = ({
   room,
   isActiveTab,
@@ -30,6 +32,16 @@ export const ChatListItem = ({
 
   /* Drag tracking to prevent onClick firing after swipe */
   const isDragging = useRef(false);
+
+  // 태그에 해당하는 로컬 이미지 찾기
+  // room.tags 배열 중에서 로컬 이미지가 존재하는 첫 번째 태그를 사용
+  const localImage = room.tags?.find((tag) => allTagImages[tag.toLowerCase()])
+    ? allTagImages[
+        room.tags.find((tag) => allTagImages[tag.toLowerCase()])!.toLowerCase()
+      ]
+    : undefined;
+
+  const displayImage = localImage || room.thumbnailUrl;
 
   // 비활성 탭 로직
   if (!isActiveTab) {
@@ -46,9 +58,9 @@ export const ChatListItem = ({
           }
         }}
       >
-        {room.thumbnailUrl ? (
+        {displayImage ? (
           <img
-            src={room.thumbnailUrl}
+            src={displayImage}
             alt={room.title}
             className="mr-4 h-[100px] w-[75px] shrink-0 rounded-[5px] border border-gray-700 object-cover"
           />
@@ -179,9 +191,9 @@ export const ChatListItem = ({
           </button>
         </div>
 
-        {room.thumbnailUrl ? (
+        {displayImage ? (
           <img
-            src={room.thumbnailUrl}
+            src={displayImage}
             alt={room.title}
             className="mr-4 h-[100px] w-[75px] shrink-0 rounded-[5px] border border-gray-700 object-cover"
           />
