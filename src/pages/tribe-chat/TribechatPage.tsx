@@ -239,11 +239,12 @@ const TribechatPage = () => {
                       room.title,
                     )
                   }
-                  onClick={() =>
+                  onClick={() => {
+                    markAsRead(Number(room.id));
                     navigate(`/tribe-chat/${room.id}`, {
                       state: { imageTag: room.tags?.[0] || "Tribe" },
-                    })
-                  }
+                    });
+                  }}
                 />
               ))}
             </div>
