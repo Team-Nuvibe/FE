@@ -126,8 +126,10 @@ export const startSocialLogin = (
 ): void => {
   const baseUrl =
     import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site";
-  const redirectUrl = `${baseUrl}api/auth/oauth2/${provider}`;
-  window.location.href = redirectUrl;
+  const currentOrigin = window.location.origin;
+  const redirectUri = currentOrigin; // 백엔드에서 /oauth/callback을 붙여주는 것으로 추정됨
+  const targetUrl = `${baseUrl}api/auth/oauth2/${provider}?redirect_uri=${encodeURIComponent(redirectUri)}`;
+  window.location.href = targetUrl;
 };
 
 // 소셜 로그인 콜백 (OAuth2 인증 코드를 받아서 토큰 발급)

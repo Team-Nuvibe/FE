@@ -8,6 +8,7 @@ import type { LogInRequest } from "@/types/auth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "@/constants/key";
 import { logIn, logOut } from "@/apis/auth";
+import { useUserStore } from "@/hooks/useUserStore";
 
 interface AuthContextType {
   accessToken: string | null;
@@ -18,16 +19,18 @@ interface AuthContextType {
   setSocialLoginTokens: (
     accessToken: string,
     refreshToken: string,
-  ) => void;
+    email: string,
+    provider: string,
+  ) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  login: async () => { },
-  logout: async () => { },
-  clearSession: () => { },
-  setSocialLoginTokens: () => { },
+  login: async () => {},
+  logout: async () => {},
+  clearSession: () => {},
+  setSocialLoginTokens: async () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -110,15 +113,44 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const setSocialLoginTokens = (
+  const setSocialLoginTokens = async (
     newAccessToken: string,
     newRefreshToken: string,
+    email: string,
+    provider: string,
   ) => {
     setAccessTokenInStorage(newAccessToken);
     setRefreshTokenInStorage(newRefreshToken);
 
     setAccessToken(newAccessToken);
     setRefreshToken(newRefreshToken);
+
+    // 스토어에 이메일과 provider 저장
+    const { setEmail, setProvider, setNickname, setProfileImage } =
+      useUserStore.getState();
+    setEmail(email);
+    setProvider(provider);
+
+    // 사용자 프로필 정보 가져오기
+    try {
+      const { getUserNickname, getUserProfileImage } =
+        await import("@/apis/user");
+
+      const [nicknameData, profileImageData] = await Promise.all([
+        getUserNickname(),
+        getUserProfileImage(),
+      ]);
+
+      if (nicknameData.data?.nickname) {
+        setNickname(nicknameData.data.nickname);
+      }
+
+      if (profileImageData.data?.profileImage) {
+        setProfileImage(profileImageData.data.profileImage);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile during social login:", error);
+    }
   };
 
   return (
