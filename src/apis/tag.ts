@@ -12,3 +12,15 @@ export const getFindTags = async (
   );
   return data;
 };
+
+export const getSearchTags = async (
+  search: string,
+): Promise<ApiResponse<string[]>> => {
+  const { data } = await axiosInstance.get<ApiResponse<string[]>>(
+    `/api/tags/search`,
+    {
+      params: { search },
+    },
+  );
+  return data;
+};

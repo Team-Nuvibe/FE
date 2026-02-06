@@ -27,6 +27,7 @@ interface CropperViewProps {
   cropMode?: "original" | "fixedratio";
   minZoom?: number;
   maxZoom?: number;
+  restrictPosition?: boolean;
 }
 
 export const CropperView = ({
@@ -40,6 +41,7 @@ export const CropperView = ({
   cropMode = "fixedratio",
   minZoom = 1,
   maxZoom = 3,
+  restrictPosition,
 }: CropperViewProps) => {
   const onCropComplete = useCallback(
     (_croppedArea: Area, croppedAreaPixels: Area) => {
@@ -65,7 +67,7 @@ export const CropperView = ({
     return `brightness(${
       finalBrightness > 100
         ? (finalBrightness - 100) * 2 + 100
-        : (finalBrightness - 100) * 4 + 100
+        : (finalBrightness - 100) * 1.8 + 100
     }%) contrast(${100 + levels.contrast / 2 + levels.structure / 2}%) sepia(${
       levels.temperature > 0 ? levels.temperature : 0
     }%) hue-rotate(${
@@ -88,8 +90,8 @@ export const CropperView = ({
         onCropChange={(newCrop) => onCropChange({ ...crop, ...newCrop })}
         onZoomChange={(newZoom) => onCropChange({ ...crop, zoom: newZoom })}
         onCropComplete={onCropComplete}
-        objectFit="cover" // 항상 cover를 사용하여 격자가 컨테이너(3:4)를 가득 채우게 함
-        restrictPosition={cropMode === "fixedratio"}
+        objectFit="cover"
+        restrictPosition={restrictPosition ?? (cropMode === "fixedratio")}
         minZoom={minZoom}
         maxZoom={maxZoom}
         showGrid={!readOnly}
