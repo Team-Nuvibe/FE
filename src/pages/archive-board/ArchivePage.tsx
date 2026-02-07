@@ -7,6 +7,7 @@ import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
 import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg?react";
 import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
+import NoArchiveDataIcon from "@/assets/icons/icon_noarchivedata.svg?react";
 import { useNavigate } from "react-router";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
 import { DeleteConfirmModal } from "@/components/archive-board/DeleteCofirmModal";
@@ -127,7 +128,24 @@ const ArchivePage = () => {
     };
 
     fetchBoards();
+    fetchBoards();
   }, []);
+
+  const handleDropVibe = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        alert("파일을 선택하지 않았습니다.");
+        return;
+      }
+      navigate("/quickdrop", { state: { file } });
+    };
+    fileInput.click();
+  };
 
   // Filter boards based on search query
   useEffect(() => {
@@ -243,6 +261,7 @@ const ArchivePage = () => {
         <div className="relative mt-2 mb-[134px]">
           {/* Background Video Posts */}
           <Swiper
+            key={resentDrops.length === 0 ? "empty" : "loaded"}
             modules={[Autoplay]}
             spaceBetween={12}
             slidesPerView={"auto"}
@@ -251,51 +270,62 @@ const ArchivePage = () => {
             className="pb-2 [&>.swiper-wrapper]:!ease-linear"
             speed={10000} // 이동 속도
             resistanceRatio={0}
-            freeMode={{
-              enabled: true,
-              momentum: false, // 관성
-              sticky: false,
-            }}
+            freeMode={
+              resentDrops.length > 0
+                ? {
+                    enabled: true,
+                    momentum: false, // 관성
+                    sticky: false,
+                  }
+                : false
+            }
             loop={false}
-            allowTouchMove={true} // 사용자가 손가락으로 스와이프 가능
-            autoplay={{
-              delay: 0, // 딜레이 없이 부드럽게 계속 흐르게 설정
-              disableOnInteraction: true, // 사용자가 건드려도 자동 재생이 꺼짐
-              stopOnLastSlide: true,
-              waitForTransition: false,
-            }}
+            allowTouchMove={resentDrops.length > 0} // 데이터 없으면 스와이프 불가
+            autoplay={
+              resentDrops.length > 0
+                ? {
+                    delay: 0, // 딜레이 없이 부드럽게 계속 흐르게 설정
+                    disableOnInteraction: true, // 사용자가 건드려도 자동 재생이 꺼짐
+                    stopOnLastSlide: true,
+                    waitForTransition: false,
+                  }
+                : false
+            }
           >
-            {/* 데이터가 없을 때 투명 컨테이너 하나만 표시 */}
-            {resentDrops.length === 0 ? (
-              <SwiperSlide key="placeholder-empty" className="!w-[165px]">
-                <div className="relative h-[220px] w-full overflow-hidden rounded-[10px] bg-transparent" />
-              </SwiperSlide>
-            ) : (
-              resentDrops.map((post) => (
-                <SwiperSlide key={post.id} className="!w-[165px]">
-                  <div
-                    className="relative h-[220px] w-full cursor-pointer overflow-hidden rounded-[10px] backdrop-blur-[2px]"
-                    onClick={() => setSelectedItem(post)}
+            {/* 데이터가 없을 때 투명 컨테이너 3개 표시 (움직임 없음) */}
+            {resentDrops.length === 0
+              ? Array.from({ length: 3 }).map((_, index) => (
+                  <SwiperSlide
+                    key={`placeholder-${index}`}
+                    className="!w-[165px]"
                   >
-                    <img
-                      src={post.thumbnail}
-                      alt={post.tag}
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-                    <div className="ST1 absolute top-1 left-1 rounded-lg px-2 py-1">
-                      <span className="bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
-                        {post.tag}
-                      </span>
+                    <div className="relative h-[220px] w-[165px] overflow-hidden rounded-[10px] bg-gray-900" />
+                  </SwiperSlide>
+                ))
+              : resentDrops.map((post) => (
+                  <SwiperSlide key={post.id} className="!w-[165px]">
+                    <div
+                      className="relative h-[220px] w-full cursor-pointer overflow-hidden rounded-[10px] backdrop-blur-[2px]"
+                      onClick={() => setSelectedItem(post)}
+                    >
+                      <img
+                        src={post.thumbnail}
+                        alt={post.tag}
+                        className="h-full w-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+                      <div className="ST1 absolute top-1 left-1 rounded-lg px-2 py-1">
+                        <span className="bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
+                          {post.tag}
+                        </span>
+                      </div>
+                      <div className="B2 absolute top-3 right-3 text-white/80">
+                        {post.time}
+                      </div>
                     </div>
-                    <div className="B2 absolute top-3 right-3 text-white/80">
-                      {post.time}
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))
-            )}
+                  </SwiperSlide>
+                ))}
           </Swiper>
           <div className="pointer-events-none absolute top-[260px] left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
             {/* 프로필 이미지 */}
@@ -339,22 +369,31 @@ const ArchivePage = () => {
 
           {/* Tags */}
           <div className="w-full">
-            <Swiper
-              spaceBetween={8}
-              slidesPerView={"auto"}
-              className="px-4"
-              freeMode={true}
-            >
-              {tags.map((tag) => (
-                <SwiperSlide key={tag} className="!w-auto">
-                  <div className="ST2 mb-7.5 rounded-[5px] bg-gray-900 px-3 py-1.5 whitespace-nowrap">
-                    <span className="bg-[linear-gradient(90deg,rgba(247,247,247,0.8)_35.59%,rgba(247,247,247,0.4)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
-                      #{tag}
-                    </span>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            {tags.length === 0 ? (
+              <button
+                className="flex h-[30px] w-[80px] items-center justify-center gap-2 rounded-[5px] border border-dashed border-gray-700 bg-gray-900 transition-all"
+                onClick={handleDropVibe}
+              >
+                <Plusbutton className="h-4 w-4" />
+              </button>
+            ) : (
+              <Swiper
+                spaceBetween={8}
+                slidesPerView={"auto"}
+                className="px-4"
+                freeMode={true}
+              >
+                {tags.map((tag) => (
+                  <SwiperSlide key={tag} className="!w-auto">
+                    <div className="ST2 mb-7.5 rounded-[5px] bg-gray-900 px-3 py-1.5 whitespace-nowrap">
+                      <span className="bg-[linear-gradient(90deg,rgba(247,247,247,0.8)_35.59%,rgba(247,247,247,0.4)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
+                        #{tag}
+                      </span>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
           </div>
         </div>
 
@@ -373,7 +412,6 @@ const ArchivePage = () => {
                 >
                   {isSelectMode ? "취소" : "선택"}
                 </button>
-                {/* TODO: 아카이브 보드 생성 API 연결 함수로 분리 필요*/}
                 <button onClick={handleCreateBoard}>
                   <Plusbutton className="h-6 w-6" />
                 </button>
@@ -395,65 +433,72 @@ const ArchivePage = () => {
 
           {/* Scrollable Grid */}
           <div className="px-4">
-            <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
-              {archiveboard.map((board) => {
-                const isSelected = selectedIds.includes(board.id);
-                return (
-                  <div
-                    key={board.id}
-                    onClick={() => {
-                      if (isSelectMode) {
-                        toggleSelection(board.id);
-                      } else {
-                        navigate(`/archive-board/${board.id}`);
-                      }
-                    }}
-                    className={`flex cursor-pointer flex-col items-center gap-2 transition-all ${isSelectMode ? "active:scale-95" : ""} `}
-                  >
-                    {/* 폴더 컨테이너 */}
-                    <div className="relative aspect-square w-full max-w-[110px] shrink-0 overflow-hidden rounded-[5px] bg-[#212224]/80">
-                      {/* 내부 이미지 (썸네일) */}
-                      {board.image ? (
-                        <img
-                          src={board.image}
-                          alt="thumbnail"
-                          className="absolute top-[3%] left-[16%] h-[88%] w-[66%] py-2"
-                        />
-                      ) : (
-                        <div className="absolute top-[3%] left-[16%] h-[88%] w-[66%] bg-gray-800" />
-                      )}
+            {archiveboard.length === 0 ? (
+              <div className="flex flex-col items-center justify-center pt-7">
+                <NoArchiveDataIcon className="mb-2 h-12 w-12 text-gray-700" />
+                <p className="B1 text-gray-500">아직 생성된 보드가 없어요.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-x-4 gap-y-4 pb-6">
+                {archiveboard.map((board) => {
+                  const isSelected = selectedIds.includes(board.id);
+                  return (
+                    <div
+                      key={board.id}
+                      onClick={() => {
+                        if (isSelectMode) {
+                          toggleSelection(board.id);
+                        } else {
+                          navigate(`/archive-board/${board.id}`);
+                        }
+                      }}
+                      className={`flex cursor-pointer flex-col items-center gap-2 transition-all ${isSelectMode ? "active:scale-95" : ""} `}
+                    >
+                      {/* 폴더 컨테이너 */}
+                      <div className="relative aspect-square w-full max-w-[110px] shrink-0 overflow-hidden rounded-[5px] bg-[#212224]/80">
+                        {/* 내부 이미지 (썸네일) */}
+                        {board.image ? (
+                          <img
+                            src={board.image}
+                            alt="thumbnail"
+                            className="absolute top-[3%] left-[16%] h-[88%] w-[66%] py-2"
+                          />
+                        ) : (
+                          <div className="absolute top-[3%] left-[16%] h-[88%] w-[66%] bg-gray-800" />
+                        )}
 
-                      {/* 폴더 오버레이 아이콘 */}
-                      <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+                        {/* 폴더 오버레이 아이콘 */}
+                        <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
 
-                      {/* 폴더 제목 (하단) */}
-                      <div className="absolute right-[6px] bottom-[9.5px] left-[6.39px] z-20 flex justify-between">
-                        <p className="line-clamp-2 text-[10px] leading-[150%] font-normal tracking-[-0.025em] text-gray-200 text-white">
-                          {board.title}
-                        </p>
-                        {/* 보드 내의 태그 갯수 */}
-                        <p className="flex items-end text-[7px] font-normal text-gray-300">
-                          {board.tagCount} tag
-                        </p>
-                      </div>
-
-                      {/* 체크표시 */}
-                      {isSelectMode && (
-                        <div
-                          className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
-                            isSelected ? "bg-white/30" : "bg-transparent"
-                          }`}
-                        >
-                          {isSelected && (
-                            <SelectedImageIcon className="h-[32px] w-[32px]" />
-                          )}
+                        {/* 폴더 제목 (하단) */}
+                        <div className="absolute right-[6px] bottom-[9.5px] left-[6.39px] z-20 flex justify-between">
+                          <p className="line-clamp-2 text-[10px] leading-[150%] font-normal tracking-[-0.025em] text-gray-200 text-white">
+                            {board.title}
+                          </p>
+                          {/* 보드 내의 태그 갯수 */}
+                          <p className="flex items-end text-[7px] font-normal text-gray-300">
+                            {board.tagCount} tag
+                          </p>
                         </div>
-                      )}
+
+                        {/* 체크표시 */}
+                        {isSelectMode && (
+                          <div
+                            className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
+                              isSelected ? "bg-white/30" : "bg-transparent"
+                            }`}
+                          >
+                            {isSelected && (
+                              <SelectedImageIcon className="h-[32px] w-[32px]" />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
