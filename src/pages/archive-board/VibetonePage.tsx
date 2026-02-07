@@ -20,11 +20,15 @@ import {
   getUserUsagePattern,
 } from "@/apis/archive-board/vibetone";
 
+import { useSearchParams } from "react-router-dom";
+
 const VibeTonePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get("tab") as "weekly" | "all") || "weekly";
 
   // 상태 관리: 탭, 활성 슬라이드 인덱스
-  const [activeTab, setActiveTab] = useState<"weekly" | "all">("weekly");
+  const [activeTab, setActiveTab] = useState<"weekly" | "all">(initialTab);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   // API period 파라미터 변환

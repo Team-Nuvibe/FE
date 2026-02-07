@@ -1,45 +1,28 @@
 export type NotificationCategory = "채팅" | "미션" | "알림";
 
-// 세부 알림 타입
-export type ChatNotificationType =
-    | "TRIBE_CHAT_OPENED"      // 트라이브챗이 열렸어요
-    | "TRIBE_CHAT_CLOSING"     // 트라이브챗이 1시간 후 종료돼요
-    | "TRIBE_CHAT_CLOSED"      // 트라이브챗이 종료되었어요
-    | "TRIBE_CHAT_MESSAGE";    // 새 메시지가 있어요
+// 명세서(NOTI-01 ~ 11)에 맞춘 확정된 타입 정의
+export type NotificationType =
+  | "TRIBE_CHAT_JOINED"          // NOTI-01: 참여 대기 중 트라이브 생성
+  | "TRIBE_CHAT_IMAGE_UPLOADED"  // NOTI-02: 새 이미지 업로드
+  | "IMAGE_REACTION"             // NOTI-03: 이미지 반응 발생
+  | "TRIBE_CHAT_CLOSING"         // NOTI-04: 종료 예고 (D-1)
+  | "TRIBE_CHAT_CLOSED"          // NOTI-05: 종료됨
+  | "MISSION_REMINDER"           // NOTI-06: 드랍 미션 리마인드
+  | "TAG_RECOMMENDATION"         // NOTI-07: 태그 추천 알림
+  | "WEEKLY_RECAP_CREATED"       // NOTI-08: 주간 리캡 생성
+  | "FULL_RECAP_UPDATED"         // NOTI-09: 전체 리캡 갱신
+  | "PASSWORD_CHANGED"           // NOTI-10: 비밀번호 변경 완료
+  | "NICKNAME_CHANGED";          // NOTI-11: 닉네임 변경 완료
 
-export type MissionNotificationType =
-    | "MISSION_COMPLETED"      // 미션이 달성되었어요
-    | "MISSION_AVAILABLE"      // 새로운 미션이 있어요
-    | "MISSION_REWARD";        // 미션 보상을 받으세요
-
-export type AlertNotificationType =
-    | "ARCHIVE_COMMENT"        // 아이디어에 댓글이 달렸어요
-    | "ARCHIVE_LIKED"          // 아이디어에 좋아요가 눌렸어요
-    | "ACCOUNT_PASSWORD"       // 비밀번호가 변경되었어요
-    | "ACCOUNT_NICKNAME"       // 닉네임이 변경되었어요
-    | "PROFILE_UPDATED";       // 프로필이 업데이트되었어요
-
-export type NotificationSubType =
-    | ChatNotificationType
-    | MissionNotificationType
-    | AlertNotificationType;
-
-export interface Notification {
-    notificationId: number;
-    category: string;
-    mainMessage: string;
-    actionMessage: string;
-    relatedId: number;
-    isRead: boolean;
-    createdAt: string;
-}
-
+// 응답 인터페이스
 export interface NotificationResponse {
     notificationId: number;
-    category: string;
+    type: NotificationType;
+    category: NotificationCategory;
     mainMessage: string;
     actionMessage: string;
-    relatedId: number;
+    relatedId: number | null;
+    tribeId: number | null;
     isRead: boolean;
     createdAt: string;
 }

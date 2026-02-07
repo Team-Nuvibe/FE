@@ -100,9 +100,9 @@ const TribechatRoomPage = () => {
           isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
           userProfile: item.sender
             ? {
-                name: item.sender.nickname || "Unknown",
-                avatar: item.sender.profileImage || "#E2E2E2",
-              }
+              name: item.sender.nickname || "Unknown",
+              avatar: item.sender.profileImage || "#E2E2E2",
+            }
             : undefined,
           reactions,
           myReactions: {
@@ -126,11 +126,29 @@ const TribechatRoomPage = () => {
   const hasNextPage = false; // 임시
   const isFetchingNextPage = false; // 임시
 
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const targetMessageId = queryParams.get("target");
+
   // 페이지 진입 시 navbar 숨기기, 언마운트 시 다시 표시
   useEffect(() => {
     setNavbarVisible(false);
     return () => setNavbarVisible(true);
   }, [setNavbarVisible]);
+
+  // 특정 메시지(이미지)로 스크롤 이동 로직
+  useEffect(() => {
+    if (targetMessageId) {
+      // 렌더링 후 스크롤을 위해 약간의 지연시간 부여
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`msg-${targetMessageId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [targetMessageId, messages]);
 
   // 역방향 무한 스크롤: 상단 도달 시 과거 메시지 로드
   useEffect(() => {
@@ -290,7 +308,7 @@ const TribechatRoomPage = () => {
                 !nextMessage || nextMessage.date !== message.date;
 
               return (
-                <div key={message.id}>
+                <div key={message.id} id={`msg-${message.id}`}>
                   {/* 날짜 구분선: 다음 메시지와 날짜가 다를 때 표시 */}
                   {isDateChanged && (
                     <div className="my-7">

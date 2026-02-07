@@ -80,6 +80,7 @@ export const reissuePassword = async (request: ReissuePasswordReq) => {
     return data;
 };
 
+
 // 사용자 설정 변경
 export const updateUserSettings = async (request: UserSettingReq) => {
     const { data } = await axiosInstance.patch<

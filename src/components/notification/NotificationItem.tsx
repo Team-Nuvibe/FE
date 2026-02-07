@@ -41,9 +41,8 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 className="relative flex h-full w-full bg-black items-center gap-5 px-[10px] transition-colors active:bg-gray-900/50 z-10 cursor-grab active:cursor-grabbing"
-                onClick={(e) => {
+                onTap={() => {
                     if (swipedState !== "none") {
-                        e.stopPropagation();
                         controls.start({ x: 0 });
                         setSwipedState("none");
                     } else {

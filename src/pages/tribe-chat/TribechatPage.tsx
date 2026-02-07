@@ -4,7 +4,7 @@ import IconChatScrap from "@/assets/icons/icon_chat_scrap.svg?react";
 import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TribeChatExitModal } from "@/components/tribe-chat/TribeChatExitModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
 import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFavorite";
@@ -14,7 +14,10 @@ import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTri
 
 const TribechatPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"ing" | "waiting">("ing");
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const initialTab = queryParams.get("tab") === "waiting" ? "waiting" : "ing";
+  const [activeTab, setActiveTab] = useState<"ing" | "waiting">(initialTab);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedRoomForExit, setSelectedRoomForExit] = useState<{
     userTribeId: number;
@@ -48,15 +51,13 @@ const TribechatPage = () => {
       console.log("⏳ 대기 중인 트라이브 items:", waitingTribeData.data?.items);
     }
   }, [waitingTribeData]);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const showToast = (message: string) => {
-    setToastMessage(message);
-  };
+    // URL 파라미터가 바뀌면 탭 변경 연동
+    const tabParam = new URLSearchParams(search).get("tab");
+    if (tabParam === "waiting") setActiveTab("waiting");
+    else if (tabParam === "ing") setActiveTab("ing");
+  }, [search]);
 
   useEffect(() => {
     if (toastMessage) {
@@ -79,6 +80,10 @@ const TribechatPage = () => {
         },
       });
     }
+  };
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
   };
 
   // 룸 액션 핸들러
@@ -143,7 +148,7 @@ const TribechatPage = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
-      <div className="absolute top-0 left-0 z-20 flex w-full items-center justify-center bg-black px-4 pt-[70px] pb-6">
+      <div className="absolute top-0 left-0 z-20 flex w-full items-center justify-center bg-black px-4 pt-[8px] pb-4">
         {/* 탭 전환 */}
         <div className="flex items-center justify-center">
           {/* 활성화 탭 */}
@@ -152,18 +157,16 @@ const TribechatPage = () => {
             onClick={() => setActiveTab("ing")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
-                activeTab === "ing" ? "text-gray-200" : "text-gray-600"
-              }`}
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${activeTab === "ing" ? "text-gray-200" : "text-gray-600"
+                }`}
             >
               활성화
             </span>
             {activeTab === "ing" && (
               <motion.div
-                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                layoutId="activeTabIndicator"
                 className="absolute right-0 bottom-[-1px] left-0 z-10 h-[1.5px] bg-white"
                 transition={{ stiffness: 500, damping: 30 }}
-                initial={false}
               />
             )}
           </div>
@@ -174,18 +177,16 @@ const TribechatPage = () => {
             onClick={() => setActiveTab("waiting")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
-                activeTab === "waiting" ? "text-gray-200" : "text-gray-600"
-              }`}
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${activeTab === "waiting" ? "text-gray-200" : "text-gray-600"
+                }`}
             >
               비활성화
             </span>
             {activeTab === "waiting" && (
               <motion.div
-                layoutId={isMounted ? "activeTabIndicator" : undefined}
+                layoutId="activeTabIndicator"
                 className="absolute right-0 bottom-[-1px] left-0 z-10 h-[1.5px] bg-white"
                 transition={{ stiffness: 500, damping: 30 }}
-                initial={false}
               />
             )}
           </div>
@@ -193,7 +194,7 @@ const TribechatPage = () => {
 
         {/* 우측 아이콘 (스크랩) - top 73px에 absolute 배치 */}
 
-        <div className="absolute top-[73px] right-4">
+        <div className="absolute top-[12px] right-4">
           <IconChatScrap
             className="h-[24px] w-[24px] text-white"
             onClick={() => {
@@ -209,7 +210,7 @@ const TribechatPage = () => {
       </div>
 
       {/* 리스트 콘텐츠 */}
-      <div className="flex-1 touch-auto overflow-y-auto px-[14px] pt-[115px] pb-24">
+      <div className="flex-1 touch-auto overflow-y-auto px-[14px] pt-[56px] pb-24">
         {activeTab === "ing" ? (
           isLoadingActive ? (
             <div className="flex h-full flex-col items-center justify-center">
