@@ -13,6 +13,7 @@ import useGetDropMission from "@/hooks/queries/useGetDropMission";
 import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
 import Union from "@/assets/icons/Union.svg?react";
 import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
+import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
 import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import { createArchiveBoard } from "@/apis/archive-board/archive";
@@ -198,34 +199,32 @@ const HomePage = () => {
           {archiveListData?.data.map((board) => (
             <div
               key={board.boardId}
-              className={`relative h-[123px] w-[123px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
               onClick={() => navigate(`/archive-board/${board.boardId}`)}
+              className={`flex w-[123px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
             >
-              {board.thumbnailUrl && (
-                <>
-                  {/* 이미지 레이어 */}
+              {/* 폴더 컨테이너 */}
+              <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                {/* 내부 이미지 (썸네일) */}
+                {board.thumbnailUrl ? (
                   <img
                     src={board.thumbnailUrl}
                     alt="thumbnail"
-                    className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
+                    className="absolute top-2 left-1/2 w-[79px] -translate-x-1/2 rounded-[3px] object-cover"
                   />
-                  {/* 폴더 오버레이 */}
-                  <Union
-                    className="pointer-events-none absolute bottom-0 left-0 z-20 h-full w-full translate-y-[0.5px]"
-                    preserveAspectRatio="xMinYMax meet"
-                  />
-                </>
-              )}
-              {!board.thumbnailUrl && (
-                <IconBoardDefault className="h-[123px] w-[123px] cursor-pointer" />
-              )}
+                ) : (
+                  <div className="absolute top-2 left-1/2 h-[104.5px] w-[79px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                )}
 
-              <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
-                <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
-                  <p className="w-[70px] text-[10px] text-white">
+                {/* 폴더 오버레이 아이콘 */}
+                <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+
+                {/* 폴더 제목 (하단) */}
+                <div className="absolute right-[6px] bottom-[10px] left-[6.39px] z-20 flex justify-between gap-[6px] tracking-tight">
+                  <p className="line-clamp-2 text-[10px] font-normal text-white">
                     {board.name}
                   </p>
-                  <p className="text-[7px] text-gray-300">
+                  {/* 보드 내의 태그 갯수 */}
+                  <p className="flex shrink-0 items-end text-[7px] font-normal text-gray-300">
                     {board.tagCount} 태그
                   </p>
                 </div>

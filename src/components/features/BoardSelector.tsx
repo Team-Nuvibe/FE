@@ -5,6 +5,9 @@ import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
+import IconPlus from "@/assets/icons/icon_plus.svg?react";
+import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
+import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
 import Union from "@/assets/icons/Union.svg?react";
 import { useState, useEffect } from "react";
 import { AddBoardModal } from "../quickdrop/AddBoardModal";
@@ -144,53 +147,68 @@ export const BoardSelector = ({
               </div>
             </div>
             <div className="ml-4 flex gap-[10px] overflow-x-auto">
-              <img
-                src={IconQuickdropAdd}
-                alt=""
-                className="h-[110px] w-[110px] cursor-pointer"
+              <div
                 onClick={() => setIsModalOpen(true)}
-              />
+                className={`flex w-[110px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
+              >
+                {/* 폴더 컨테이너 */}
+                <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                  {/* 내부 이미지 (썸네일) */}
+
+                  <div className="absolute top-2 left-1/2 h-[94px] w-[71px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+
+                  {/* 폴더 오버레이 아이콘 */}
+                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full scale-y-[150%]" />
+                  <IconPlus className="absolute top-[50px] left-1/2 z-20 h-[21px] w-[21px] -translate-x-1/2" />
+                </div>
+              </div>
               {boards.map((board) => (
                 <div
                   key={board.id}
-                  className={`relative h-[110px] w-[110px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
                   onClick={() => setSelectedBoard(board)}
+                  className={`flex w-[110px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
                 >
-                  {board.tagCount > 0 && (
-                    <>
-                      {/* 이미지 레이어 */}
+                  {/* 폴더 컨테이너 */}
+                  <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                    {/* 내부 이미지 (썸네일) */}
+                    {board.thumbnailUrl ? (
                       <img
                         src={board.thumbnailUrl}
                         alt="thumbnail"
-                        className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
+                        className="absolute top-2 left-1/2 w-[71px] -translate-x-1/2 rounded-[3px] object-cover"
                       />
-                      {/* 폴더 오버레이 */}
-                      <Union
-                        className="pointer-events-none absolute bottom-0 left-0 z-20 h-full w-full translate-y-[0.5px]"
-                        preserveAspectRatio="xMinYMax meet"
-                      />
-                    </>
-                  )}
-                  {board.tagCount === 0 && (
-                    <IconBoardDefault className="h-[110px] w-[110px] cursor-pointer" />
-                  )}
+                    ) : (
+                      <div className="absolute top-2 left-1/2 h-[94px] w-[71px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                    )}
 
-                  <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
-                    <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
-                      <p className="w-[70px] text-[10px] text-white">
+                    {/* 폴더 오버레이 아이콘 */}
+                    <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+
+                    {/* 폴더 제목 (하단) */}
+                    <div className="absolute right-[6px] bottom-[10px] left-[6.39px] z-20 flex justify-between gap-[6px] tracking-tight">
+                      <p className="line-clamp-2 text-[10px] font-normal text-white">
                         {board.name}
                       </p>
-                      <p className="text-[7px] text-gray-300">
+                      {/* 보드 내의 태그 갯수 */}
+                      <p className="flex shrink-0 items-end text-[7px] font-normal text-gray-300">
                         {board.tagCount} 태그
                       </p>
                     </div>
+
+                    {/* 체크표시 */}
+
+                    <div
+                      className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
+                        selectedBoard === board
+                          ? "bg-white/30"
+                          : "bg-transparent"
+                      }`}
+                    >
+                      {selectedBoard === board && (
+                        <SelectedImageIcon className="h-[32px] w-[32px]" />
+                      )}
+                    </div>
                   </div>
-                  {selectedBoard?.id === board.id && (
-                    <>
-                      <div className="absolute z-20 h-full w-full cursor-pointer bg-white opacity-50" />
-                      <IconSelectImage className="absolute top-1/2 left-1/2 z-40 h-[42px] w-[42px] -translate-x-1/2 -translate-y-1/2" />
-                    </>
-                  )}
                 </div>
               ))}
             </div>
@@ -224,36 +242,50 @@ export const BoardSelector = ({
               className="B1 tracking-tight focus:outline-none"
             />
           </div>
-          <div className="mx-4 flex flex-col gap-3">
+          <div className="mx-4 flex flex-col">
             {boards.map((board) => (
-              <div className="flex flex-col gap-[10px]">
-                <div className="flex items-center gap-6">
+              <div className="flex flex-col gap-3 pt-3" key={board.id}>
+                <div
+                  className="flex cursor-pointer items-center gap-4 px-[10px]"
+                  onClick={() => setSelectedBoard(board)}
+                >
                   <div
-                    className={`relative h-[74px] w-[74px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
-                    onClick={() => setSelectedBoard(board)}
+                    key={board.id}
+                    className={`flex w-[70px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
                   >
-                    {/* 이미지 레이어 */}
-                    <img
-                      src={board.thumbnailUrl}
-                      alt="thumbnail"
-                      className="absolute top-1/2 left-1/2 w-[45px] -translate-x-1/2 -translate-y-1/2 object-cover"
-                    />
-                    {/* 폴더 오버레이 */}
-                    <Union
-                      className="pointer-events-none absolute bottom-0 left-0 z-10 h-full w-full translate-y-[0.5px]"
-                      preserveAspectRatio="xMinYMax meet"
-                    />
-                    <div className="absolute inset-0 z-20 flex flex-col justify-between text-white" />
-                    {selectedBoard?.id === board.id && (
-                      <>
-                        <div className="absolute z-20 h-full w-full cursor-pointer bg-white opacity-50" />
-                        <IconSelectImage className="absolute top-1/2 left-1/2 z-40 h-[42px] w-[42px] -translate-x-1/2 -translate-y-1/2" />
-                      </>
-                    )}
+                    {/* 폴더 컨테이너 */}
+                    <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                      {/* 내부 이미지 (썸네일) */}
+                      {board.thumbnailUrl ? (
+                        <img
+                          src={board.thumbnailUrl}
+                          alt="thumbnail"
+                          className="absolute top-2 left-1/2 w-[45px] -translate-x-1/2 rounded-[3px] object-cover"
+                        />
+                      ) : (
+                        <div className="absolute top-2 left-1/2 h-[60px] w-[45px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                      )}
+
+                      {/* 폴더 오버레이 아이콘 */}
+                      <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+                      {/* 체크표시 */}
+
+                      <div
+                        className={`absolute inset-0 z-30 flex items-center justify-center transition-colors ${
+                          selectedBoard === board
+                            ? "bg-white/30"
+                            : "bg-transparent"
+                        }`}
+                      >
+                        {selectedBoard === board && (
+                          <SelectedImageIcon className="h-[32px] w-[32px]" />
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-2 tracking-tight text-gray-100">
-                    <h3 className="H3">{board.name}</h3>
-                    <p className="B2">{board.tagCount}개 태그</p>
+                  <div className="flex flex-col leading-[150%] tracking-tight text-gray-100">
+                    <h3 className="H4">{board.name}</h3>
+                    <p className="B1">{board.tagCount}개 태그</p>
                   </div>
                 </div>
                 <div className="h-[0.5px] w-full bg-gray-700" />
