@@ -5,6 +5,7 @@ import useGetAllScrapedImages from "@/hooks/queries/tribe-chat/useGetAllScrapedI
 import useGetTribeScrapedImages from "@/hooks/queries/tribe-chat/useGetTribeScrapedImages";
 import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
 import { type ChatGridItem, type ScrapedImageItem } from "@/types/tribeChat";
+import IconChatScrap from "@/assets/icons/icon_scrap gray.svg?react";
 
 type DisplayItem = ChatGridItem | ScrapedImageItem;
 
@@ -176,8 +177,9 @@ export const ScrapPage = () => {
             </div>
           ))
         ) : (
-          <div className="mt-20 flex w-full flex-col items-center justify-center gap-2">
-            <p className="B1 text-gray-500">
+          <div className="mt-55 flex w-full flex-col items-center justify-center">
+            <IconChatScrap className="h-12 w-12 text-gray-500" />
+            <p className="B1 mt-3 text-gray-500">
               {tribeId && viewMode === "recent"
                 ? "이미지가 없습니다."
                 : "스크랩한 이미지가 없습니다."}
