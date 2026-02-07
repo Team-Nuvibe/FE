@@ -28,53 +28,59 @@ export const NotificationPage = () => {
     }
 
     // 페이지 이동 로직 (기능 명세 반영)
-    const { category, mainMessage, relatedId, tribeId } = notification;
+    const { type, relatedId, tribeId, actionMessage } = notification;
 
-    if (category === "채팅") {
-      if (mainMessage.includes("열렸어요")) {
-        // NOTI-01, 02: 비활성화 채팅목록
-        navigate("/tribe-chat?tab=waiting");
-      } else if (mainMessage.includes("바이브가 올라왔어요") || mainMessage.includes("종료가 1시간 남았어요")) {
-        // NOTI-03, 05: 해당 채팅방
-        navigate(`/tribe-chat/${relatedId}`);
-      } else if (mainMessage.includes("반응했어요")) {
-        // NOTI-04: 해당 채팅방 속 해당 이미지로 이동
-        const roomId = tribeId || relatedId;
-        navigate(`/tribe-chat/${roomId}?target=${relatedId}`);
-      }
-    } else if (category === "미션") {
-      if (mainMessage.includes("비어 있어요")) {
-        // NOTI-07: 홈
-        navigate("/home");
-      } else if (mainMessage.includes("추천 태그")) {
-        // NOTI-08: 바이브 드랍 화면 (추천 태그 고정)
-        // actionMessage: "#Minimal 태그로 바이브를 드랍해 볼까요?" 에서 태그 추출
-        const tagMatch = notification.actionMessage.match(/#(\S+)/);
-        const extractedTag = tagMatch ? tagMatch[1] : "Minimal";
-        navigate("/quickdrop", { state: { tag: extractedTag } });
-      }
-    } else if (category === "알림") {
-      if (mainMessage.includes("종료되었어요")) {
-        // NOTI-06: 홈
-        navigate("/home");
-      } else if (mainMessage.includes("곧 닫혀요")) {
-        // NOTI-05: 해당 채팅방
-        navigate(`/tribe-chat/${relatedId}`);
-      } else if (mainMessage.includes("이번 주의")) {
-        // NOTI-09: 주간 리캡
-        navigate("/archive-board/vibetone?tab=weekly");
-      } else if (mainMessage.includes("전체 바이브톤")) {
-        // NOTI-10: 전체 리캡
-        navigate("/archive-board/vibetone?tab=all");
-      } else if (mainMessage.includes("비밀번호") || mainMessage.includes("닉네임")) {
-        // NOTI-11, 12: 프로필
-        navigate("/profile");
-      }
-    } else {
-      // 기본 폴백
-      navigate("/home");
+    switch (type) {
+        case "TRIBE_CHAT_JOINED":
+            // NOTI-01: 비활성화 채팅목록으로 이동
+            navigate("/tribe-chat?tab=waiting");
+            break;
+
+        case "TRIBE_CHAT_IMAGE_UPLOADED":
+        case "TRIBE_CHAT_CLOSING":
+            // NOTI-02, 04: 해당 채팅방 화면으로 이동
+            navigate(`/tribe-chat/${relatedId}`);
+            break;
+
+        case "IMAGE_REACTION":
+            // NOTI-03: 해당 채팅방 속 해당 이미지로 이동
+            navigate(`/tribe-chat/${tribeId}?target=${relatedId}`);
+            break;
+
+        case "TRIBE_CHAT_CLOSED":
+        case "MISSION_REMINDER":
+            // NOTI-05, 06: 홈 화면으로 이동
+            navigate("/home");
+            break;
+
+        case "TAG_RECOMMENDATION": {
+            // NOTI-07: 바이브 드랍 화면으로 이동 (태그 추출)
+            const tagMatch = actionMessage.match(/#(\S+)/); // 정규표현식 (태그 찾아내기: '#' 찾고 그 뒤의 공백 아닌 태그 내용 묶어 기억)
+            const tag = tagMatch ? tagMatch[1] : "Minimal"; // 태그를 잘 찾으면 그걸 쓰고, 못 찾으면 기본 태그 사용 (현재는 minimal로 해둠, 백엔드 협의 필요)
+            navigate("/quickdrop", { state: { tag } }); // 사진 선택 화면으로 보내면서 state에 태그 전달
+            break;
+        }
+
+        case "WEEKLY_RECAP_CREATED":
+            // NOTI-08: 주간 리캡 화면
+            navigate("/archive-board/vibetone?tab=weekly");
+            break;
+
+        case "FULL_RECAP_UPDATED":
+            // NOTI-09: 전체 리캡 화면
+            navigate("/archive-board/vibetone?tab=all");
+            break;
+
+        case "PASSWORD_CHANGED":
+        case "NICKNAME_CHANGED":
+            // NOTI-10, 11: 프로필 화면으로 이동
+            navigate("/profile");
+            break;
+
+        default:
+            navigate("/home");
     }
-  };
+};
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">

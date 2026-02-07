@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, isSupported } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,5 +11,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+export const getMessagingIfSupported = async () => {
+    // 브라우저가 FCM을 지원하는지 비동기로 먼저 확인
+    const supported = await isSupported();
+    if (supported) {
+        return getMessaging(app);
+    } else {
+        console.warn("Firebase Messaging is not supported in this browser.");
+        return null;
+    }
+};
 export const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
