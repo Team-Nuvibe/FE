@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 
 import Xbutton from "@/assets/icons/icon_xbutton_sm.svg?react";
 import Xbutton24 from "@/assets/icons/icon_xbutton_24.svg?react";
@@ -38,49 +38,49 @@ export const ImageDetailModal = ({
     setIsDownloading(true);
 
     try {
-      const canvas = await html2canvas(captureRef.current, {
-        backgroundColor: null, // Capture actual background
-        scale: 2, // Higher resolution
-        useCORS: true, // Allow cross-origin images
-        ignoreElements: (element) =>
-          element.classList.contains("ignore-capture"), // Ignore header buttons
+      const dataUrl = await toPng(captureRef.current, {
+        cacheBust: true,
+        backgroundColor: "transparent", // Capture actual background
+        pixelRatio: 2, // Higher resolution
+        filter: (node) => !node.classList?.contains("ignore-capture"), // Ignore header buttons
       });
 
       const fileName = `Nuvibe_${item.tag}_${Date.now()}.png`;
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error("Blob creation failed");
-          setIsDownloading(false);
-          return;
-        }
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
 
-        const file = new File([blob], fileName, { type: "image/png" });
-
-        // Web Share API
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-            });
-          } catch (error) {
-            if ((error as Error).name !== "AbortError") {
-              console.error("Share failed:", error);
-            }
-          }
-        } else {
-          // Native Download Fallback
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
+      if (!blob) {
+        console.error("Blob creation failed");
         setIsDownloading(false);
-      }, "image/png");
+        return;
+      }
+
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      // Web Share API
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+          });
+        } catch (error) {
+          if ((error as Error).name !== "AbortError") {
+            console.error("Share failed:", error);
+          }
+        }
+      } else {
+        // Native Download Fallback
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      setIsDownloading(false);
     } catch (error) {
       console.error("Download failed:", error);
       setIsDownloading(false);
@@ -172,9 +172,9 @@ export const ImageDetailModal = ({
                     <ChevronRightIcon />
                   </p>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-pretendard H1 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-[-0.6px] text-transparent">
+                    <div className="font-pretendard H1 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-[-0.6px] text-transparent">
                       #{item.tag}
-                    </h2>
+                    </div>
                     <button
                       className="text-gray-300 transition-colors hover:text-white"
                       onClick={() => setIsTagSelectorOpen(true)}

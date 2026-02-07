@@ -349,7 +349,7 @@ const ArchivePage = () => {
                 <SwiperSlide key={tag} className="!w-auto">
                   <div className="ST2 mb-7.5 rounded-[5px] bg-gray-900 px-3 py-1.5 whitespace-nowrap">
                     <span className="bg-[linear-gradient(90deg,rgba(247,247,247,0.8)_35.59%,rgba(247,247,247,0.4)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
-                      {tag}
+                      #{tag}
                     </span>
                   </div>
                 </SwiperSlide>
