@@ -23,3 +23,9 @@ export interface TagDetailResponse {
   hasImages: boolean;
   tribeId: number;
 }
+
+export interface DropMissionResponse {
+  tag: string;
+  imageId: number;
+  imageUrl: string;
+}
