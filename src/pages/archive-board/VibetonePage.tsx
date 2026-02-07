@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { AxiosError } from "axios";
-import { BackButton } from "../../components/onboarding/BackButton";
+import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
 import RecapFirstSlide from "../../components/archive-board/vibetone/RecapFirstSlide";
 import RecapSecondSlide from "../../components/archive-board/vibetone/RecapSecondSlide";
 import RecapThirdSlide from "../../components/archive-board/vibetone/RecapThirdSlide";
@@ -33,6 +33,10 @@ const VibeTonePage = () => {
   const [activeTab, setActiveTab] = useState<"weekly" | "all">(initialTab);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   // API period 파라미터 변환
   const period = activeTab === "weekly" ? "WEEK" : "TOTAL";
@@ -195,7 +199,7 @@ const VibeTonePage = () => {
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
       {/* Header */}
       <div className="flex shrink-0 items-center justify-between px-4 pt-6 pb-4">
-        <BackButton className="h-6 w-6" />
+        <BackButton className="h-6 w-6" onClick={handleBack} />
         <h1 className="H2 text-gray-200">바이브 톤</h1>
         <button
           className="flex h-6 w-6 items-center justify-center"
@@ -206,28 +210,37 @@ const VibeTonePage = () => {
       </div>
 
       {/* Tab Navigation (필터 역할로 변경) */}
-      <div className="flex h-[27px] shrink-0 items-end gap-4 px-4">
+      <div className="flex h-[27px] shrink-0 items-end px-4">
         <button
           onClick={() => setActiveTab("weekly")}
-          className={`relative flex w-16 justify-center transition-all duration-200 ${
-            activeTab === "weekly" ? "ST2 text-gray-200" : "B2 text-gray-600"
+          className={`relative flex w-[52px] justify-center transition-all duration-200 ${
+            activeTab === "weekly" ? "ST2 text-gray-200" : "ST2 text-gray-600"
           }`}
         >
           주간
-          {activeTab === "weekly" && (
-            <div className="absolute -bottom-1 left-1/2 h-[2px] w-16 -translate-x-1/2 bg-gray-200" />
-          )}
+          {/* 하단 인디케이터: 활성(흰색, 두께 2px) / 비활성(회색, 두께 0.5px) */}
+          <div
+            className={`absolute -bottom-1 left-1/2 w-[52px] -translate-x-1/2 ${
+              activeTab === "weekly"
+                ? "h-[2px] bg-gray-200"
+                : "h-[0.5px] bg-gray-600"
+            }`}
+          />
         </button>
         <button
           onClick={() => setActiveTab("all")}
-          className={`relative flex w-16 justify-center transition-all duration-200 ${
-            activeTab === "all" ? "ST2 text-gray-200" : "B2 text-gray-600"
+          className={`relative flex w-[52px] justify-center transition-all duration-200 ${
+            activeTab === "all" ? "ST2 text-gray-200" : "ST2 text-gray-600"
           }`}
         >
           전체
-          {activeTab === "all" && (
-            <div className="absolute -bottom-1 left-1/2 h-[2px] w-16 -translate-x-1/2 bg-gray-200" />
-          )}
+          <div
+            className={`absolute -bottom-1 left-1/2 w-[52px] -translate-x-1/2 ${
+              activeTab === "all"
+                ? "h-[2px] bg-gray-200"
+                : "h-[0.5px] bg-gray-600"
+            }`}
+          />
         </button>
       </div>
 
