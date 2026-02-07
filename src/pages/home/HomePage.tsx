@@ -240,7 +240,7 @@ const HomePage = () => {
                   </p>
                   {activeIndex === index && (
                     <motion.div
-                      layoutId="activeTabIndicator"
+                      layoutId="homeTabIndicator"
                       className="absolute bottom-0 z-10 h-[1.5px] w-full bg-white"
                       transition={{ stiffness: 500, damping: 30 }}
                     />

@@ -23,7 +23,6 @@ const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
     const { email, nickname } = useUserStore();
-    console.log('Current Email in State:', email);
 
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 

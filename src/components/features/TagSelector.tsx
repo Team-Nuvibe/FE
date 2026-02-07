@@ -122,8 +122,7 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className={`ST2 ${
-              selectedTag
+            className={`ST2 ${selectedTag
                 ? "cursor-pointer text-white"
                 : "cursor-not-allowed text-gray-700"
             }`}

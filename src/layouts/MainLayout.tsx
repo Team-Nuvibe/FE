@@ -3,12 +3,15 @@ import Navbar from "../components/common/Navbar";
 import QuickDropButton from "../components/common/QuickDropButton";
 import { useNavbarInfo } from "../hooks/useNavbarStore";
 import { useAuth } from "@/context/AuthContext";
+import { useFcmToken } from "@/hooks/useFcmToken";
 import { useUserStore } from "@/hooks/useUserStore";
 
 const MainLayout = () => {
-  const isNavbarVisible = useNavbarInfo();
-
   const { accessToken, refreshToken } = useAuth();
+  const isAuthenticated = !!(accessToken || refreshToken);
+
+  useFcmToken(isAuthenticated);
+  const isNavbarVisible = useNavbarInfo();
   const { provider, nickname } = useUserStore();
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트

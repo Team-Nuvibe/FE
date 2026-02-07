@@ -33,7 +33,7 @@ export interface ChatDetailResponse {
   imageUrl: string;
   imageTag: string;
   createdAt: string;
-  isScraped: boolean;
+  isScrapped: boolean;
 }
 
 // 채팅 타임라인 아이템
