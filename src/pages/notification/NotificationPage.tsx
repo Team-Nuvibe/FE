@@ -56,8 +56,10 @@ export const NotificationPage = () => {
         case "TAG_RECOMMENDATION": {
             // NOTI-07: 바이브 드랍 화면으로 이동 (태그 추출)
             const tagMatch = actionMessage.match(/#(\S+)/); // 정규표현식 (태그 찾아내기: '#' 찾고 그 뒤의 공백 아닌 태그 내용 묶어 기억)
-            const tag = tagMatch ? tagMatch[1] : "Minimal"; // 태그를 잘 찾으면 그걸 쓰고, 못 찾으면 기본 태그 사용 (현재는 minimal로 해둠, 백엔드 협의 필요)
-            navigate("/quickdrop", { state: { tag } }); // 사진 선택 화면으로 보내면서 state에 태그 전달
+            const tag = tagMatch ? tagMatch[1] : null; // 태그를 잘 찾으면 그걸 쓰기
+            if (tag) {
+              navigate(`/tag/${tag}`);
+            } 
             break;
         }
 
