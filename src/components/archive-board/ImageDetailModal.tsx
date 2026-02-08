@@ -1,13 +1,10 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
 
-import Xbutton from "@/assets/icons/icon_xbutton_sm.svg?react";
 import Xbutton24 from "@/assets/icons/icon_xbutton_24.svg?react";
 import Downloadbutton from "@/assets/icons/icon_imagesave.svg?react";
 import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg?react";
-
-import { TagSelector } from "@/components/features/TagSelector";
 
 interface ModelItem {
   id: string;
@@ -26,11 +23,9 @@ export const ImageDetailModal = ({
   item,
   onClose,
   boardTitle = "Model",
-  onTagUpdate,
 }: ImageDetailModalProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
   const captureRef = useRef<HTMLDivElement>(null);
 
   const handleDownload = async () => {
@@ -175,12 +170,6 @@ export const ImageDetailModal = ({
                     <div className="font-pretendard H1 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-[-0.6px] text-transparent">
                       #{item.tag}
                     </div>
-                    <button
-                      className="text-gray-300 transition-colors hover:text-white"
-                      onClick={() => setIsTagSelectorOpen(true)}
-                    >
-                      <Xbutton className="h-6 w-6" />
-                    </button>
                   </div>
                   <p
                     className="font-montserrat pt-1 text-[10px] leading-[9.3px] font-light text-[#FAFAFA] italic"
@@ -194,27 +183,6 @@ export const ImageDetailModal = ({
           </div>
         </div>
       </motion.div>
-
-      {/* Tag Selector */}
-      <AnimatePresence>
-        {isTagSelectorOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="absolute inset-0 z-[60] bg-black" // Higher z-index than modal
-          >
-            <TagSelector
-              onPrevious={() => setIsTagSelectorOpen(false)}
-              onNext={(newTag) => {
-                if (onTagUpdate) onTagUpdate(newTag);
-                setIsTagSelectorOpen(false);
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };
