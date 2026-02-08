@@ -220,9 +220,25 @@ const RecapFirstSlide = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="H2 leading-[150%] tracking-[-0.5px] text-gray-100">
-              {activeTab === "weekly"
-                ? `${nickname}의 이번주 바이브 태그`
-                : `${nickname}의 바이브 태그`}
+              {activeTab === "weekly" ? (
+                nickname.length > 5 ? (
+                  <>
+                    {nickname}의
+                    <br />
+                    이번주 바이브 태그
+                  </>
+                ) : (
+                  `${nickname}의 이번주 바이브 태그`
+                )
+              ) : nickname.length > 5 ? (
+                <>
+                  {nickname}의
+                  <br />
+                  바이브 태그
+                </>
+              ) : (
+                `${nickname}의 바이브 태그`
+              )}
             </h1>
             <p className="B2 leading-[150%] tracking-[-0.35px] text-[#B9BDC2]">
               {activeTab === "weekly"
