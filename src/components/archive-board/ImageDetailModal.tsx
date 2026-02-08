@@ -17,16 +17,31 @@ interface ImageDetailModalProps {
   onClose: () => void;
   boardTitle?: string;
   onTagUpdate?: (newTag: string) => void;
+  createdAt?: string;
 }
 
 export const ImageDetailModal = ({
   item,
   onClose,
   boardTitle = "Model",
+  createdAt,
 }: ImageDetailModalProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const captureRef = useRef<HTMLDivElement>(null);
+
+  // Format createdAt to "YYYY.MM.DD   |   HH:mm"
+  const formattedDate = createdAt
+    ? (() => {
+        const date = new Date(createdAt);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${year}.${month}.${day}   |   ${hours}:${minutes}`;
+      })()
+    : "";
 
   const handleDownload = async () => {
     if (isDownloading || !captureRef.current) return;
@@ -175,7 +190,7 @@ export const ImageDetailModal = ({
                     className="font-montserrat pt-1 text-[10px] leading-[9.3px] font-light text-[#FAFAFA] italic"
                     style={{ opacity: 0.8 }}
                   >
-                    2025.11.24 | 09:41
+                    {formattedDate}
                   </p>
                 </div>
               </motion.div>
