@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
-import Icon_backbutton from "@/assets/icons/icon_backbutton.svg?react";
+import Icon_backbutton from "@/assets/icons/icon_chevron_left.svg?react";
 import DefaultProfileImage from "@/assets/images/Default_profile_logo.svg";
 import type { NotificationResponse } from "@/types/notification";
 import { NotificationItem } from "@/components/notification/NotificationItem";
@@ -86,7 +86,7 @@ export const NotificationPage = () => {
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
       <div className="flex-1 touch-auto overflow-y-auto pb-24">
         {/* Header */}
-        <header className="relative sticky top-0 z-20 mt-[20px] mb-[20px] flex h-[30px] items-center justify-between bg-black px-4">
+        <header className="relative sticky top-0 z-20 mt-2 mb-[23.59px] flex h-[30px] items-center justify-between bg-black px-4">
           <Icon_backbutton
             className="cursor-pointer text-white"
             onClick={() => navigate(-1)}
