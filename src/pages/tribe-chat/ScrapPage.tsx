@@ -6,21 +6,39 @@ import useGetTribeScrapedImages from "@/hooks/queries/tribe-chat/useGetTribeScra
 import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
 import { type ChatGridItem, type ScrapedImageItem } from "@/types/tribeChat";
 import IconChatScrap from "@/assets/icons/icon_scrap gray.svg?react";
+import { ImageDetailModal } from "@/components/tribe-chat/ImageDetailModal";
+import { DeleteConfirmModal } from "@/components/archive-board/DeleteCofirmModal";
+import { toggleImageScrap } from "@/apis/tribe-chat/scrapimage";
+import { useUserStore } from "@/hooks/useUserStore";
 
 type DisplayItem = ChatGridItem | ScrapedImageItem;
 
 export const ScrapPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { tribeId?: number; tags?: string[] };
+  const state = location.state as {
+    tribeId?: number;
+    tags?: string[];
+    imageTag?: string;
+  };
   const tribeId = state?.tribeId;
   const passedTags = state?.tags ?? [];
+  const imageTag = state?.imageTag;
+  const { nickname: currentUserNickname } = useUserStore();
 
   // Global Mode State
   const [currentTag, setCurrentTag] = useState<string | undefined>(undefined);
 
   // Tribe Mode State
   const [viewMode, setViewMode] = useState<"recent" | "scrap">("recent");
+
+  // Modal State
+  const [selectedItem, setSelectedItem] = useState<DisplayItem | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingScrapToggle, setPendingScrapToggle] = useState<{
+    chatId: number;
+    currentStatus: boolean;
+  } | null>(null);
 
   // 1. Global Mode: Fetch all scraped images
   const { data: allData } = useGetAllScrapedImages({
@@ -78,6 +96,53 @@ export const ScrapPage = () => {
     },
     {} as Record<string, DisplayItem[]>,
   );
+
+  const handleImageClick = (item: DisplayItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+  };
+
+  const handleScrapToggle = async (chatId: number, currentStatus: boolean) => {
+    // If currently scrapped (Active), show delete confirmation modal
+    if (currentStatus) {
+      setPendingScrapToggle({ chatId, currentStatus });
+      setShowDeleteModal(true);
+    } else {
+      // If not scrapped (InActive), toggle directly
+      try {
+        await toggleImageScrap(chatId);
+        // Refresh data based on mode
+        window.location.reload(); // Simple refresh for now
+      } catch (error) {
+        console.error("Failed to toggle scrap:", error);
+      }
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingScrapToggle) return;
+
+    try {
+      await toggleImageScrap(pendingScrapToggle.chatId);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+      setSelectedItem(null);
+      // Refresh data
+      window.location.reload(); // Simple refresh for now
+    } catch (error) {
+      console.error("Failed to toggle scrap:", error);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setPendingScrapToggle(null);
+  };
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-black text-white">
@@ -163,7 +228,8 @@ export const ScrapPage = () => {
                   return (
                     <div
                       key={key}
-                      className="aspect-[3/4] w-full overflow-hidden rounded-[5px] bg-gray-800"
+                      className="aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[5px] bg-gray-800"
+                      onClick={() => handleImageClick(item)}
                     >
                       <img
                         src={item.imageUrl}
@@ -187,6 +253,42 @@ export const ScrapPage = () => {
           </div>
         )}
       </div>
+
+      {/* Image Detail Modal */}
+      {selectedItem && (
+        <ImageDetailModal
+          item={{
+            id:
+              "chatId" in selectedItem
+                ? selectedItem.chatId.toString()
+                : selectedItem.scrapedImageId.toString(),
+            tag:
+              "imageTag" in selectedItem
+                ? selectedItem.imageTag
+                : imageTag || "",
+            thumbnail: selectedItem.imageUrl,
+          }}
+          chatId={"chatId" in selectedItem ? selectedItem.chatId : undefined}
+          isScrapped={true} // Items in ScrapPage are always scrapped
+          senderNickname={undefined} // ScrapPage doesn't have sender info
+          currentUserNickname={currentUserNickname}
+          onClose={handleCloseModal}
+          onScrapToggle={
+            "chatId" in selectedItem ? handleScrapToggle : undefined
+          }
+          createdAt={selectedItem.createdAt}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        count={0}
+        maintext="스크랩을 취소하시겠습니까?"
+        subtext="스크랩을 취소하면 해당 이미지가 사라져요."
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

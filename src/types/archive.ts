@@ -18,6 +18,7 @@ export interface ArchiveBoardImage {
   imageId: number;
   imageUrl: string;
   imageTag: string;
+  uploadedAt?: string; // Optional as API may not always include it
 }
 
 // 아카이브 보드 상세 타입
