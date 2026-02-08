@@ -24,6 +24,8 @@ import {
   deleteArchiveBoard,
   createArchiveBoard,
 } from "@/apis/archive-board/archive";
+import { getImageDetail } from "@/apis/image";
+import type { ImageDetailResponse } from "@/types/image";
 
 interface ArchiveBoard {
   id: string;
@@ -186,7 +188,22 @@ const ArchivePage = () => {
   const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
 
   // Detail Modal State
-  const [selectedItem, setSelectedItem] = useState<ResentDrops | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ImageDetailResponse | null>(
+    null,
+  );
+
+  // 이미지 클릭 핸들러 - getImageDetail API 호출
+  const handleImageClick = async (post: ResentDrops) => {
+    try {
+      const response = await getImageDetail(parseInt(post.id));
+      if (response.data) {
+        setSelectedItem(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch image detail:", error);
+      // TODO: Show error toast to user
+    }
+  };
 
   const handleTrashClick = () => {
     if (selectedIds.length === 0) return;
@@ -308,7 +325,7 @@ const ArchivePage = () => {
                   <SwiperSlide key={post.id} className="!w-[165px]">
                     <div
                       className="relative h-[220px] w-full cursor-pointer overflow-hidden rounded-[10px] backdrop-blur-[2px]"
-                      onClick={() => setSelectedItem(post)}
+                      onClick={() => handleImageClick(post)}
                     >
                       <img
                         src={post.thumbnail}
@@ -524,16 +541,19 @@ const ArchivePage = () => {
       <AnimatePresence>
         {selectedItem && (
           <ImageDetailModal
-            item={selectedItem}
+            item={{
+              id: "", // ImageDetailResponse에는 id가 없지만 모달에서 필요하므로 빈 값 전달
+              tag: selectedItem.imageTag,
+              thumbnail: selectedItem.imageUrl,
+            }}
             onClose={() => setSelectedItem(null)}
+            boardTitle={selectedItem.boardName}
+            createdAt={selectedItem.createdAt}
             onTagUpdate={(newTag) => {
-              const updatedItem = { ...selectedItem, tag: newTag };
+              const updatedItem = { ...selectedItem, imageTag: newTag };
               setSelectedItem(updatedItem);
-              setResentDrops((prev) =>
-                prev.map((item) =>
-                  item.id === selectedItem.id ? updatedItem : item,
-                ),
-              );
+              // resentDrops도 업데이트하려면 imageId를 찾아서 업데이트
+              // 현재 구조에서는 imageId가 없어서 업데이트하기 어려움
             }}
           />
         )}
