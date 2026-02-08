@@ -38,6 +38,7 @@ interface ResentDrops {
   tag: string;
   time: string;
   thumbnail: string;
+  uploadedAt?: string;
 }
 
 const ArchivePage = () => {
@@ -67,6 +68,7 @@ const ArchivePage = () => {
               tag: item.tag,
               time: "--", // TODO: uploadedAt을 상대 시간으로 변환 필요
               thumbnail: item.imageUrl,
+              uploadedAt: item.uploadedAt,
             }),
           );
           setResentDrops(mappedDrops);
@@ -321,7 +323,7 @@ const ArchivePage = () => {
                         </span>
                       </div>
                       <div className="B2 absolute top-3 right-3 text-white/80">
-                        {post.time}
+                        {post.uploadedAt}
                       </div>
                     </div>
                   </SwiperSlide>
