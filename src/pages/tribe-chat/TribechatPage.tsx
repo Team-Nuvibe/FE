@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChatListItem } from "@/components/tribe-chat/ChatListItem";
 import IconChatScrap from "@/assets/icons/icon_chat_scrap.svg?react";
 import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
@@ -147,6 +147,34 @@ const TribechatPage = () => {
       unreadCount: 0,
       tags: [item.imageTag],
     })) ?? [];
+
+  // 채팅방 정렬 로직 적용
+  const sortedActiveRooms = useMemo(() => {
+    const indexedRooms = activeRooms.map((room, index) => ({
+      ...room,
+      originalIndex: index, // 서버에서 받은 순서 저장
+    }));
+    return [...indexedRooms].sort((a, b) => {
+      // 1. 고정된 (Pinned) 채팅방 상단 고정
+      if (a.isPinned !== b.isPinned) {
+        return a.isPinned ? -1 : 1; // 고정된 방이 위로 (-1)
+      }
+      // 고정된 방끼리는 설정 순서대로 위치 고정
+      if (a.isPinned) {
+        return a.originalIndex - b.originalIndex;
+      }
+      // 고정되지 않은 방끼리는 안 읽은 메시지 여부 비교
+      const aHasUnread = (a.unreadCount ?? 0) > 0;
+      const bHasUnread = (b.unreadCount ?? 0) > 0;
+      if (aHasUnread !== bHasUnread) {
+        return aHasUnread ? -1 : 1; // 안 읽은 메시지 있는 방이 위로
+      }
+      // 안 읽은 메시지 여부가 같다면 최근 활동 시간 비교 (최신 순 정렬)
+      const timeA = new Date(a.lastMessageTime ?? 0).getTime();
+      const timeB = new Date(b.lastMessageTime ?? 0).getTime();
+      return timeB - timeA; // 최신 시간이 위로
+    });
+  }, [activeRooms]);
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
