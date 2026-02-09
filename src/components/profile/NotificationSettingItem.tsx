@@ -14,7 +14,7 @@ export const NotificationSettingItem = ({
     isOn,
     onToggle
 }: NotificationSettingItemProps) => (
-    <div className="w-full bg-gray-800 rounded-[5px] px-2.5 py-3 flex items-center justify-between mb-2 min-h-15.75">
+    <div className="w-full bg-gray-900 rounded-[5px] px-2.5 py-3 flex items-center justify-between mb-2 min-h-15.75">
         <div className="flex flex-col">
             <span className="text-gray-100 text-[14px] font-normal font-weight-400 leading-[150%] tracking-[-0.35px]">
                 {title}

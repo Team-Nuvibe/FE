@@ -18,11 +18,15 @@ import {
 } from '@/hooks/mutation/user/useUpdateEmail';
 import { useUpdatePassword } from '@/hooks/mutation/user/useUpdatePassword';
 import { checkPassword } from '@/apis/auth';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
+import { set } from 'zod';
 
 const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
     const { email, nickname } = useUserStore();
+
+    const { setNavbarVisible } = useNavbarActions();
 
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -79,6 +83,11 @@ const ProfileEditPage = () => {
             setIsConfirmFocused(false);
         }
     }, [type]);
+
+    useEffect(() => {
+        setNavbarVisible(false); // 페이지 진입 시 네비바 숨기기
+        return () => setNavbarVisible(true); // 페이지 나갈 때 네비바 다시 보이기
+    }, [setNavbarVisible]);
 
     const handleSave = () => {
         // 모바일 키보드 닫기
@@ -258,7 +267,7 @@ const ProfileEditPage = () => {
 
                 <div className="flex-1 w-full">
                     {type === 'nickname' && (
-                        <div className="flex flex-col h-full pb-8 h-full">
+                        <div className="flex flex-col h-full pb-8">
                             <div className="flex flex-col mt-6">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.25px] mb-3">닉네임 변경</label>
 
@@ -305,7 +314,7 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'email' && (
-                        <div className="flex flex-col h-full pb-8 h-full">
+                        <div className="flex flex-col h-full pb-8">
                             <div className="flex flex-col mt-6">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.35px] mb-3">
                                     현재 이메일
