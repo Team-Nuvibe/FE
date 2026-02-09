@@ -143,7 +143,7 @@ export const NotificationPage = () => {
                 />
               </div>
               <p className="text-[16px] font-medium leading-[150%] tracking-[-0.025em] text-gray-500">
-                새로운 알림이 없습니다.
+                새로운 알림이 없어요.
               </p>
             </div>
           ) : (
