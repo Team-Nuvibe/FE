@@ -5,12 +5,14 @@ import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TribeChatExitModal } from "@/components/tribe-chat/TribeChatExitModal";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
 import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFavorite";
 import useLeaveTribe from "@/hooks/mutation/tribe-chat/useLeaveTribe";
 import useMarkTribeAsRead from "@/hooks/mutation/tribe-chat/useMarkTribeAsRead";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
+import { queryClient } from "@/App";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
@@ -240,11 +242,17 @@ const TribechatPage = () => {
                       room.title,
                     )
                   }
-                  onClick={() =>
-                    navigate(`/tribe-chat/${room.id}`, {
-                      state: { imageTag: room.tags?.[0] || "Tribe" },
-                    })
-                  }
+                  onClick={() => {
+                    // 채팅방 입장 시 읽음 처리 API 호출 후 이동
+                    markAsRead(Number(room.id), {
+                      onSuccess: () => {
+                        queryClient.invalidateQueries({ queryKey: ["activeTribeList"] });
+                        navigate(`/tribe-chat/${room.id}`, {
+                          state: { imageTag: room.tags?.[0] || "Tribe" },
+                        });
+                      },
+                    });
+                  }}
                 />
               ))}
             </div>
