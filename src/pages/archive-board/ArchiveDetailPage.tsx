@@ -23,6 +23,7 @@ import {
   getArchiveBoardDetail,
   deleteArchiveBoardImages,
   updateArchiveBoardName,
+  moveArchiveBoardImages,
 } from "@/apis/archive-board/archive";
 
 // Swiper styles
@@ -155,17 +156,35 @@ const ArchiveDetailPage = () => {
     }
   };
 
-  const handleBoardSelect = (targetBoard: Board) => {
-    console.log(
-      `Moving items ${selectedIds.join(", ")} to board ${targetBoard.name} (ID: ${targetBoard.id})`,
-    );
-    // TODO: Implement actual move logic API call here
+  const handleBoardSelect = async (targetBoard: Board) => {
+    if (!boardid) return;
 
-    // Reset states
-    setIsBoardSelectorOpen(false);
-    setIsSelectMode(false);
-    setIsMoveMode(false);
-    setSelectedIds([]);
+    try {
+      const boardImageIds = selectedIds.map((id) => parseInt(id));
+      await moveArchiveBoardImages(
+        parseInt(boardid),
+        targetBoard.id,
+        boardImageIds,
+      );
+
+      console.log(
+        `Successfully moved ${boardImageIds.length} images to board ${targetBoard.name}`,
+      );
+
+      // Update local state: remove moved images from current board
+      setAllModelItems((prev) =>
+        prev.filter((item) => !selectedIds.includes(item.id)),
+      );
+
+      // Reset states
+      setIsBoardSelectorOpen(false);
+      setIsSelectMode(false);
+      setIsMoveMode(false);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error("Failed to move images:", error);
+      // TODO: Show error toast to user
+    }
   };
 
   // Rename Logic
