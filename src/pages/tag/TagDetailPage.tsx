@@ -45,7 +45,7 @@ export const TagDetailPage = () => {
       ?.imageUrl;
   const { data: tagDetails } = useGetTagDetails(tagid || "");
   const { setNavbarVisible } = useNavbarActions();
-  const { data: chatGridData } = useGetChatGrid({
+  const { data: chatGridData, isError: isChatGridError } = useGetChatGrid({
     tribeId: tagDetails?.data.tribeId || 0,
     size: 5,
   });
@@ -115,13 +115,13 @@ export const TagDetailPage = () => {
           {/* {tagDetails?.data.hasImages && (
             <div className="mt-3 flex gap-2"></div>
           )} */}
-          {!tagDetails?.data.hasImages && (
+          {(!tagDetails?.data.hasImages || isChatGridError) && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
               <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
             </div>
           )}
-          {tagDetails?.data.hasImages && (
+          {tagDetails?.data.hasImages && !isChatGridError && (
             <div className="flex gap-2 overflow-x-auto">
               {chatGridData?.data.items.map((item) => (
                 <div

@@ -83,7 +83,7 @@ export const BoardSelector = ({
         const newBoard: Board = {
           id: response.data.boardId,
           name: response.data.name,
-          thumbnailUrl: imageUrl || "",
+          thumbnailUrl: "",
           tagCount: 0,
         };
         setBoards([newBoard, ...boards]);

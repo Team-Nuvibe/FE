@@ -128,7 +128,7 @@ export const startSocialLogin = (
     import.meta.env.VITE_SERVER_API_URL || "https://api.nuvibe.site";
   const currentOrigin = window.location.origin;
   const redirectUri = currentOrigin; // 백엔드에서 /oauth/callback을 붙여주는 것으로 추정됨
-  const targetUrl = `${baseUrl}api/auth/oauth2/${provider}?redirect_uri=${encodeURIComponent(redirectUri)}`;
+  const targetUrl = `${baseUrl}/api/auth/oauth2/${provider}?redirect_uri=${encodeURIComponent(redirectUri)}`;
   window.location.href = targetUrl;
 };
 

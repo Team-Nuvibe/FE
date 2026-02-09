@@ -24,6 +24,28 @@ import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
 
 import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
+const tagImages = import.meta.glob(
+  "@/assets/images/tag-default-images/*.{png,jpg,jpeg,webp}",
+  {
+    eager: true,
+    import: "default",
+  },
+) as Record<string, string>;
+
+const allTagImages: Record<string, string> = {};
+
+Object.entries(tagImages).forEach(([path, imageUrl]) => {
+  const parts = path.split("/");
+  const fileName = parts[parts.length - 1];
+
+  if (fileName.length > 4) {
+    const tagNameWithExt = fileName.substring(4);
+    const tagName = tagNameWithExt.split(".")[0].toLowerCase();
+
+    allTagImages[tagName] = imageUrl;
+  }
+});
+
 // TODO: 인터페이스 따로 빼야 함
 interface Board {
   id: number;
@@ -547,7 +569,21 @@ export const QuickdropPage = () => {
                           </>
                         )}
                       </p>
-                      <ImgTempUploaded />
+                      <div className="relative mt-4 mb-8">
+                        <div className="aspect-3/4 w-[96px] -rotate-[20deg] rounded-[5px] bg-gray-300/60 blur-[1px]"></div>
+                        <div className="absolute top-0 aspect-3/4 w-[96px] -rotate-[10deg] rounded-[5px] bg-gray-200 blur-[1px]"></div>
+                        <div
+                          className="absolute top-0 aspect-3/4 w-[96px] rotate-0 rounded-[5px]"
+                          style={{
+                            backgroundImage: `url(${
+                              allTagImages[imageData.tag.toLowerCase()] ||
+                              imageData.imageUrl
+                            })`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        ></div>
+                      </div>
                     </div>
                     {uploadedTribeInfo?.joinStatus === "already_waiting" ? (
                       // 이미 대기 중인 경우: "나중에 입장하기" 버튼만
