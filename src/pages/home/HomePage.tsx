@@ -20,29 +20,23 @@ import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
 
 const tagImages = import.meta.glob(
-  "@/assets/images/tag-default-images/**/*.{png,jpg,jpeg}",
+  "@/assets/images/tag-default-images/*.{png,jpg,jpeg}",
   {
     eager: true,
     import: "default",
   },
 ) as Record<string, string>;
 
-const imageMap: Record<string, Record<string, string>> = {};
 const allTagImages: Record<string, string> = {};
 
 Object.entries(tagImages).forEach(([path, imageUrl]) => {
   const parts = path.split("/");
-  const category = parts[parts.length - 2].toLowerCase();
   const fileName = parts[parts.length - 1];
 
   if (fileName.length > 4) {
     const tagNameWithExt = fileName.substring(4);
     const tagName = tagNameWithExt.split(".")[0].toLowerCase();
 
-    if (!imageMap[category]) {
-      imageMap[category] = {};
-    }
-    imageMap[category][tagName] = imageUrl;
     allTagImages[tagName] = imageUrl;
   }
 });
@@ -305,10 +299,7 @@ const HomePage = () => {
             <SwiperSlide key={index}>
               <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
                 {category.items.map((item, itemIndex) => {
-                  const localImage =
-                    imageMap[category.name.toLowerCase()]?.[
-                      item.tag.toLowerCase()
-                    ];
+                  const localImage = allTagImages[item.tag.toLowerCase()];
 
                   return (
                     <div
@@ -329,7 +320,7 @@ const HomePage = () => {
                         backgroundPosition: "center",
                       }}
                     >
-                      <div className="mb-[10px] flex w-fit min-w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
+                      <div className="mb-[10px] flex w-fit items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
                         <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[1.4] tracking-tight text-transparent">
                           #{item.tag}
                         </p>

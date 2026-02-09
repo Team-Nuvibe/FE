@@ -3,9 +3,14 @@ import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
 interface VibeDropModalProps {
   tag: string;
   onClose?: () => void;
+  imageUrl: string;
 }
 
-export const VibeDropModal = ({ tag, onClose }: VibeDropModalProps) => {
+export const VibeDropModal = ({
+  tag,
+  onClose,
+  imageUrl,
+}: VibeDropModalProps) => {
   return (
     <div className="flex flex-col items-center justify-center rounded-[15px] border-[1px] border-gray-800 bg-gray-900 px-[20px] py-[27px]">
       <IconRectangleGray3 className="w-[18px]" />
@@ -22,7 +27,14 @@ export const VibeDropModal = ({ tag, onClose }: VibeDropModalProps) => {
       <div className="relative mt-4 mb-8">
         <div className="aspect-3/4 w-[96px] -rotate-[20deg] rounded-[5px] bg-gray-300/60 blur-[1px]"></div>
         <div className="absolute top-0 aspect-3/4 w-[96px] -rotate-[10deg] rounded-[5px] bg-gray-200 blur-[1px]"></div>
-        <div className="absolute top-0 aspect-3/4 w-[96px] rotate-0 rounded-[5px] bg-white"></div>
+        <div
+          className="absolute top-0 aspect-3/4 w-[96px] rotate-0 rounded-[5px]"
+          style={{
+            backgroundImage: `url(${imageUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        ></div>
       </div>
       <div className="flex justify-between gap-2">
         <button

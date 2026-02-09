@@ -85,10 +85,10 @@ export const QuickdropPage = () => {
     userTribeId: number;
     isActivatable: boolean; // counts >= 5
     joinStatus?:
-    | "new_waiting"
-    | "new_active"
-    | "already_waiting"
-    | "already_active";
+      | "new_waiting"
+      | "new_active"
+      | "already_waiting"
+      | "already_active";
   } | null>(null);
 
   // Tribe Chat Queries and Mutations
@@ -292,7 +292,7 @@ export const QuickdropPage = () => {
             if (
               joinError.response?.status === 400 &&
               joinError.response?.data?.message ===
-              "이미 해당 태그의 트라이브에 가입되어 있습니다."
+                "이미 해당 태그의 트라이브에 가입되어 있습니다."
             ) {
               console.log("ℹ️ Already joined, checking lists...");
 
@@ -435,9 +435,10 @@ export const QuickdropPage = () => {
           <div className="relative flex flex-col items-center justify-center gap-4">
             {/* 배경 조명 효과 */}
             <div
-              className="absolute -bottom-50 left-1/2 -translate-x-1/2 w-full h-dvh pointer-events-none"
+              className="pointer-events-none absolute -bottom-50 left-1/2 h-dvh w-full -translate-x-1/2"
               style={{
-                background: "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
+                background:
+                  "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
                 filter: "blur(30px)",
               }}
             />
@@ -466,7 +467,7 @@ export const QuickdropPage = () => {
                 <div className="relative h-full w-full overflow-hidden rounded-[15px]">
                   {/* 선명한 이미지 레이어 (상단) */}
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 rounded-[15px]"
                     style={{
                       backgroundImage: `url(${imageData.imageUrl})`,
                       backgroundSize: "cover",
@@ -479,7 +480,7 @@ export const QuickdropPage = () => {
                   />
                   {/* 블러 + 어두운 이미지 레이어 (하단) */}
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 rounded-[15px]"
                     style={{
                       backgroundImage: `url(${imageData.imageUrl})`,
                       backgroundSize: "cover",
@@ -493,7 +494,7 @@ export const QuickdropPage = () => {
                   />
                   {/* 어두운 그라데이션 오버레이 */}
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 rounded-[15px]"
                     style={{
                       background:
                         "linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.8) 100%)",
