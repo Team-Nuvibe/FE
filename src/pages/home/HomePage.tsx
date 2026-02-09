@@ -20,12 +20,12 @@ import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
 
 const tagImages = import.meta.glob(
-  "@/assets/images/tag-default-images/*.{png,jpg,jpeg}",
+  "@/assets/images/tag-default-images/*.{webp,jpg,jpeg}",
   {
-    eager: true,
     import: "default",
+    eager: true,
   },
-) as Record<string, string>;
+) as unknown as Record<string, string>;
 
 const allTagImages: Record<string, string> = {};
 
