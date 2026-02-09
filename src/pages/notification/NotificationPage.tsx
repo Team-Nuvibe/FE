@@ -7,6 +7,7 @@ import { NotificationItem } from "@/components/notification/NotificationItem";
 import { useGetNotifications } from "@/hooks/queries/useGetNotifications";
 import { useReadNotification, useDeleteNotification } from "@/hooks/mutation/useNotificationMutations";
 import useGetDropMission from "@/hooks/queries/useGetDropMission";
+import { no } from "zod/v4/locales";
 
 export const NotificationPage = () => {
   const navigate = useNavigate();
@@ -17,10 +18,26 @@ export const NotificationPage = () => {
   // 드롭 미션 데이터 미리 불러오기
   const { data: dropMissionData } = useGetDropMission();
 
-  // 시간순(최신순) 정렬만 적용
+  // 시간순(최신순) 정렬 및 트라이브챗 음소거 필터링 적용
   const sortedNotifications = useMemo(() => {
-    return [...notifications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [notifications]);
+    // 로컬 스토리지에서 음소거된 tribeId 목록 불러오기
+    const mutedTribeIds = JSON.parse(localStorage.getItem("mutedTribeIds") || "[]");
+    return notifications
+      .filter(noti => {
+        // NOTI-02와 NOTI-03의 id 참조 위치가 다름을 반영
+        const targetTribeId = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" 
+        ? noti.relatedId // 02는 relatedId가 방 ID
+        : noti.tribeId;  // 03은 tribeId가 방 ID
+        const isMuted = mutedTribeIds.includes(Number(targetTribeId));
+        const isTarget = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" || noti.type === "IMAGE_REACTION";
+        // 음소거된 트라이브챗의 02,03번 알림만 제외
+        if (isMuted && isTarget) {
+          return false;
+        }
+        return true;
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }, [notifications]);
 
   const handleDelete = (id: number) => {
     deleteNoti(id);
