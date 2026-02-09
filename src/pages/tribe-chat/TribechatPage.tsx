@@ -17,6 +17,7 @@ import { queryClient } from "@/App";
 const TribechatPage = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const queryClient = useQueryClient();
   const queryParams = new URLSearchParams(search);
   const initialTab = queryParams.get("tab") === "waiting" ? "waiting" : "ing";
   const [activeTab, setActiveTab] = useState<"ing" | "waiting">(initialTab);
@@ -26,6 +27,11 @@ const TribechatPage = () => {
     tribeId: number;
     title: string;
   } | null>(null);
+  // 음소거 상태 관리를 위한 로컬 스토리지 로직 추가
+  const [mutedIds, setMutedIds] = useState<number[]>(() => {
+    const savedMutedIds = localStorage.getItem("mutedTribeIds");
+    return savedMutedIds ? JSON.parse(savedMutedIds) : [];
+  });
 
   // React Query 훅
   const { data: activeTribeData, isLoading: isLoadingActive } =
@@ -70,6 +76,11 @@ const TribechatPage = () => {
     }
   }, [toastMessage]);
 
+  useEffect(() => {
+    // mutedIds 상태가 바뀔 때마다 로컬 스토리지에 저장
+    localStorage.setItem("mutedTribeIds", JSON.stringify(mutedIds));
+  }, [mutedIds]);
+
   const handleConfirmExit = () => {
     if (selectedRoomForExit) {
       leaveTribe(selectedRoomForExit.userTribeId, {
@@ -105,6 +116,13 @@ const TribechatPage = () => {
           showToast("즐겨찾기 변경에 실패했습니다.");
         },
       });
+    } else if (action === "mute") {
+      // 음소거 토글
+      setMutedIds((prev) => 
+        prev.includes(tribeId) 
+        ? prev.filter((id) => id !== tribeId) // 이미 있으면 제거 (무음 해제)
+        : [...prev, tribeId] // 없으면 추가 (무음 설정)
+      );
     } else if (action === "read") {
       // 읽음 처리
       markAsRead(tribeId, {
@@ -122,18 +140,20 @@ const TribechatPage = () => {
   };
 
   // 활성화된 트라이브 데이터 변환
-  const activeRooms =
-    activeTribeData?.data.items.map((item) => ({
+  const activeRooms = useMemo(() => {
+    return activeTribeData?.data.items.map((item) => ({
+      ...item,
       id: item.tribeId.toString(),
       userTribeId: item.userTribeId, // API response now has userTribeId
       title: `#${item.imageTag}`,
       memberCount: item.counts ?? 0,
       isPinned: item.isFavorite,
-      isMuted: false, // API 응답에 없으므로 기본값
+      isMuted: mutedIds.includes(item.tribeId),
       unreadCount: item.unreadCount ?? 0,
       lastMessageTime: item.lastActivityAt,
       tags: [item.imageTag],
     })) ?? [];
+  }, [activeTribeData, mutedIds]);
 
   // 대기 중인 트라이브 데이터 변환
   const waitingRooms =
@@ -257,7 +277,7 @@ const TribechatPage = () => {
             </div>
           ) : (
             <div className="mx-auto flex w-[365px] flex-col">
-              {activeRooms.map((room) => (
+              {sortedActiveRooms.map((room) => (
                 <ChatListItem
                   key={room.id}
                   room={room}
