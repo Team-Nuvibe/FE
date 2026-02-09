@@ -132,7 +132,6 @@ const ArchivePage = () => {
     };
 
     fetchBoards();
-    fetchBoards();
   }, []);
 
   const handleDropVibe = () => {

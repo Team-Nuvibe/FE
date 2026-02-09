@@ -92,7 +92,7 @@ export const BoardSelector = (props: BoardSelectorProps) => {
           thumbnailUrl: imageUrl || "",
           tagCount: 0,
         };
-        setBoards([newBoard, ...boards]);
+        setBoards((prev) => [newBoard, ...prev]);
       }
     } catch (error) {
       console.error("Failed to create archive board:", error);

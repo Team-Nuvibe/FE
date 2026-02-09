@@ -9,6 +9,7 @@ import IconChatlineUnread from "@/assets/icons/icon_chatline_unread.svg?react";
 
 import type { ChatRoom } from "@/types/tribeChat";
 import { formatChatDate } from "@/utils/formatChatDate";
+import { allTagImages } from "@/utils/imageMap";
 
 interface ChatListItemProps {
   room: ChatRoom;
@@ -16,8 +17,6 @@ interface ChatListItemProps {
   onAction?: (action: "mute" | "pin" | "read" | "exit" | "enter") => void;
   onClick?: () => void;
 }
-
-import { allTagImages } from "@/utils/imageMap";
 
 export const ChatListItem = ({
   room,

@@ -115,7 +115,7 @@ const VibeTonePage = () => {
 
       if (!activeSlide) {
         alert("저장할 카드를 찾을 수 없습니다.");
-        return;
+        throw new Error("Active slide not found");
       }
 
       // 이미지 데이터 URL로 변환 (toPng 사용)
@@ -130,11 +130,11 @@ const VibeTonePage = () => {
       const blob = await response.blob();
 
       // 파일명 생성
-      const period = activeTab === "weekly" ? "Weekly" : "Total";
+      const periodLabel = activeTab === "weekly" ? "Weekly" : "Total";
       const slideName = ["TagRanking", "MostUsedBoard", "UsagePattern"][
         activeSlideIndex
       ];
-      const fileName = `VibeTone_${period}_${slideName}_${Date.now()}.png`;
+      const fileName = `VibeTone_${periodLabel}_${slideName}_${Date.now()}.png`;
 
       // 다운로드 또는 공유
       const file = new File([blob], fileName, { type: "image/png" });
