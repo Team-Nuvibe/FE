@@ -300,27 +300,29 @@ const HomePage = () => {
               <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
                 {category.items.map((item, itemIndex) => {
                   const localImage = allTagImages[item.tag.toLowerCase()];
+                  const imageUrl = localImage || item.imageUrl;
 
                   return (
                     <div
                       key={itemIndex}
-                      className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
+                      className="relative flex aspect-[177/236] w-full cursor-pointer items-end justify-center overflow-hidden rounded-[5px]"
                       onClick={() =>
                         navigate(`/tag/${item.tag}`, {
-                          state: { imageUrl: localImage || item.imageUrl },
+                          state: { imageUrl },
                         })
                       }
-                      style={{
-                        backgroundImage: localImage
-                          ? `url(${localImage})`
-                          : item.imageUrl
-                            ? `url(${item.imageUrl})`
-                            : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
                     >
-                      <div className="mb-[10px] flex w-fit items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={item.tag}
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 h-full w-full bg-[linear-gradient(135deg,#3A3A3A_0%,#1C1C1C_100%)]" />
+                      )}
+                      <div className="relative z-10 mb-[10px] flex w-fit items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
                         <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[1.4] tracking-tight text-transparent">
                           #{item.tag}
                         </p>
