@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import Img_3 from "@/assets/images/img_3.png";
+import { useEffect, useRef, useState } from "react";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import Icon_notification from "@/assets/icons/icon_notification.svg?react";
@@ -11,10 +10,7 @@ import { useNavigate } from "react-router";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetDropMission from "@/hooks/queries/useGetDropMission";
 import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
-import Union from "@/assets/icons/Union.svg?react";
-import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
 import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
-import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
@@ -45,6 +41,7 @@ const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
+  const [isScrollEnd, setIsScrollEnd] = useState(false);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const tabsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -99,7 +96,20 @@ const HomePage = () => {
     }
   };
 
-  console.log(archiveListData);
+  const handleScroll = () => {
+    if (tabsContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+      // 오차 범위를 고려해 1px 정도 여유를 둡니다.
+      // 스크롤 위치 + 보이는 너비 >= 전체 너비라면 끝에 도달한 것입니다.
+      setIsScrollEnd(scrollLeft + clientWidth >= scrollWidth - 1);
+    }
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener("resize", handleScroll);
+    return () => window.removeEventListener("resize", handleScroll);
+  }, []);
 
   // const inputImageRef = useRef<HTMLInputElement>(null);
 
@@ -234,12 +244,16 @@ const HomePage = () => {
             <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-full bg-gray-400" />
             <div
               ref={tabsContainerRef}
+              onScroll={handleScroll} // 스크롤 이벤트 연결
               className="scrollbar-hide flex gap-3 overflow-x-auto"
               style={{
-                maskImage:
-                  "linear-gradient(to right, black 90%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, black 90%, transparent 100%)",
+                // 끝에 도달하면 마스킹 제거 (none), 아니면 기존 효과 적용
+                maskImage: isScrollEnd
+                  ? "none"
+                  : "linear-gradient(to right, black 90%, transparent 100%)",
+                WebkitMaskImage: isScrollEnd
+                  ? "none"
+                  : "linear-gradient(to right, black 90%, transparent 100%)",
               }}
             >
               {categories.map((category, index) => (
