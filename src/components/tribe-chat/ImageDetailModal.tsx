@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
 
@@ -20,7 +20,7 @@ interface ImageDetailModalProps {
   boardTitle?: string;
   onTagUpdate?: (newTag: string) => void;
   chatId?: number;
-  isScrapped?: boolean;
+  isScraped?: boolean;
   senderNickname?: string;
   currentUserNickname?: string;
   onScrapToggle?: (chatId: number, currentStatus: boolean) => void;
@@ -30,9 +30,9 @@ interface ImageDetailModalProps {
 export const ImageDetailModal = ({
   item,
   onClose,
-  boardTitle = "Model",
+  boardTitle,
   chatId,
-  isScrapped = false,
+  isScraped = false,
   senderNickname,
   currentUserNickname,
   onScrapToggle,
@@ -40,16 +40,25 @@ export const ImageDetailModal = ({
 }: ImageDetailModalProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [currentScrapStatus, setCurrentScrapStatus] = useState(isScraped);
   const captureRef = useRef<HTMLDivElement>(null);
 
-  const isOwner =
-    senderNickname &&
-    currentUserNickname &&
-    senderNickname === currentUserNickname;
+  const isOwner = senderNickname === currentUserNickname;
+
+  // prop이 변경되면 상태도 업데이트
+  useEffect(() => {
+    setCurrentScrapStatus(isScraped);
+  }, [isScraped]);
 
   const handleScrapClick = () => {
     if (chatId && onScrapToggle) {
-      onScrapToggle(chatId, isScrapped);
+      // 조건부 낙관적 UI 업데이트
+      // InactiveScrapButton(false)일 때만 즉시 상태 변경
+      if (!currentScrapStatus) {
+        setCurrentScrapStatus(true);
+      }
+      // ActiveScrapButton(true)일 때는 모달 확인 후 변경되므로 여기서는 변경하지 않음
+      onScrapToggle(chatId, currentScrapStatus);
     }
   };
 
@@ -177,7 +186,7 @@ export const ImageDetailModal = ({
                   onClick={handleScrapClick}
                   aria-label="스크랩"
                 >
-                  {isScrapped ? (
+                  {currentScrapStatus ? (
                     <ActiveScrapButton className="h-6 w-6" />
                   ) : (
                     <InActiveScrapButton className="h-6 w-6" />
@@ -221,7 +230,7 @@ export const ImageDetailModal = ({
 
                 {/* Bottom Info */}
                 <div className="flex w-full flex-col items-start">
-                  {isOwner && (
+                  {isOwner && boardTitle && (
                     <p className="B2 font-pretendard flex items-center leading-[150%] tracking-[-0.35px] text-white">
                       {boardTitle}
                       <ChevronRightIcon />

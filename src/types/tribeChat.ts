@@ -33,7 +33,7 @@ export interface ChatDetailResponse {
   imageUrl: string;
   imageTag: string;
   createdAt: string;
-  isScrapped: boolean;
+  isScraped: boolean;
 }
 
 // 채팅 타임라인 아이템
@@ -68,6 +68,7 @@ export interface ChatGridItem {
   imageId: number;
   imageUrl: string;
   createdAt: string;
+  chatSenderNickname: string;
 }
 
 // 채팅 이미지 그리드 목록 조회 응답
@@ -164,6 +165,9 @@ export interface ScrapedImageItem {
   imageUrl: string;
   imageTag: string;
   createdAt: string;
+  chatId: number;
+  chatSenderId: number;
+  chatSenderNickname: string;
 }
 
 // 스크랩 이미지 목록 조회 응답
