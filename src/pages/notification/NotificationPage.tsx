@@ -21,22 +21,26 @@ export const NotificationPage = () => {
   // 시간순(최신순) 정렬 및 트라이브챗 음소거 시점 기준 필터링 적용
   const sortedNotifications = useMemo(() => {
     // 로컬 스토리지에서 음소거된 tribeId 목록 불러오기
-    const mutedTribeData: Record<number, string> = JSON.parse(localStorage.getItem("mutedTribeData") || "{}");
+    const historyData: Record<number, { start: string, end: string | null }[]> = JSON.parse(localStorage.getItem("muteHistory") || "{}");
     return notifications
       .filter(noti => {
         // NOTI-02와 NOTI-03의 id 참조 위치가 다름을 반영
         const targetTribeId = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" 
         ? noti.relatedId // 02는 relatedId가 방 ID
         : noti.tribeId;  // 03은 tribeId가 방 ID
-        const mutedAt = mutedTribeData[Number(targetTribeId)];
+        const intervals = historyData[Number(targetTribeId)];
         const isTarget = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" || noti.type === "IMAGE_REACTION";
-        // 음소거된 트라이브챗의 02,03번 알림만 제외
-        if (mutedAt && isTarget) {
+        
+        if (intervals && isTarget) {
           const notiTime = new Date(noti.createdAt).getTime();
-          const muteSettingTime = new Date(mutedAt).getTime();
-
-          // 알림 발생 시각이 음소거 설정 시각보다 '이후'인 경우에만 false (설정 이전의 기록은 그대로 보여줌)
-          if (notiTime > muteSettingTime) {
+          // 알림 시각이 하나라도 음소거 구간 내에 있다면 영구 제외
+          const isMutedInHistory = intervals.some(interval => {
+            const startTime = new Date(interval.start).getTime();
+            // end가 null이면 현재까지 음소거 중인 상태로 간주
+            const endTime = interval.end ? new Date(interval.end).getTime() : Infinity;
+            return notiTime >= startTime && notiTime <= endTime;
+          });
+          if (isMutedInHistory) {
             return false;
           }
         }

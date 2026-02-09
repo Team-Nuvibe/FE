@@ -28,8 +28,8 @@ const TribechatPage = () => {
     title: string;
   } | null>(null);
   // 음소거 상태 관리를 위한 로컬 스토리지 로직 추가
-  const [mutedTribeData, setMutedTribeData] = useState<Record<number, string>>(() => {
-    const savedMutedData = localStorage.getItem("mutedTribeData");
+  const [muteHistory, setMuteHistory] = useState<Record<number, { start: string, end: string | null}[]>>(() => {
+    const savedMutedData = localStorage.getItem("muteHistory");
     return savedMutedData ? JSON.parse(savedMutedData) : {};
   });
 
@@ -77,9 +77,9 @@ const TribechatPage = () => {
   }, [toastMessage]);
 
   useEffect(() => {
-    // mutedTribeData 상태가 바뀔 때마다 로컬 스토리지에 저장
-    localStorage.setItem("mutedTribeData", JSON.stringify(mutedTribeData));
-  }, [mutedTribeData]);
+    // muteHistory 상태가 바뀔 때마다 로컬 스토리지에 저장
+    localStorage.setItem("muteHistory", JSON.stringify(muteHistory));
+  }, [muteHistory]);
 
   const handleConfirmExit = () => {
     if (selectedRoomForExit) {
@@ -118,15 +118,26 @@ const TribechatPage = () => {
       });
     } else if (action === "mute") {
       const now = new Date().toISOString();
-      setMutedTribeData((prev) => {
-        const next = { ...prev };
-        if (next[tribeId]) {
-          delete next[tribeId]; // 이미 있으면 제거 (음소거 해제)
+      setMuteHistory((prev) => {
+        const history = prev[tribeId] || [];
+        const lastInterval = history[history.length - 1];
+        
+        // 마지막 구간이 null인 경우 (열려 있는 경우), 무음 해제 시점 기록
+        if (lastInterval && !lastInterval.end) {
+          // 무음 해제: 마지막 구간만 닫아서 반환
+          return {
+            ...prev,
+            [tribeId]: [...history.slice(0, -1), { ...lastInterval, end: now }],
+          };
         } else {
-          next[tribeId] = now; // 없으면 현재 시각을 기준으로 음소거 설정
+          // 무음 설정: 새로운 구간 추가해서 반환
+          return {
+            ...prev,
+            [tribeId]: [...history, { start: now, end: null }],
+          };
         }
-        return next;
       });
+      showToast("음소거 상태가 변경되었습니다.");
     } else if (action === "read") {
       // 읽음 처리
       markAsRead(tribeId, {
@@ -145,19 +156,25 @@ const TribechatPage = () => {
 
   // 활성화된 트라이브 데이터 변환
   const activeRooms = useMemo(() => {
-    return activeTribeData?.data.items.map((item) => ({
-      ...item,
-      id: item.tribeId.toString(),
-      userTribeId: item.userTribeId,
-      title: `#${item.imageTag}`,
-      memberCount: item.counts ?? 0,
-      isPinned: item.isFavorite,
-      isMuted: !!mutedTribeData[item.tribeId], // 객체에 키가 존재하는지 확인
-      unreadCount: item.unreadCount ?? 0,
-      lastMessageTime: item.lastActivityAt,
-      tags: [item.imageTag],
-    })) ?? [];
-  }, [activeTribeData, mutedTribeData]); // 의존성 배열 확인
+    return activeTribeData?.data.items.map((item) => {
+      // 현재 시점의 음소거 여부 계산
+      const history = muteHistory[item.tribeId] || [];
+      const isCurrentlyMuted = history.length > 0 && !history[history.length - 1].end;
+
+      return {
+        ...item,
+        id: item.tribeId.toString(),
+        userTribeId: item.userTribeId,
+        title: `#${item.imageTag}`,
+        memberCount: item.counts ?? 0,
+        isPinned: item.isFavorite,
+        isMuted: isCurrentlyMuted,
+        unreadCount: item.unreadCount ?? 0,
+        lastMessageTime: item.lastActivityAt,
+        tags: [item.imageTag],
+      };
+    }) ?? [];
+  }, [activeTribeData, muteHistory]); // 의존성 배열 확인
 
   // 대기 중인 트라이브 데이터 변환
   const waitingRooms =
