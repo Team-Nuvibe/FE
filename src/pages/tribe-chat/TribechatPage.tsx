@@ -28,9 +28,9 @@ const TribechatPage = () => {
     title: string;
   } | null>(null);
   // 음소거 상태 관리를 위한 로컬 스토리지 로직 추가
-  const [mutedIds, setMutedIds] = useState<number[]>(() => {
-    const savedMutedIds = localStorage.getItem("mutedTribeIds");
-    return savedMutedIds ? JSON.parse(savedMutedIds) : [];
+  const [mutedTribeData, setMutedTribeData] = useState<Record<number, string>>(() => {
+    const savedMutedData = localStorage.getItem("mutedTribeData");
+    return savedMutedData ? JSON.parse(savedMutedData) : {};
   });
 
   // React Query 훅
@@ -77,9 +77,9 @@ const TribechatPage = () => {
   }, [toastMessage]);
 
   useEffect(() => {
-    // mutedIds 상태가 바뀔 때마다 로컬 스토리지에 저장
-    localStorage.setItem("mutedTribeIds", JSON.stringify(mutedIds));
-  }, [mutedIds]);
+    // mutedTribeData 상태가 바뀔 때마다 로컬 스토리지에 저장
+    localStorage.setItem("mutedTribeData", JSON.stringify(mutedTribeData));
+  }, [mutedTribeData]);
 
   const handleConfirmExit = () => {
     if (selectedRoomForExit) {
@@ -117,12 +117,16 @@ const TribechatPage = () => {
         },
       });
     } else if (action === "mute") {
-      // 음소거 토글
-      setMutedIds((prev) => 
-        prev.includes(tribeId) 
-        ? prev.filter((id) => id !== tribeId) // 이미 있으면 제거 (무음 해제)
-        : [...prev, tribeId] // 없으면 추가 (무음 설정)
-      );
+      const now = new Date().toISOString();
+      setMutedTribeData((prev) => {
+        const next = { ...prev };
+        if (next[tribeId]) {
+          delete next[tribeId]; // 이미 있으면 제거 (음소거 해제)
+        } else {
+          next[tribeId] = now; // 없으면 현재 시각을 기준으로 음소거 설정
+        }
+        return next;
+      });
     } else if (action === "read") {
       // 읽음 처리
       markAsRead(tribeId, {
@@ -144,16 +148,16 @@ const TribechatPage = () => {
     return activeTribeData?.data.items.map((item) => ({
       ...item,
       id: item.tribeId.toString(),
-      userTribeId: item.userTribeId, // API response now has userTribeId
+      userTribeId: item.userTribeId,
       title: `#${item.imageTag}`,
       memberCount: item.counts ?? 0,
       isPinned: item.isFavorite,
-      isMuted: mutedIds.includes(item.tribeId),
+      isMuted: !!mutedTribeData[item.tribeId], // 객체에 키가 존재하는지 확인
       unreadCount: item.unreadCount ?? 0,
       lastMessageTime: item.lastActivityAt,
       tags: [item.imageTag],
     })) ?? [];
-  }, [activeTribeData, mutedIds]);
+  }, [activeTribeData, mutedTribeData]); // 의존성 배열 확인
 
   // 대기 중인 트라이브 데이터 변환
   const waitingRooms =
