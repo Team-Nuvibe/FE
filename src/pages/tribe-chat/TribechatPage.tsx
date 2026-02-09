@@ -35,7 +35,9 @@ const TribechatPage = () => {
 
   // React Query 훅
   const { data: activeTribeData, isLoading: isLoadingActive } =
-    useGetActiveTribeList();
+    useGetActiveTribeList({
+      refetchInterval: 1000, // 1초마다 자동 갱신
+    });
   const { data: waitingTribeData, isLoading: isLoadingWaiting } =
     useGetWaitingTribeList();
 

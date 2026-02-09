@@ -1,6 +1,6 @@
 import { getActiveTribeList } from "@/apis/tribe-chat/usertribe";
 import { QUERY_KEY } from "@/constants/key";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 
 interface UseGetActiveTribeListParams {
   cursorFav?: boolean;
@@ -8,15 +8,21 @@ interface UseGetActiveTribeListParams {
   cursorUnread?: boolean;
   cursorLastChatId?: number;
   size?: number;
+  refetchInterval?: number;
 }
 
-function useGetActiveTribeList({
+function useGetActiveTribeList(
+  params: UseGetActiveTribeListParams = {},
+  options?: Omit<UseQueryOptions<any, any, any, any>, 'queryKey' | 'queryFn'>
+) { 
+const {
   cursorFav,
   cursorLastActivityAt,
   cursorUnread,
   cursorLastChatId,
   size = 20,
-}: UseGetActiveTribeListParams = {}) {
+  refetchInterval,
+} = params;
   return useQuery({
     queryKey: [
       QUERY_KEY.activeTribeList,
@@ -34,6 +40,7 @@ function useGetActiveTribeList({
         cursorLastChatId,
         size,
       ),
+    refetchInterval,
   });
 }
 
