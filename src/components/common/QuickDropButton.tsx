@@ -18,13 +18,11 @@ const QuickDropButton = () => {
 
   return (
     <button
-      className="z-50 flex h-[65px] w-[65px] cursor-pointer items-center justify-center rounded-[40px] bg-[var(--color-gray-900)]/90 transition-transform"
+      className="z-50 flex h-16.25 w-16.25 shrink-0 cursor-pointer flex-col items-center justify-center rounded-[40px] bg-gray-900/90 pt-1.5 px-2 pb-1.75 backdrop-blur-[20px] transition-transform border-t border-gray-800 shadow-[0_0_32px_0_rgba(18,18,18,0.5)]"
       aria-label="Quick Drop"
+      onClick={() => inputImageRef.current?.click()}
     >
-      <IconQuickDrop
-        className="h-full w-full"
-        onClick={() => inputImageRef.current?.click()}
-      />
+      <IconQuickDrop className="h-10 w-10" />      
       <input
         type="file"
         className="hidden"
