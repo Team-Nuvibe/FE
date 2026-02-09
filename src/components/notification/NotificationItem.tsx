@@ -17,8 +17,10 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
     const controls = useAnimation();
     const [swipedState, setSwipedState] = useState<"none" | "left">("none");
     const swipeWidth = 68;
+    const [isDragging, setIsDragging] = useState(false);
 
     const handleDragEnd = async (_: any, info: PanInfo) => {
+        setIsDragging(false); // 드래그 종료 시 상태 리셋
         const offset = info.offset.x;
         const threshold = swipeWidth / 2;
 
@@ -32,16 +34,20 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
     };
 
     return (
-        <div className={`relative w-[361px] mx-auto h-[89px] select-none overflow-hidden ${notification.isRead ? "opacity-60" : ""}`}>
+        <div className={`relative w-90.25 mx-auto h-22.25 select-none overflow-hidden ${notification.isRead ? "opacity-60" : ""}`}>
             {/* 알림 컨텐츠 (스와이프 가능) */}
             <motion.div
                 drag="x"
                 dragConstraints={{ left: -swipeWidth, right: 0 }}
                 dragElastic={0.1}
+                onDragStart={() => setIsDragging(true)}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                className="relative flex h-full w-full bg-black items-center gap-5 px-[10px] transition-colors active:bg-gray-900/50 z-10 cursor-grab active:cursor-grabbing"
+                className="relative flex h-full w-full bg-black items-center gap-5 px-2.5 transition-colors active:bg-gray-900/50 z-10 cursor-grab active:cursor-grabbing"
                 onTap={() => {
+                    // 드래그 중이었다면 클릭 로직 전체 무시
+                    if (isDragging) return;
+
                     if (swipedState !== "none") {
                         controls.start({ x: 0 });
                         setSwipedState("none");
@@ -51,15 +57,15 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
                 }}
             >
                 {/* 프로필 기본 이미지 */}
-                <div className="flex h-[40px] w-[40px] shrink-0 items-center justify-center">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center">
                     <img src={DefaultProfileImage} alt="profile" className="h-full w-full" />
                 </div>
 
                 {/* content */}
-                <div className="flex flex-1 flex-col gap-[2px]">
+                <div className="flex flex-1 flex-col gap-0.5">
                     {/* 카테고리 태그 */}
                     <div className="flex">
-                        <span className="inline-flex py-[2px] px-[8px] items-center justify-center rounded-[5px] bg-gray-900">
+                        <span className="inline-flex py-0.5 px-2 items-center justify-center rounded-[5px] bg-gray-900">
                             <span className="text-[12px] font-medium leading-[150%] tracking-[-0.025em] text-gray-300">
                                 {notification.category}
                             </span>
@@ -79,7 +85,7 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
                 <Icon_rightarrow className="h-6 w-6 shrink-0 text-gray-600" />
 
                 {/* 하단 구분선 (읽음/안읽음 상태에 따라 다른 아이콘) */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[361px] pointer-events-none">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-90.25 pointer-events-none">
                     {!notification.isRead ? (
                         <IconChatlineUnread className="w-full" />
                     ) : (
@@ -88,7 +94,7 @@ export const NotificationItem = ({ notification, onDelete, onClick }: Notificati
                 </div>
 
                 {/* 오른쪽에서 따라오는 삭제 버튼 */}
-                <div className="absolute top-0 -right-[68px] h-full w-[68px] bg-black flex items-center justify-center">
+                <div className="absolute top-0 -right-17 h-full w-17 bg-black flex items-center justify-center">
                     <button
                         className="flex h-full w-full items-center justify-center p-0"
                         onClick={(e) => {

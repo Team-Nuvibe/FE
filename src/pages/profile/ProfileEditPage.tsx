@@ -246,7 +246,7 @@ const ProfileEditPage = () => {
 
     return (
         <div className="w-full h-full bg-black text-white flex flex-col items-center relative">
-            <div className="w-full max-w-[393px] h-full flex flex-col px-[16px]">
+            <div className="w-full max-w-98.25 h-full flex flex-col px-4">
                 <header className="flex items-center justify-center relative mt-[8.06px]">
                     <button
                         onClick={() => {
@@ -362,7 +362,7 @@ const ProfileEditPage = () => {
                             </div>
                             <div className="flex-1" />
                             <button
-                                className={`mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                className={`mt-6 w-full rounded-[5px] h-12 px-12.5 py-1.5 text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
                                     ${isEmailVerified
                                         ? 'bg-gray-200 text-gray-900'
                                         : 'bg-gray-700 text-gray-900 cursor-not-allowed'

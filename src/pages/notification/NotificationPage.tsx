@@ -114,10 +114,10 @@ export const NotificationPage = () => {
 };
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-black text-white">
       <div className="flex-1 touch-auto overflow-y-auto pb-24">
         {/* Header */}
-        <header className="relative sticky top-0 z-20 mt-2 mb-[23.59px] flex h-[30px] items-center justify-between bg-black px-4">
+        <header className="relative sticky top-0 z-20 mt-2 mb-[23.59px] flex h-7.5 items-center justify-between bg-black px-4">
           <Icon_backbutton
             className="cursor-pointer text-white"
             onClick={() => navigate(-1)}
@@ -130,12 +130,12 @@ export const NotificationPage = () => {
         {/* Notification List */}
         <div className="flex flex-col">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center pt-[200px]">
+            <div className="flex flex-col items-center justify-center pt-50">
               <p className="text-gray-500">불러오는 중...</p>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center pt-[200px]">
-              <div className="flex h-[48px] w-[48px] items-center justify-center mb-[12px]">
+            <div className="flex flex-col items-center justify-center pt-50">
+              <div className="flex h-12 w-12 items-center justify-center mb-3">
                 <img
                   src={DefaultProfileImage}
                   alt="no notifications"
