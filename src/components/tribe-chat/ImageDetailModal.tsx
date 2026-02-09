@@ -1,10 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
 
 import Xbutton24 from "@/assets/icons/icon_xbutton_24.svg?react";
 import Downloadbutton from "@/assets/icons/icon_imagesave.svg?react";
 import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg?react";
+import ActiveScrapButton from "@/assets/icons/icon_bookmarked_lg.svg?react";
+import InActiveScrapButton from "@/assets/icons/icon_bookmark_lg.svg?react";
 
 interface ModelItem {
   id: string;
@@ -17,18 +19,48 @@ interface ImageDetailModalProps {
   onClose: () => void;
   boardTitle?: string;
   onTagUpdate?: (newTag: string) => void;
+  chatId?: number;
+  isScraped?: boolean;
+  senderNickname?: string;
+  currentUserNickname?: string;
+  onScrapToggle?: (chatId: number, currentStatus: boolean) => void;
   createdAt?: string;
 }
 
 export const ImageDetailModal = ({
   item,
   onClose,
-  boardTitle = "Model",
+  boardTitle,
+  chatId,
+  isScraped = false,
+  senderNickname,
+  currentUserNickname,
+  onScrapToggle,
   createdAt,
 }: ImageDetailModalProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [currentScrapStatus, setCurrentScrapStatus] = useState(isScraped);
   const captureRef = useRef<HTMLDivElement>(null);
+
+  const isOwner = senderNickname === currentUserNickname;
+
+  // prop이 변경되면 상태도 업데이트
+  useEffect(() => {
+    setCurrentScrapStatus(isScraped);
+  }, [isScraped]);
+
+  const handleScrapClick = () => {
+    if (chatId && onScrapToggle) {
+      // 조건부 낙관적 UI 업데이트
+      // InactiveScrapButton(false)일 때만 즉시 상태 변경
+      if (!currentScrapStatus) {
+        setCurrentScrapStatus(true);
+      }
+      // ActiveScrapButton(true)일 때는 모달 확인 후 변경되므로 여기서는 변경하지 않음
+      onScrapToggle(chatId, currentScrapStatus);
+    }
+  };
 
   // Format createdAt to "YYYY.MM.DD   |   HH:mm"
   const formattedDate = createdAt
@@ -134,17 +166,34 @@ export const ImageDetailModal = ({
             <button onClick={onClose} className="-ml-2 p-2 text-white">
               <Xbutton24 />
             </button>
-            <button
-              className="-mr-2 p-2 text-white disabled:opacity-50"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              ) : (
-                <Downloadbutton />
+            <div className="flex items-center gap-2">
+              {isOwner && (
+                <button
+                  className="-mr-2 p-2 text-white disabled:opacity-50"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <Downloadbutton />
+                  )}
+                </button>
               )}
-            </button>
+              {chatId && onScrapToggle && (
+                <button
+                  className="-mr-2 p-2 text-white"
+                  onClick={handleScrapClick}
+                  aria-label="스크랩"
+                >
+                  {currentScrapStatus ? (
+                    <ActiveScrapButton className="h-6 w-6" />
+                  ) : (
+                    <InActiveScrapButton className="h-6 w-6" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
           <div className="flex min-h-0 flex-1 flex-col gap-5 p-5">
             {/* Main Image Container */}
@@ -181,10 +230,12 @@ export const ImageDetailModal = ({
 
                 {/* Bottom Info */}
                 <div className="flex w-full flex-col items-start">
-                  <p className="B2 font-pretendard flex items-center leading-[150%] tracking-[-0.35px] text-white">
-                    {boardTitle}
-                    <ChevronRightIcon />
-                  </p>
+                  {isOwner && boardTitle && (
+                    <p className="B2 font-pretendard flex items-center leading-[150%] tracking-[-0.35px] text-white">
+                      {boardTitle}
+                      <ChevronRightIcon />
+                    </p>
+                  )}
                   <div className="flex items-center gap-2">
                     <div className="font-pretendard H1 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-[-0.6px] text-transparent">
                       #{item.tag}

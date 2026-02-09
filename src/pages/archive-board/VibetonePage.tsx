@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { BackButton } from "../../components/onboarding/BackButton";
+import { AxiosError } from "axios";
+import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
 import RecapFirstSlide from "../../components/archive-board/vibetone/RecapFirstSlide";
 import RecapSecondSlide from "../../components/archive-board/vibetone/RecapSecondSlide";
 import RecapThirdSlide from "../../components/archive-board/vibetone/RecapThirdSlide";
@@ -14,6 +15,7 @@ import RefreshIcon from "@/assets/icons/icon_refreshbutton.svg?react";
 import SaveIcon from "@/assets/icons/icon_imagesave.svg?react";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
 import { useQuery } from "@tanstack/react-query";
+import { toPng } from "html-to-image";
 import {
   getTagUsageRanking,
   getMostUsedBoard,
@@ -30,6 +32,11 @@ const VibeTonePage = () => {
   // 상태 관리: 탭, 활성 슬라이드 인덱스
   const [activeTab, setActiveTab] = useState<"weekly" | "all">(initialTab);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   // API period 파라미터 변환
   const period = activeTab === "weekly" ? "WEEK" : "TOTAL";
@@ -42,6 +49,12 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["tagRanking", period],
     queryFn: () => getTagUsageRanking(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const {
@@ -51,6 +64,12 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["mostUsedBoard", period],
     queryFn: () => getMostUsedBoard(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const {
@@ -60,7 +79,93 @@ const VibeTonePage = () => {
   } = useQuery({
     queryKey: ["usagePattern", period],
     queryFn: () => getUserUsagePattern(period),
+    retry: (failureCount, error) => {
+      if ((error as AxiosError).response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
+
+  const handleDropVibe = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        alert("파일을 선택하지 않았습니다.");
+        return;
+      }
+      navigate("/quickdrop", { state: { file } });
+    };
+    fileInput.click();
+  };
+
+  const handleSaveCard = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+
+    try {
+      // 현재 활성화된 슬라이드 찾기 (swiper-slide-active 클래스 이용)
+      const activeSlide = document.querySelector(
+        ".swiper-slide.swiper-slide-active",
+      ) as HTMLElement;
+
+      if (!activeSlide) {
+        alert("저장할 카드를 찾을 수 없습니다.");
+        throw new Error("Active slide not found");
+      }
+
+      // 이미지 데이터 URL로 변환 (toPng 사용)
+      const dataUrl = await toPng(activeSlide, {
+        cacheBust: true,
+        backgroundColor: "#000000",
+        pixelRatio: 2, // 고해상도
+      });
+
+      // Data URL을 Blob으로 변환
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+
+      // 파일명 생성
+      const periodLabel = activeTab === "weekly" ? "Weekly" : "Total";
+      const slideName = ["TagRanking", "MostUsedBoard", "UsagePattern"][
+        activeSlideIndex
+      ];
+      const fileName = `VibeTone_${periodLabel}_${slideName}_${Date.now()}.png`;
+
+      // 다운로드 또는 공유
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+          });
+        } catch (error) {
+          if ((error as Error).name !== "AbortError") {
+            console.error("Share failed:", error);
+          }
+        }
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error("Failed to save card:", error);
+      alert("카드 저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // 전체 로딩 상태
   const isLoading = tagLoading || boardLoading || patternLoading;
@@ -94,7 +199,7 @@ const VibeTonePage = () => {
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
       {/* Header */}
       <div className="flex shrink-0 items-center justify-between px-4 pt-6 pb-4">
-        <BackButton className="h-6 w-6" />
+        <BackButton className="h-6 w-6" onClick={handleBack} />
         <h1 className="H2 text-gray-200">바이브 톤</h1>
         <button
           className="flex h-6 w-6 items-center justify-center"
@@ -105,26 +210,37 @@ const VibeTonePage = () => {
       </div>
 
       {/* Tab Navigation (필터 역할로 변경) */}
-      <div className="flex h-[27px] shrink-0 items-end gap-4 px-4">
+      <div className="flex h-[27px] shrink-0 items-end px-4">
         <button
           onClick={() => setActiveTab("weekly")}
-          className={`relative flex w-16 justify-center transition-all duration-200 ${activeTab === "weekly" ? "ST2 text-gray-200" : "B2 text-gray-600"
-            }`}
+          className={`relative flex w-[52px] justify-center transition-all duration-200 ${
+            activeTab === "weekly" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+          }`}
         >
           주간
-          {activeTab === "weekly" && (
-            <div className="absolute -bottom-1 left-1/2 h-[2px] w-16 -translate-x-1/2 bg-gray-200" />
-          )}
+          {/* 하단 인디케이터: 활성(흰색, 두께 2px) / 비활성(회색, 두께 0.5px) */}
+          <div
+            className={`absolute -bottom-1 left-1/2 w-[52px] -translate-x-1/2 ${
+              activeTab === "weekly"
+                ? "h-[2px] bg-gray-200"
+                : "h-[0.5px] bg-gray-600"
+            }`}
+          />
         </button>
         <button
           onClick={() => setActiveTab("all")}
-          className={`relative flex w-16 justify-center transition-all duration-200 ${activeTab === "all" ? "ST2 text-gray-200" : "B2 text-gray-600"
-            }`}
+          className={`relative flex w-[52px] justify-center transition-all duration-200 ${
+            activeTab === "all" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+          }`}
         >
           전체
-          {activeTab === "all" && (
-            <div className="absolute -bottom-1 left-1/2 h-[2px] w-16 -translate-x-1/2 bg-gray-200" />
-          )}
+          <div
+            className={`absolute -bottom-1 left-1/2 w-[52px] -translate-x-1/2 ${
+              activeTab === "all"
+                ? "h-[2px] bg-gray-200"
+                : "h-[0.5px] bg-gray-600"
+            }`}
+          />
         </button>
       </div>
 
@@ -192,7 +308,10 @@ const VibeTonePage = () => {
         {isEmpty ? (
           /* Drop Your Vibe 버튼 */
           // TODO : onClick에 Dropvibe 연동
-          <button className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]">
+          <button
+            className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+            onClick={handleDropVibe}
+          >
             <DropIcon className="h-5.25 w-5.25" />
             <span
               className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
@@ -213,10 +332,14 @@ const VibeTonePage = () => {
             </button>
 
             {/* Save Card Button (오른쪽) */}
-            <button className="mx-auto flex h-11 flex-1 items-center justify-center gap-4 rounded-[10px] border border-gray-800 transition-colors hover:bg-gray-900">
+            <button
+              className="mx-auto flex h-11 flex-1 items-center justify-center gap-4 rounded-[10px] border border-gray-800 transition-colors hover:bg-gray-900 disabled:opacity-50"
+              onClick={handleSaveCard}
+              disabled={isSaving}
+            >
               <SaveIcon />
               <span className="ST2 tracking-[-0.4px] text-gray-200">
-                이 카드 저장하기
+                {isSaving ? "저장 중..." : "이 카드 저장하기"}
               </span>
             </button>
           </div>

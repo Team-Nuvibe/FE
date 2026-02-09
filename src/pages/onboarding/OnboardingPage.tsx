@@ -1,12 +1,5 @@
-import Onboarding1_bg from "@/assets/images/img_onboarding1_bg.svg";
-import Onboarding2 from "@/assets/images/img_onboarding2.svg";
-import Onboarding2_frame_1 from "@/assets/images/img_onboarding2_frame_1.svg";
-import Onboarding2_frame_2 from "@/assets/images/img_onboarding2_frame_2.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import Onboarding1_frame_1 from "@/assets/images/img_onboarding1_frame_1.png";
-import Onboarding3_frame from "@/assets/images/img_onboarding3_frame.png";
-import Onboarding3_text from "@/assets/images/img_onboarding3_text.svg";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import Onboarding1_1 from "@/assets/images/img_onboarding1_1.svg";
 import Onboarding1_2 from "@/assets/images/img_onboarding1_2.svg";
@@ -48,11 +41,11 @@ export const OnboardingPage = () => {
         <SwiperSlide className="flex w-full flex-col">
           <div className="mt-[40px] mb-[45px] flex shrink-0 flex-col items-center gap-[3px]">
             <h1 className="H0 tracking-tight text-white">Drop your vibe.</h1>
-              <p className="B1 tracking-tight text-gray-300 text-center">
-                이미지를 드롭하고,
-              <br/>
-                태그로 지금의 감각을 기록하세요.
-              </p>
+            <p className="B1 text-center tracking-tight text-gray-300">
+              이미지를 드롭하고,
+              <br />
+              태그로 지금의 감각을 기록하세요.
+            </p>
           </div>
           <div className="relative flex flex-1 items-center justify-center">
             <img src={Onboarding1_1} className="absolute -top-7.5 z-10" />
@@ -66,11 +59,11 @@ export const OnboardingPage = () => {
         <SwiperSlide className="flex w-full flex-col">
           <div className="mt-[40px] mb-[45px] flex shrink-0 flex-col items-center gap-[3px]">
             <h1 className="H0 tracking-tight text-white">Find your tribe.</h1>
-              <p className="B1 tracking-tight text-gray-300 text-center">
-                말 없이도 통하는 감각.
-              <br/>
-                이미지로 이어지는 트라이브 챗
-              </p>
+            <p className="B1 text-center tracking-tight text-gray-300">
+              말 없이도 통하는 감각.
+              <br />
+              이미지로 이어지는 트라이브 챗
+            </p>
           </div>
           <div className="relative flex flex-1 items-center justify-center">
             <img
@@ -82,24 +75,28 @@ export const OnboardingPage = () => {
         {/* Slide 3 */}
         <SwiperSlide className="flex w-full flex-col">
           <div className="mt-[40px] mb-[45px] flex shrink-0 flex-col items-center gap-[3px]">
-            <h1 className="H0 tracking-tight text-white">Your vibe, archived.</h1>
-              <p className="B1 tracking-tight text-gray-300 text-center">
-                드롭한 이미지들이 보드에 쌓여
-              <br/>
-                나만의 톤과 흐름이 됩니다.
-              </p>
+            <h1 className="H0 tracking-tight text-white">
+              Your vibe, archived.
+            </h1>
+            <p className="B1 text-center tracking-tight text-gray-300">
+              드롭한 이미지들이 보드에 쌓여
+              <br />
+              나만의 톤과 흐름이 됩니다.
+            </p>
           </div>
           <div className="relative flex flex-1 flex-col items-center justify-center gap-10">
             <img
               src={Onboarding3_1}
               className="absolute top-0 object-contain"
             />
-            <img src={Onboarding3_2} className="absolute top-[250px]"/>
+            <img src={Onboarding3_2} className="absolute top-[250px]" />
             <button
               onClick={() => navigate("/login")}
               className="absolute top-[416px] cursor-pointer rounded-[10px] border-[1px] border-gray-100/50 bg-white px-10 py-[5px] drop-shadow-[0_0_12px_rgba(250,250,250,0.6)]"
             >
-              <p className="font-medium text-[20px] bg-[linear-gradient(to_right,black,rgba(0,0,0,0.5))] bg-clip-text text-transparent">Start Nuvibe</p>
+              <p className="bg-[linear-gradient(to_right,black,rgba(0,0,0,0.5))] bg-clip-text text-[20px] font-medium text-transparent">
+                Start Nuvibe
+              </p>
             </button>
           </div>
         </SwiperSlide>

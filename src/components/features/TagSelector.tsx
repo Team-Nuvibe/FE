@@ -34,18 +34,20 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   // 검색어 하이라이트 함수
   const highlightText = (text: string, query: string) => {
     if (!query.trim()) return <span>{text}</span>;
-    
-    const regex = new RegExp(`(${query})`, 'gi');
+
+    const regex = new RegExp(`(${query})`, "gi");
     const parts = text.split(regex);
-    
+
     return (
       <>
-        {parts.map((part, index) => 
+        {parts.map((part, index) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <span key={index} className="text-gray-400">{part}</span>
+            <span key={index} className="text-gray-400">
+              {part}
+            </span>
           ) : (
             <span key={index}>{part}</span>
-          )
+          ),
         )}
       </>
     );
@@ -53,41 +55,40 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
 
   const addRecentSearch = (tag: string) => {
     console.log("addRecentSearch 호출됨:", tag);
-    
+
     // 기존 localStorage에서 직접 읽기
     const savedSearches = localStorage.getItem("recentSearches");
     const prev = savedSearches ? JSON.parse(savedSearches) : [];
-    
+
     // 중복 제거 후 맨 앞에 추가
     const filtered = prev.filter((item: string) => item !== tag);
     const updated = [tag, ...filtered].slice(0, 10);
-    
+
     // 즉시 localStorage에 저장
     localStorage.setItem("recentSearches", JSON.stringify(updated));
     console.log("localStorage 저장됨:", updated);
-    
+
     // state도 업데이트 (컴포넌트가 살아있으면)
     setRecentSearches(updated);
-  }
+  };
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
     localStorage.removeItem("recentSearches");
-  }
+  };
 
   const removeRecentSearch = (tag: string) => {
     setRecentSearches((prev) => {
       const updated = prev.filter((item) => item !== tag);
       localStorage.setItem("recentSearches", JSON.stringify(updated));
       return updated;
-    })
-  }
+    });
+  };
 
   const { data: tagsData, isPending: isPendingTags } = useGetFindTags(
     selectedCategory || "",
   );
-  const { data: searchTagsData, isPending: isPendingSearchTags } =
-    useGetSearchTags(debouncedSearchInput);
+  const { data: searchTagsData } = useGetSearchTags(debouncedSearchInput);
 
   const tags = tagsData?.data || [];
   const searchTags = searchTagsData?.data || [];
@@ -98,9 +99,6 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
     setActiveIndex(index);
     swiperRef.current?.slideTo(index);
   };
-
-  // 임시 최근 검색어 데이터
-  const recentSearches_temp = ["Grain", "Morning", "Mono"];
 
   const categories = [
     "MOOD",
@@ -116,7 +114,7 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex flex-col shrink-0">
+      <div className="flex shrink-0 flex-col">
         <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
           <IconChevronLeft
             className="cursor-pointer"
@@ -147,7 +145,7 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           <input
             type="text"
             placeholder="검색어를 입력하세요."
-            className="B1 tracking-tight focus:outline-none placeholder:text-gray-600 placeholder:text-[16px] focus:placeholder:text-transparent"
+            className="B1 tracking-tight placeholder:text-[16px] placeholder:text-gray-600 focus:outline-none focus:placeholder:text-transparent"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onFocus={() => setIsSearchOpen(true)}
@@ -156,25 +154,33 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
         </div>
       </div>
       {isSearchOpen && (
-        <div className="flex flex-col items-center mx-4">
+        <div className="mx-4 flex flex-col items-center">
           {searchTags.length > 0 && (
-            <div className="flex flex-col px-[10px] w-full gap-3 items-center">
+            <div className="flex w-full flex-col items-center gap-3 px-[10px]">
               {searchTags.map((tag) => (
-                <div className="flex w-full justify-between items-center">
+                <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <IconRectangleGray9 className="w-[32px] h-[32px]" />
-                      <IconSearch className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-[12px] h-[12px]" />
+                      <IconRectangleGray9 className="h-[32px] w-[32px]" />
+                      <IconSearch className="absolute top-1/2 left-1/2 z-10 h-[12px] w-[12px] -translate-x-1/2 -translate-y-1/2 transform" />
                     </div>
-                    <p className="ST2 text-gray-100 cursor-pointer" onClick={() => {
-                      addRecentSearch(tag);
-                      onNext(tag);
-                    }}>{highlightText(tag, searchInput)}</p>
+                    <p
+                      className="ST2 cursor-pointer text-gray-100"
+                      onClick={() => {
+                        addRecentSearch(tag);
+                        onNext(tag);
+                      }}
+                    >
+                      {highlightText(tag, searchInput)}
+                    </p>
                   </div>
-                  <IconArrowUpRight className="cursor-pointer" onClick={() => {
+                  <IconArrowUpRight
+                    className="cursor-pointer"
+                    onClick={() => {
                       addRecentSearch(tag);
                       onNext(tag);
-                    }}/>
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -246,8 +252,8 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           >
             <SwiperSlide>
               {recentSearches.length === 0 ? (
-                <div className="flex flex-col gap-2 items-center justify-center h-full px-4">
-                  <IconSearchGray5 className="w-12 h-12"/>
+                <div className="flex h-full flex-col items-center justify-center gap-2 px-4">
+                  <IconSearchGray5 className="h-12 w-12" />
                   <h4 className="H4 text-gray-600">최근 검색어가 없습니다.</h4>
                 </div>
               ) : (
@@ -257,8 +263,16 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
                       className="flex cursor-pointer items-center justify-between gap-3 rounded-[5px] bg-gray-900 px-2 py-[3px]"
                       key={tag}
                     >
-                      <p className="ST1 tracking-tight text-gray-200 cursor-pointer" onClick={() => onNext(tag)}>#{tag}</p>
-                      <IconXbuttonQuickdropTag className="w-[8px] cursor-pointer" onClick={() => removeRecentSearch(tag)} />
+                      <p
+                        className="ST1 cursor-pointer tracking-tight text-gray-200"
+                        onClick={() => onNext(tag)}
+                      >
+                        #{tag}
+                      </p>
+                      <IconXbuttonQuickdropTag
+                        className="w-[8px] cursor-pointer"
+                        onClick={() => removeRecentSearch(tag)}
+                      />
                     </div>
                   ))}
                 </div>

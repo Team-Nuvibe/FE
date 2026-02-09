@@ -5,21 +5,50 @@ import useGetAllScrapedImages from "@/hooks/queries/tribe-chat/useGetAllScrapedI
 import useGetTribeScrapedImages from "@/hooks/queries/tribe-chat/useGetTribeScrapedImages";
 import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
 import { type ChatGridItem, type ScrapedImageItem } from "@/types/tribeChat";
+import IconChatScrap from "@/assets/icons/icon_scrap gray.svg?react";
+import { ImageDetailModal } from "@/components/tribe-chat/ImageDetailModal";
+import { DeleteConfirmModal } from "@/components/archive-board/DeleteCofirmModal";
+import { toggleImageScrap } from "@/apis/tribe-chat/scrapimage";
+import { getChatDetail } from "@/apis/tribe-chat/chat";
+import { useUserStore } from "@/hooks/useUserStore";
+import { getImageDetail } from "@/apis/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "@/constants/key";
 
 type DisplayItem = ChatGridItem | ScrapedImageItem;
 
 export const ScrapPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { tribeId?: number; tags?: string[] };
+  const state = location.state as {
+    tribeId?: number;
+    tags?: string[];
+    imageTag?: string;
+  };
   const tribeId = state?.tribeId;
   const passedTags = state?.tags ?? [];
+  const imageTag = state?.imageTag;
+  const { nickname: currentUserNickname } = useUserStore();
+  const queryClient = useQueryClient();
 
   // Global Mode State
   const [currentTag, setCurrentTag] = useState<string | undefined>(undefined);
 
   // Tribe Mode State
   const [viewMode, setViewMode] = useState<"recent" | "scrap">("recent");
+
+  // Modal State
+  const [selectedItem, setSelectedItem] = useState<{
+    item: DisplayItem;
+    chatSenderNickname: string;
+    isScraped?: boolean;
+    boardTitle?: string;
+  } | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingScrapToggle, setPendingScrapToggle] = useState<{
+    chatId: number;
+    currentStatus: boolean;
+  } | null>(null);
 
   // 1. Global Mode: Fetch all scraped images
   const { data: allData } = useGetAllScrapedImages({
@@ -77,6 +106,95 @@ export const ScrapPage = () => {
     },
     {} as Record<string, DisplayItem[]>,
   );
+
+  const handleImageClick = async (item: DisplayItem) => {
+    try {
+      // Both ChatGridItem and ScrapedImageItem now have chatSenderNickname
+      const chatSenderNickname = item.chatSenderNickname || "";
+      let isScraped = true; // Default to true for scrap page items
+      let boardTitle: string | undefined = undefined;
+
+      // Fetch isScraped status from getChatDetail API for ChatGridItem in tribe mode
+      if (tribeId && "chatId" in item && item.chatId) {
+        const response = await getChatDetail(item.chatId);
+        isScraped = response.data.isScraped;
+      }
+
+      // Fetch boardTitle from getImageDetail API
+      try {
+        const imageDetailResponse = await getImageDetail(item.imageId);
+        boardTitle = imageDetailResponse.data.boardName;
+      } catch (error) {
+        console.error("Failed to fetch board title:", error);
+      }
+
+      setSelectedItem({
+        item,
+        chatSenderNickname,
+        isScraped,
+        boardTitle,
+      });
+    } catch (error) {
+      console.error("Failed to fetch detail:", error);
+      // Fallback: open modal without complete info
+      setSelectedItem({
+        item,
+        chatSenderNickname: item.chatSenderNickname || "",
+        isScraped: true, // 스크랩 페이지에서는 기본적으로 true
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+  };
+
+  const handleScrapToggle = async (chatId: number, currentStatus: boolean) => {
+    // If currently scrapped (Active), show delete confirmation modal
+    if (currentStatus) {
+      setPendingScrapToggle({ chatId, currentStatus });
+      setShowDeleteModal(true);
+    } else {
+      // If not scrapped (InActive), toggle directly
+      try {
+        await toggleImageScrap(chatId);
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY.chatGrid] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY.scrapedImages] });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY.tribeScrapedImages],
+        });
+      } catch (error) {
+        console.error("Failed to toggle scrap:", error);
+      }
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingScrapToggle) return;
+
+    try {
+      await toggleImageScrap(pendingScrapToggle.chatId);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+      setSelectedItem(null);
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.chatGrid] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.scrapedImages] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.tribeScrapedImages],
+      });
+    } catch (error) {
+      console.error("Failed to toggle scrap:", error);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setPendingScrapToggle(null);
+  };
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-black text-white">
@@ -162,7 +280,8 @@ export const ScrapPage = () => {
                   return (
                     <div
                       key={key}
-                      className="aspect-[3/4] w-full overflow-hidden rounded-[5px] bg-gray-800"
+                      className="aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[5px] bg-gray-800"
+                      onClick={() => handleImageClick(item)}
                     >
                       <img
                         src={item.imageUrl}
@@ -176,8 +295,9 @@ export const ScrapPage = () => {
             </div>
           ))
         ) : (
-          <div className="mt-20 flex w-full flex-col items-center justify-center gap-2">
-            <p className="B1 text-gray-500">
+          <div className="mt-55 flex w-full flex-col items-center justify-center">
+            <IconChatScrap className="h-12 w-12 text-gray-500" />
+            <p className="B1 mt-3 text-gray-500">
               {tribeId && viewMode === "recent"
                 ? "이미지가 없습니다."
                 : "스크랩한 이미지가 없습니다."}
@@ -185,6 +305,46 @@ export const ScrapPage = () => {
           </div>
         )}
       </div>
+
+      {/* Image Detail Modal */}
+      {selectedItem && (
+        <ImageDetailModal
+          item={{
+            id:
+              "chatId" in selectedItem.item && selectedItem.item.chatId
+                ? selectedItem.item.chatId.toString()
+                : "scrapedImageId" in selectedItem.item
+                  ? selectedItem.item.scrapedImageId.toString()
+                  : selectedItem.item.chatId.toString(),
+            tag:
+              "imageTag" in selectedItem.item
+                ? selectedItem.item.imageTag
+                : imageTag || "",
+            thumbnail: selectedItem.item.imageUrl,
+          }}
+          chatId={
+            "chatId" in selectedItem.item ? selectedItem.item.chatId : undefined
+          }
+          isScraped={selectedItem.isScraped}
+          senderNickname={selectedItem.chatSenderNickname}
+          currentUserNickname={currentUserNickname}
+          boardTitle={selectedItem.boardTitle}
+          onClose={handleCloseModal}
+          onScrapToggle={
+            "chatId" in selectedItem.item ? handleScrapToggle : undefined
+          }
+          createdAt={selectedItem.item.createdAt}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        maintext="스크랩을 취소하시겠습니까?"
+        subtext="스크랩을 취소하면 해당 이미지가 사라져요."
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

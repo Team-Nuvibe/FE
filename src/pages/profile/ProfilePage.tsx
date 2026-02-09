@@ -17,7 +17,14 @@ import { useUpdateProfileImage } from "@/hooks/mutation/user/useUpdateProfileIma
 import { DeleteAccountModal } from "@/components/profile/DeleteAccountModal";
 
 const ProfilePage = () => {
-  const { nickname, profileImage, setProfileImage, setNickname, reset } = useUserStore();
+  const {
+    nickname,
+    profileImage,
+    setProfileImage,
+    setNickname,
+    reset,
+    provider,
+  } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -47,7 +54,7 @@ const ProfilePage = () => {
     if (nicknameData?.data?.nickname) {
       // useUserStore의 setNickname 사용
       // 하지만 useUserStore는 export되지 않은 set함수들만 있음 -> destructuring 필요
-      // 이미 useUserStore()에서 nickname 등 가져옴. 
+      // 이미 useUserStore()에서 nickname 등 가져옴.
       // 여기서 setNickname을 가져와야 함.
       setNickname(nicknameData.data.nickname);
     }
@@ -111,8 +118,8 @@ const ProfilePage = () => {
       navigate("/login", {
         replace: true,
         state: {
-          toastMessage: "계정이 삭제되었습니다."
-        }
+          toastMessage: "계정이 삭제되었습니다.",
+        },
       });
     } catch (error) {
       console.error("Account deletion failed:", error);
@@ -121,7 +128,19 @@ const ProfilePage = () => {
     }
   };
 
-  const menuGroups = [
+  interface MenuItem {
+    label: string;
+    onClick: () => void;
+    hasArrow: boolean;
+    textColor?: string;
+  }
+
+  interface MenuGroup {
+    title: string;
+    items: MenuItem[];
+  }
+
+  const menuGroups: MenuGroup[] = [
     {
       title: "계정관리",
       items: [
@@ -132,13 +151,37 @@ const ProfilePage = () => {
         },
         {
           label: "이메일 변경",
-          onClick: () => navigate("/profile/edit/email"),
+          onClick: () => {
+            if (["KAKAO", "NAVER", "GOOGLE"].includes(provider || "")) {
+              setToastMessage(
+                `${provider} 계정으로 로그인되어 변경할 수 없습니다.`,
+              );
+              setTimeout(() => setToastMessage(null), 3000);
+            } else {
+              navigate("/profile/edit/email");
+            }
+          },
           hasArrow: true,
+          textColor: ["KAKAO", "NAVER", "GOOGLE"].includes(provider || "")
+            ? "text-gray-600"
+            : "text-gray-300",
         },
         {
           label: "비밀번호 변경",
-          onClick: () => navigate("/profile/edit/password"),
+          onClick: () => {
+            if (["KAKAO", "NAVER", "GOOGLE"].includes(provider || "")) {
+              setToastMessage(
+                `${provider} 계정으로 로그인되어 변경할 수 없습니다.`,
+              );
+              setTimeout(() => setToastMessage(null), 3000);
+            } else {
+              navigate("/profile/edit/password");
+            }
+          },
           hasArrow: true,
+          textColor: ["KAKAO", "NAVER", "GOOGLE"].includes(provider || "")
+            ? "text-gray-600"
+            : "text-gray-300",
         },
         {
           label: "로그아웃",
@@ -182,7 +225,7 @@ const ProfilePage = () => {
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-black text-white">
       <div className="mt-[38.06px] mb-8 flex flex-col items-center">
-        <div className="relative mb-[12px] w-[89.79px] h-[89.79px]">
+        <div className="relative mb-[12px] h-[89.79px] w-[89.79px]">
           {profileImage === DefaultProfileImage ? (
             <div className="h-full w-full overflow-visible">
               <img
@@ -192,10 +235,7 @@ const ProfilePage = () => {
               />
             </div>
           ) : (
-            <ProfileImageDisplay
-              src={profileImage}
-              className="h-full w-full"
-            />
+            <ProfileImageDisplay src={profileImage} className="h-full w-full" />
           )}
           <input
             type="file"
@@ -206,14 +246,18 @@ const ProfilePage = () => {
           />
           <button
             onClick={handleCameraClick}
-            className="absolute left-[68.58px] top-[67.37px] h-[24px] w-[24px] p-0 bg-transparent block"
+            className="absolute top-[67.37px] left-[68.58px] block h-[24px] w-[24px] bg-transparent p-0"
             aria-label="Change profile picture"
           >
-            <img src={CameraFrame} alt="" className="absolute inset-0 w-full h-full" />
+            <img
+              src={CameraFrame}
+              alt=""
+              className="absolute inset-0 h-full w-full"
+            />
             <img
               src={CameraInside}
               alt=""
-              className="absolute z-10 w-[16.6px] h-[16.8px] left-[3.53px] top-[3.84px]"
+              className="absolute top-[3.84px] left-[3.53px] z-10 h-[16.8px] w-[16.6px]"
             />
           </button>
         </div>
@@ -236,7 +280,9 @@ const ProfilePage = () => {
                   onClick={item.onClick}
                   className="flex h-[48px] w-full items-center justify-between rounded-[5px] bg-gray-900 py-[12px] pr-[10px] pl-[12px] transition-transform active:scale-[0.99]"
                 >
-                  <span className="B2 leading-[150%] tracking-[-0.025em] text-gray-300">
+                  <span
+                    className={`B2 leading-[150%] tracking-[-0.025em] ${item.textColor || "text-gray-300"}`}
+                  >
                     {item.label}
                   </span>
                   {item.hasArrow && (
