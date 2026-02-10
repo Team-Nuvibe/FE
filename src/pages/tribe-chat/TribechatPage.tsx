@@ -12,7 +12,6 @@ import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFa
 import useLeaveTribe from "@/hooks/mutation/tribe-chat/useLeaveTribe";
 import useMarkTribeAsRead from "@/hooks/mutation/tribe-chat/useMarkTribeAsRead";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
-import { queryClient } from "@/App";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
@@ -28,7 +27,9 @@ const TribechatPage = () => {
     title: string;
   } | null>(null);
   // 음소거 상태 관리를 위한 로컬 스토리지 로직 추가
-  const [muteHistory, setMuteHistory] = useState<Record<number, { start: string, end: string | null}[]>>(() => {
+  const [muteHistory, setMuteHistory] = useState<
+    Record<number, { start: string; end: string | null }[]>
+  >(() => {
     const savedMutedData = localStorage.getItem("muteHistory");
     return savedMutedData ? JSON.parse(savedMutedData) : {};
   });
@@ -123,7 +124,7 @@ const TribechatPage = () => {
       setMuteHistory((prev) => {
         const history = prev[tribeId] || [];
         const lastInterval = history[history.length - 1];
-        
+
         // 마지막 구간이 null인 경우 (열려 있는 경우), 무음 해제 시점 기록
         if (lastInterval && !lastInterval.end) {
           // 무음 해제: 마지막 구간만 닫아서 반환
@@ -158,24 +159,27 @@ const TribechatPage = () => {
 
   // 활성화된 트라이브 데이터 변환
   const activeRooms = useMemo(() => {
-    return activeTribeData?.data.items.map((item) => {
-      // 현재 시점의 음소거 여부 계산
-      const history = muteHistory[item.tribeId] || [];
-      const isCurrentlyMuted = history.length > 0 && !history[history.length - 1].end;
+    return (
+      activeTribeData?.data.items.map((item) => {
+        // 현재 시점의 음소거 여부 계산
+        const history = muteHistory[item.tribeId] || [];
+        const isCurrentlyMuted =
+          history.length > 0 && !history[history.length - 1].end;
 
-      return {
-        ...item,
-        id: item.tribeId.toString(),
-        userTribeId: item.userTribeId,
-        title: `#${item.imageTag}`,
-        memberCount: item.counts ?? 0,
-        isPinned: item.isFavorite,
-        isMuted: isCurrentlyMuted,
-        unreadCount: item.unreadCount ?? 0,
-        lastMessageTime: item.lastActivityAt,
-        tags: [item.imageTag],
-      };
-    }) ?? [];
+        return {
+          ...item,
+          id: item.tribeId.toString(),
+          userTribeId: item.userTribeId,
+          title: `#${item.imageTag}`,
+          memberCount: item.counts ?? 0,
+          isPinned: item.isFavorite,
+          isMuted: isCurrentlyMuted,
+          unreadCount: item.unreadCount ?? 0,
+          lastMessageTime: item.lastActivityAt,
+          tags: [item.imageTag],
+        };
+      }) ?? []
+    );
   }, [activeTribeData, muteHistory]); // 의존성 배열 확인
 
   // 대기 중인 트라이브 데이터 변환
@@ -319,7 +323,9 @@ const TribechatPage = () => {
                     // 채팅방 입장 시 읽음 처리 API 호출 후 이동
                     markAsRead(Number(room.id), {
                       onSuccess: () => {
-                        queryClient.invalidateQueries({ queryKey: ["activeTribeList"] });
+                        queryClient.invalidateQueries({
+                          queryKey: ["activeTribeList"],
+                        });
                         navigate(`/tribe-chat/${room.id}`, {
                           state: { imageTag: room.tags?.[0] || "Tribe" },
                         });

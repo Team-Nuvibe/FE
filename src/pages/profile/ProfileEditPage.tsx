@@ -19,7 +19,6 @@ import {
 import { useUpdatePassword } from '@/hooks/mutation/user/useUpdatePassword';
 import { checkPassword } from '@/apis/auth';
 import { useNavbarActions } from '@/hooks/useNavbarStore';
-import { set } from 'zod';
 
 const ProfileEditPage = () => {
     const { type } = useParams();

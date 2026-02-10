@@ -7,7 +7,6 @@ import { NotificationItem } from "@/components/notification/NotificationItem";
 import { useGetNotifications } from "@/hooks/queries/useGetNotifications";
 import { useReadNotification, useDeleteNotification } from "@/hooks/mutation/useNotificationMutations";
 import useGetDropMission from "@/hooks/queries/useGetDropMission";
-import { no } from "zod/v4/locales";
 
 export const NotificationPage = () => {
   const navigate = useNavigate();
