@@ -122,7 +122,8 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
-            className={`ST2 ${selectedTag
+            className={`ST2 ${
+              selectedTag
                 ? "cursor-pointer text-white"
                 : "cursor-not-allowed text-gray-700"
             }`}
@@ -254,7 +255,7 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
               {recentSearches.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center gap-2 px-4">
                   <IconSearchGray5 className="h-12 w-12" />
-                  <h4 className="H4 text-gray-600">최근 검색어가 없습니다.</h4>
+                  <h4 className="H4 text-gray-600">최근 검색어가 없어요.</h4>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-3 px-4">

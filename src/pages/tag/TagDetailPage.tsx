@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Img_3 from "@/assets/images/img_3.png";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
@@ -7,21 +7,56 @@ import { useNavbarActions } from "@/hooks/useNavbarStore";
 import { useEffect, useRef, useState } from "react";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
 import { VibeDropModal } from "@/components/home/VibeDropModal";
+import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
+
+const tagImages = import.meta.glob(
+  "@/assets/images/tag-default-images/*.{webp,jpg,jpeg}",
+  {
+    import: "default",
+    eager: true,
+  },
+) as unknown as Record<string, string>;
+
+const allTagImages: Record<string, string> = {};
+
+Object.entries(tagImages).forEach(([path, imageUrl]) => {
+  const parts = path.split("/");
+  const fileName = parts[parts.length - 1];
+
+  if (fileName.length > 4) {
+    const tagNameWithExt = fileName.substring(4);
+    const tagName = tagNameWithExt.split(".")[0].toLowerCase();
+
+    allTagImages[tagName] = imageUrl;
+  }
+});
 
 export const TagDetailPage = () => {
   const { tagid } = useParams<{ tagid: string }>();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (tagid && /^[a-z]/.test(tagid)) {
+      const capitalizedTag = tagid.charAt(0).toUpperCase() + tagid.slice(1);
+      navigate(`/tag/${capitalizedTag}`, { replace: true });
+    }
+  }, [tagid, navigate]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const location = useLocation();
   const { categories } = useGetAllCategoriesTags();
+
   const imageUrl =
-    location.state?.imageUrl ||
+    allTagImages[tagid?.toLowerCase() || ""] ||
     categories.flatMap((cat) => cat.items).find((item) => item.tag === tagid)
       ?.imageUrl;
   const { data: tagDetails } = useGetTagDetails(tagid || "");
   const { setNavbarVisible } = useNavbarActions();
+  const { data: chatGridData, isError: isChatGridError } = useGetChatGrid({
+    tribeId: tagDetails?.data.tribeId || 0,
+    size: 5,
+  });
+
+  console.log(chatGridData);
 
   const inputImageRef = useRef<HTMLInputElement>(null);
 
@@ -81,27 +116,32 @@ export const TagDetailPage = () => {
             </div>
           </div>
         </section>
-        <section className="flex flex-col gap-4 py-6 pl-4">
+        <section
+          className={`flex flex-col gap-4 py-6 ${tagDetails?.data.hasImages && !isChatGridError ? "pl-4" : "px-4"}`}
+        >
           <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
-          {tagDetails?.data.hasImages && (
+          {/* {tagDetails?.data.hasImages && (
             <div className="mt-3 flex gap-2"></div>
-          )}
-          {tagDetails?.data.hasImages && (
+          )} */}
+          {(!tagDetails?.data.hasImages || isChatGridError) && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
               <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
             </div>
           )}
-          {!tagDetails?.data.hasImages && (
+          {tagDetails?.data.hasImages && !isChatGridError && (
             <div className="flex gap-2 overflow-x-auto">
-              <div
-                className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"
-                onClick={() => setIsModalOpen(true)}
-              ></div>
-              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
-              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
-              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
-              <div className="aspect-3/4 w-[101px] shrink-0 rounded-[5px] bg-gray-400"></div>
+              {chatGridData?.data.items.map((item) => (
+                <div
+                  className="aspect-3/4 w-[101px] shrink-0 cursor-pointer rounded-[5px] opacity-70 blur-[1px]"
+                  style={{
+                    backgroundImage: `url(${item.imageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  onClick={() => setIsModalOpen(true)}
+                ></div>
+              ))}
             </div>
           )}
         </section>
@@ -126,6 +166,7 @@ export const TagDetailPage = () => {
           <VibeDropModal
             tag={tagDetails?.data.tag || ""}
             onClose={() => setIsModalOpen(false)}
+            imageUrl={imageUrl || ""}
           />
         </div>
       )}

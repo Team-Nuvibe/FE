@@ -11,16 +11,38 @@ import { useNavigate } from "react-router";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetDropMission from "@/hooks/queries/useGetDropMission";
 import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
-import Union from "@/assets/icons/Union.svg?react";
-import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
+import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
 import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
+
+const tagImages = import.meta.glob(
+  "@/assets/images/tag-default-images/*.{webp,jpg,jpeg}",
+  {
+    import: "default",
+    eager: true,
+  },
+) as unknown as Record<string, string>;
+
+const allTagImages: Record<string, string> = {};
+
+Object.entries(tagImages).forEach(([path, imageUrl]) => {
+  const parts = path.split("/");
+  const fileName = parts[parts.length - 1];
+
+  if (fileName.length > 4) {
+    const tagNameWithExt = fileName.substring(4);
+    const tagName = tagNameWithExt.split(".")[0].toLowerCase();
+
+    allTagImages[tagName] = imageUrl;
+  }
+});
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
+  const [isScrollEnd, setIsScrollEnd] = useState(false);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const tabsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -75,7 +97,20 @@ const HomePage = () => {
     }
   };
 
-  console.log(archiveListData);
+  const handleScroll = () => {
+    if (tabsContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+      // 오차 범위를 고려해 1px 정도 여유를 둡니다.
+      // 스크롤 위치 + 보이는 너비 >= 전체 너비라면 끝에 도달한 것입니다.
+      setIsScrollEnd(scrollLeft + clientWidth >= scrollWidth - 1);
+    }
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener("resize", handleScroll);
+    return () => window.removeEventListener("resize", handleScroll);
+  }, []);
 
   // const inputImageRef = useRef<HTMLInputElement>(null);
 
@@ -169,34 +204,32 @@ const HomePage = () => {
           {archiveListData?.data.map((board) => (
             <div
               key={board.boardId}
-              className={`relative h-[123px] w-[123px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-gray-900`}
               onClick={() => navigate(`/archive-board/${board.boardId}`)}
+              className={`flex w-[123px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
             >
-              {board.thumbnailUrl && (
-                <>
-                  {/* 이미지 레이어 */}
+              {/* 폴더 컨테이너 */}
+              <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                {/* 내부 이미지 (썸네일) */}
+                {board.thumbnailUrl ? (
                   <img
                     src={board.thumbnailUrl}
                     alt="thumbnail"
-                    className="absolute top-1/2 left-1/2 w-[70px] -translate-x-1/2 -translate-y-1/2 object-cover"
+                    className="absolute top-2 left-1/2 w-[79px] -translate-x-1/2 rounded-[3px] object-cover"
                   />
-                  {/* 폴더 오버레이 */}
-                  <Union
-                    className="pointer-events-none absolute bottom-0 left-0 z-20 h-full w-full translate-y-[0.5px]"
-                    preserveAspectRatio="xMinYMax meet"
-                  />
-                </>
-              )}
-              {!board.thumbnailUrl && (
-                <IconBoardDefault className="h-[123px] w-[123px] cursor-pointer" />
-              )}
+                ) : (
+                  <div className="absolute top-2 left-1/2 h-[104.5px] w-[79px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                )}
 
-              <div className="absolute inset-0 z-20 flex flex-col justify-end text-white">
-                <div className="ST2 z-30 flex items-end justify-between px-[6px] pb-[10px] tracking-tight">
-                  <p className="w-[70px] text-[10px] text-white">
+                {/* 폴더 오버레이 아이콘 */}
+                <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+
+                {/* 폴더 제목 (하단) */}
+                <div className="absolute right-[6px] bottom-[10px] left-[6.39px] z-20 flex justify-between gap-[6px] tracking-tight">
+                  <p className="line-clamp-2 text-[10px] font-normal text-white">
                     {board.name}
                   </p>
-                  <p className="text-[7px] text-gray-300">
+                  {/* 보드 내의 태그 갯수 */}
+                  <p className="flex shrink-0 items-end text-[7px] font-normal text-gray-300">
                     {board.tagCount} 태그
                   </p>
                 </div>
@@ -212,12 +245,16 @@ const HomePage = () => {
             <div className="absolute bottom-[0.5px] left-0 h-[0.5px] w-full bg-gray-400" />
             <div
               ref={tabsContainerRef}
+              onScroll={handleScroll} // 스크롤 이벤트 연결
               className="scrollbar-hide flex gap-3 overflow-x-auto"
               style={{
-                maskImage:
-                  "linear-gradient(to right, black 90%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, black 90%, transparent 100%)",
+                // 끝에 도달하면 마스킹 제거 (none), 아니면 기존 효과 적용
+                maskImage: isScrollEnd
+                  ? "none"
+                  : "linear-gradient(to right, black 90%, transparent 100%)",
+                WebkitMaskImage: isScrollEnd
+                  ? "none"
+                  : "linear-gradient(to right, black 90%, transparent 100%)",
               }}
             >
               {categories.map((category, index) => (
@@ -277,31 +314,30 @@ const HomePage = () => {
             <SwiperSlide key={index}>
               <div className="grid grid-cols-2 gap-x-[10px] gap-y-[10px] px-[16px]">
                 {category.items.map((item, itemIndex) => {
-                  const localImage =
-                    imageMap[category.name.toLowerCase()]?.[
-                      item.tag.toLowerCase()
-                    ];
+                  const localImage = allTagImages[item.tag.toLowerCase()];
+                  const imageUrl = localImage || item.imageUrl;
 
                   return (
                     <div
                       key={itemIndex}
-                      className="flex aspect-[177/236] w-full cursor-pointer items-end justify-center rounded-[5px]"
+                      className="relative flex aspect-[177/236] w-full cursor-pointer items-end justify-center overflow-hidden rounded-[5px]"
                       onClick={() =>
                         navigate(`/tag/${item.tag}`, {
-                          state: { imageUrl: localImage || item.imageUrl },
+                          state: { imageUrl },
                         })
                       }
-                      style={{
-                        backgroundImage: localImage
-                          ? `url(${localImage})`
-                          : item.imageUrl
-                            ? `url(${item.imageUrl})`
-                            : "linear-gradient(135deg, #3A3A3A 0%, #1C1C1C 100%)",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
                     >
-                      <div className="mb-[10px] flex w-fit min-w-[80px] items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={item.tag}
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 h-full w-full bg-[linear-gradient(135deg,#3A3A3A_0%,#1C1C1C_100%)]" />
+                      )}
+                      <div className="relative z-10 mb-[10px] flex w-fit items-center justify-center rounded-[5px] bg-gray-900 px-[9px] py-[3px]">
                         <p className="ST2 bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[1.4] tracking-tight text-transparent">
                           #{item.tag}
                         </p>

@@ -101,6 +101,7 @@ const SocialSignUpCompletePage = () => {
 
       // 성공 시 홈으로 이동
       navigate("/home", { replace: true });
+      sessionStorage.setItem("isNewUser", "true");
     } catch (error: any) {
       console.error("Social signup completion failed:", error);
 
