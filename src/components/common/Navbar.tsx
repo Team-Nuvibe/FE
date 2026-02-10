@@ -37,14 +37,15 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="z-50 flex h-[65px] w-[282px] items-center justify-between rounded-[40px] bg-[var(--color-gray-900)]/90 px-6 backdrop-blur-[20px]">
+    // shadow: blur 32, #121212, Opacity 50% 반영
+    <nav className="z-50 flex h-16.25 w-70.5 items-center justify-center -space-x-2.5 rounded-[40px] bg-gray-900/90 py-1.25 backdrop-blur-[20px] border-t border-gray-800 shadow-[0_0_32px_0_rgba(18,18,18,0.5)]">  
       {navItems.map((item) => (
         <NavLink
           key={item.path}
           to={item.path}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-1 transition-colors ${
-              isActive ? "text-white" : "text-[#8A8A8A]"
+            `flex w-19.5 flex-col items-center justify-center gap-1.5 pt-1.5 pb-1.75 px-2 transition-colors ${
+              isActive ? "text-white" : "text-gray-600"
             }`
           }
         >
@@ -55,7 +56,8 @@ const Navbar = () => {
               ) : (
                 <item.icon width={24} height={24} />
               )}
-              <span className="text-[10px] leading-[12px] font-normal">
+              <span className={`text-[10px] leading-3 font-normal font-weight-400 text-align-center transition-colors ${
+              isActive ? "text-gray-100" : "text-gray-600"}`}>
                 {item.label}
               </span>
             </>

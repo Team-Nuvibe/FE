@@ -1,20 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChatListItem } from "@/components/tribe-chat/ChatListItem";
 import IconChatScrap from "@/assets/icons/icon_chat_scrap.svg?react";
 import IconNavbarTribe from "@/assets/icons/icon_navbar_tribe.svg?react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TribeChatExitModal } from "@/components/tribe-chat/TribeChatExitModal";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import useGetWaitingTribeList from "@/hooks/queries/tribe-chat/useGetWaitingTribeList";
 import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFavorite";
 import useLeaveTribe from "@/hooks/mutation/tribe-chat/useLeaveTribe";
 import useMarkTribeAsRead from "@/hooks/mutation/tribe-chat/useMarkTribeAsRead";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
+import { queryClient } from "@/App";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const queryClient = useQueryClient();
   const queryParams = new URLSearchParams(search);
   const initialTab = queryParams.get("tab") === "waiting" ? "waiting" : "ing";
   const [activeTab, setActiveTab] = useState<"ing" | "waiting">(initialTab);
@@ -24,10 +27,17 @@ const TribechatPage = () => {
     tribeId: number;
     title: string;
   } | null>(null);
+  // 음소거 상태 관리를 위한 로컬 스토리지 로직 추가
+  const [muteHistory, setMuteHistory] = useState<Record<number, { start: string, end: string | null}[]>>(() => {
+    const savedMutedData = localStorage.getItem("muteHistory");
+    return savedMutedData ? JSON.parse(savedMutedData) : {};
+  });
 
   // React Query 훅
   const { data: activeTribeData, isLoading: isLoadingActive } =
-    useGetActiveTribeList();
+    useGetActiveTribeList({
+      refetchInterval: 1000, // 1초마다 자동 갱신
+    });
   const { data: waitingTribeData, isLoading: isLoadingWaiting } =
     useGetWaitingTribeList();
 
@@ -68,6 +78,11 @@ const TribechatPage = () => {
     }
   }, [toastMessage]);
 
+  useEffect(() => {
+    // muteHistory 상태가 바뀔 때마다 로컬 스토리지에 저장
+    localStorage.setItem("muteHistory", JSON.stringify(muteHistory));
+  }, [muteHistory]);
+
   const handleConfirmExit = () => {
     if (selectedRoomForExit) {
       leaveTribe(selectedRoomForExit.userTribeId, {
@@ -103,6 +118,28 @@ const TribechatPage = () => {
           showToast("즐겨찾기 변경에 실패했습니다.");
         },
       });
+    } else if (action === "mute") {
+      const now = new Date().toISOString();
+      setMuteHistory((prev) => {
+        const history = prev[tribeId] || [];
+        const lastInterval = history[history.length - 1];
+        
+        // 마지막 구간이 null인 경우 (열려 있는 경우), 무음 해제 시점 기록
+        if (lastInterval && !lastInterval.end) {
+          // 무음 해제: 마지막 구간만 닫아서 반환
+          return {
+            ...prev,
+            [tribeId]: [...history.slice(0, -1), { ...lastInterval, end: now }],
+          };
+        } else {
+          // 무음 설정: 새로운 구간 추가해서 반환
+          return {
+            ...prev,
+            [tribeId]: [...history, { start: now, end: null }],
+          };
+        }
+      });
+      showToast("음소거 상태가 변경되었습니다.");
     } else if (action === "read") {
       // 읽음 처리
       markAsRead(tribeId, {
@@ -120,18 +157,26 @@ const TribechatPage = () => {
   };
 
   // 활성화된 트라이브 데이터 변환
-  const activeRooms =
-    activeTribeData?.data.items.map((item) => ({
-      id: item.tribeId.toString(),
-      userTribeId: item.userTribeId, // API response now has userTribeId
-      title: `#${item.imageTag}`,
-      memberCount: item.counts ?? 0,
-      isPinned: item.isFavorite,
-      isMuted: false, // API 응답에 없으므로 기본값
-      unreadCount: item.unreadCount ?? 0,
-      lastMessageTime: item.lastActivityAt,
-      tags: [item.imageTag],
-    })) ?? [];
+  const activeRooms = useMemo(() => {
+    return activeTribeData?.data.items.map((item) => {
+      // 현재 시점의 음소거 여부 계산
+      const history = muteHistory[item.tribeId] || [];
+      const isCurrentlyMuted = history.length > 0 && !history[history.length - 1].end;
+
+      return {
+        ...item,
+        id: item.tribeId.toString(),
+        userTribeId: item.userTribeId,
+        title: `#${item.imageTag}`,
+        memberCount: item.counts ?? 0,
+        isPinned: item.isFavorite,
+        isMuted: isCurrentlyMuted,
+        unreadCount: item.unreadCount ?? 0,
+        lastMessageTime: item.lastActivityAt,
+        tags: [item.imageTag],
+      };
+    }) ?? [];
+  }, [activeTribeData, muteHistory]); // 의존성 배열 확인
 
   // 대기 중인 트라이브 데이터 변환
   const waitingRooms =
@@ -145,6 +190,34 @@ const TribechatPage = () => {
       unreadCount: 0,
       tags: [item.imageTag],
     })) ?? [];
+
+  // 채팅방 정렬 로직 적용
+  const sortedActiveRooms = useMemo(() => {
+    const indexedRooms = activeRooms.map((room, index) => ({
+      ...room,
+      originalIndex: index, // 서버에서 받은 순서 저장
+    }));
+    return [...indexedRooms].sort((a, b) => {
+      // 1. 고정된 (Pinned) 채팅방 상단 고정
+      if (a.isPinned !== b.isPinned) {
+        return a.isPinned ? -1 : 1; // 고정된 방이 위로 (-1)
+      }
+      // 고정된 방끼리는 설정 순서대로 위치 고정
+      if (a.isPinned) {
+        return a.originalIndex - b.originalIndex;
+      }
+      // 고정되지 않은 방끼리는 안 읽은 메시지 여부 비교
+      const aHasUnread = (a.unreadCount ?? 0) > 0;
+      const bHasUnread = (b.unreadCount ?? 0) > 0;
+      if (aHasUnread !== bHasUnread) {
+        return aHasUnread ? -1 : 1; // 안 읽은 메시지 있는 방이 위로
+      }
+      // 안 읽은 메시지 여부가 같다면 최근 활동 시간 비교 (최신 순 정렬)
+      const timeA = new Date(a.lastMessageTime ?? 0).getTime();
+      const timeB = new Date(b.lastMessageTime ?? 0).getTime();
+      return timeB - timeA; // 최신 시간이 위로
+    });
+  }, [activeRooms]);
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-black text-white">
@@ -229,7 +302,7 @@ const TribechatPage = () => {
             </div>
           ) : (
             <div className="mx-auto flex w-[365px] flex-col">
-              {activeRooms.map((room) => (
+              {sortedActiveRooms.map((room) => (
                 <ChatListItem
                   key={room.id}
                   room={room}
@@ -243,11 +316,14 @@ const TribechatPage = () => {
                     )
                   }
                   onClick={() => {
+                    // 채팅방 입장 시 읽음 처리 API 호출 후 이동
                     markAsRead(Number(room.id), {
-                      onError: () => showToast("읽음 처리에 실패했습니다."),
-                    });
-                    navigate(`/tribe-chat/${room.id}`, {
-                      state: { imageTag: room.tags?.[0] || "Tribe" },
+                      onSuccess: () => {
+                        queryClient.invalidateQueries({ queryKey: ["activeTribeList"] });
+                        navigate(`/tribe-chat/${room.id}`, {
+                          state: { imageTag: room.tags?.[0] || "Tribe" },
+                        });
+                      },
                     });
                   }}
                 />

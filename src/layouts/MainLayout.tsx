@@ -25,7 +25,7 @@ const MainLayout = () => {
   }
 
   return (
-    <div className="relative h-full min-h-screen w-full overflow-hidden bg-[var(--color-black)] text-white">
+    <div className="relative h-full min-h-screen w-full overflow-hidden bg-black text-white">
       {/* 페이지 내용 */}
       <main className="scrollbar-hide h-full w-full overflow-y-auto overscroll-y-none">
         <Outlet />
@@ -33,12 +33,19 @@ const MainLayout = () => {
 
       {/* 하단 공통 컴포넌트 */}
       {isNavbarVisible && (
-        <div className="pointer-events-none fixed bottom-0 left-1/2 z-50 h-0 w-full max-w-[430px] -translate-x-1/2 overflow-visible">
-          <div className="pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2">
-            <Navbar />
-            <QuickDropButton />
+        <>
+          <div className="pointer-events-none fixed bottom-0 left-1/2 z-40 h-46.75 w-full max-w-107.5 -translate-x-1/2"
+            style={{
+              background: `linear-gradient(0deg, #121212 0%, rgba(18, 18, 18, 0.00) 100%)`
+            }}
+          />
+          <div className="pointer-events-none fixed bottom-0 left-1/2 z-50 h-0 w-full max-w-107.5 -translate-x-1/2 overflow-visible">
+            <div className="pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2">
+              <Navbar />
+              <QuickDropButton />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
