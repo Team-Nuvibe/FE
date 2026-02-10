@@ -15,6 +15,7 @@ import {
   getArchiveList,
   createArchiveBoard,
 } from "@/apis/archive-board/archive";
+import { BoardBottomSheet } from "../archive-board/BoardBottomSheet";
 
 interface BoardSelectorProps {
   image: Blob | null;
@@ -294,7 +295,7 @@ export const BoardSelector = ({
           </div>
         </>
       )}
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <>
           <div className="fixed inset-0 z-40 bg-black/50" />
           <div className="fixed right-0 bottom-0 left-0 z-50 mx-auto max-w-[393px]">
@@ -304,7 +305,16 @@ export const BoardSelector = ({
             />
           </div>
         </>
-      )}
+      )} */}
+      <BoardBottomSheet
+        isOpen={isModalOpen}
+        initialTitle=""
+        toptext="아카이브 보드 추가"
+        buttontext="추가하기"
+        placeholderText="추가할 보드명을 입력해주세요."
+        onClose={() => setIsModalOpen(false)}
+        onClick={handleAddBoard}
+      />
     </div>
   );
 };
