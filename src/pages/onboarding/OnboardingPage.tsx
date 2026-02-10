@@ -127,7 +127,7 @@ export const OnboardingPage = () => {
             <p className="B1 text-center tracking-tight text-gray-300">
               말 없이도 통하는 감각.
               <br />
-              이미지로 이어지는 트라이브 챗
+              이미지로 이어지는 트라이브 챗을 경험하세요.
             </p>
           </div>
           <div className="relative flex flex-1 items-center justify-center">
@@ -180,9 +180,9 @@ export const OnboardingPage = () => {
               Your vibe, archived.
             </h1>
             <p className="B1 text-center tracking-tight text-gray-300">
-              드롭한 이미지들이 보드에 쌓여
+              드롭한 바이브를 보드에 쌓아
               <br />
-              나만의 톤과 흐름이 됩니다.
+              나만의 톤과 흐름을 만들어 보세요.
             </p>
           </div>
           <div className="relative flex flex-1 flex-col items-center justify-center gap-10">
