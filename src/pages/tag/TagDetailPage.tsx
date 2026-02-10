@@ -116,7 +116,9 @@ export const TagDetailPage = () => {
             </div>
           </div>
         </section>
-        <section className="flex flex-col gap-4 py-6 pl-4">
+        <section
+          className={`flex flex-col gap-4 py-6 ${tagDetails?.data.hasImages && !isChatGridError ? "pl-4" : "px-4"}`}
+        >
           <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
           {/* {tagDetails?.data.hasImages && (
             <div className="mt-3 flex gap-2"></div>
