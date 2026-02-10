@@ -34,12 +34,12 @@ const RecapSecondSlide = ({
 
   const weekDate = data
     ? {
-      start: formatDate(data.startDate),
-      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
-    }
+        start: formatDate(data.startDate),
+        end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+      }
     : { start: "", end: "" };
 
-  const dropCount = data?.totalDropCount || 0;
+  const dropCount = data?.totalDropsCount || 0;
   const boardName = data?.boardName || "";
 
   // 슬라이드가 활성화되거나 activeTab이 변경될 때 애니메이션 시작
@@ -92,9 +92,25 @@ const RecapSecondSlide = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="H2 leading-[150%] tracking-[-0.5px] text-gray-100">
-              {activeTab === "weekly"
-                ? `${nickname}의 이번주 아카이브`
-                : `${nickname}의 아카이브`}
+              {activeTab === "weekly" ? (
+                nickname.length > 5 ? (
+                  <>
+                    {nickname}의
+                    <br />
+                    이번주 아카이브
+                  </>
+                ) : (
+                  `${nickname}의 이번주 아카이브`
+                )
+              ) : nickname.length > 5 ? (
+                <>
+                  {nickname}의
+                  <br />
+                  아카이브
+                </>
+              ) : (
+                `${nickname}의 아카이브`
+              )}
             </h1>
             <p className="B2 leading-[150%] tracking-[-0.35px] text-[#B9BDC2]">
               {activeTab === "weekly"
@@ -113,16 +129,12 @@ const RecapSecondSlide = ({
       </div>
 
       {/* --- [폴더 애니메이션 본체] --- */}
-      <div className="relative mx-auto mt-12 mb-4 h-[220px] w-[280px]">
+      <div className="relative mx-auto mt-22 mb-4 h-[220px] w-[280px]">
         {/* 배경 광원 효과 */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15)_0%,transparent_60%)]" />
 
         {/* 1. Folder Back (뒷면) */}
-        <div
-          className="absolute bottom-4 left-1/2 h-[195px] w-[215px] -translate-x-1/2 rounded-[10px] border-[0.5px] border-solid border-[#36383E] bg-gray-800 opacity-50"
-          data-name="퀵드랍4"
-          data-node-id="6895:11830"
-        />
+        <div className="absolute bottom-4 left-1/2 h-[195px] w-[215px] -translate-x-1/2 rounded-[10px] border-[0.5px] border-solid border-[#36383E] bg-gray-800 opacity-50" />
 
         {/* 2. Images (중간 레이어 - 팝업 애니메이션) */}
         <div className="pointer-events-none absolute bottom-4 left-0 z-10 flex h-full w-full items-end justify-center">
@@ -166,10 +178,10 @@ const RecapSecondSlide = ({
         initial={{ opacity: 0, y: 20 }}
         animate={isOpen ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="w-full px-[27.5px] pb-[24.87px]"
+        className="absolute bottom-0 w-full px-[27.5px] pb-[24.87px]"
       >
-        <div className="flex items-end justify-between gap-9">
-          <div className="flex flex-col">
+        <div className="flex w-full items-end justify-between gap-9">
+          <div className="flex h-[60px] w-[138px] flex-col">
             <p className="B2 leading-[150%] tracking-[-0.35px] text-gray-600">
               {dropCount}회 드랍
             </p>

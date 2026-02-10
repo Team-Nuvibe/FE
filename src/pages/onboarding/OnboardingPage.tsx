@@ -1,12 +1,5 @@
-import Onboarding1_bg from "@/assets/images/img_onboarding1_bg.svg";
-import Onboarding2 from "@/assets/images/img_onboarding2.svg";
-import Onboarding2_frame_1 from "@/assets/images/img_onboarding2_frame_1.svg";
-import Onboarding2_frame_2 from "@/assets/images/img_onboarding2_frame_2.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import Onboarding1_frame_1 from "@/assets/images/img_onboarding1_frame_1.png";
-import Onboarding3_frame from "@/assets/images/img_onboarding3_frame.png";
-import Onboarding3_text from "@/assets/images/img_onboarding3_text.svg";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import Onboarding1_1 from "@/assets/images/img_onboarding1_1.svg";
 import Onboarding1_2 from "@/assets/images/img_onboarding1_2.svg";

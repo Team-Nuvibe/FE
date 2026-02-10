@@ -206,12 +206,12 @@ const RecapFirstSlide = ({
 
   const weekDate = data
     ? {
-      start: formatDate(data.startDate),
-      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
-    }
+        start: formatDate(data.startDate),
+        end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+      }
     : { start: "", end: "" };
 
-  const dropCount = data?.totalDropCount || 0;
+  const dropCount = data?.totalDropsCount || 0;
 
   return (
     <div className="relative flex h-full w-full flex-col rounded-[15px] bg-[radial-gradient(ellipse_at_center,#191A1B_0%,#252729_40%,#353739_70%,#454749_100%)] shadow-[inset_0_0_40px_0_rgba(255,255,255,0.25)] backdrop-blur-[25px]">
@@ -220,13 +220,29 @@ const RecapFirstSlide = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="H2 leading-[150%] tracking-[-0.5px] text-gray-100">
-              {activeTab === "weekly"
-                ? `${nickname}의 이번주 바이브 태그`
-                : `${nickname}의 바이브 태그`}
+              {activeTab === "weekly" ? (
+                nickname.length > 5 ? (
+                  <>
+                    {nickname}의
+                    <br />
+                    이번주 바이브 태그
+                  </>
+                ) : (
+                  `${nickname}의 이번주 바이브 태그`
+                )
+              ) : nickname.length > 5 ? (
+                <>
+                  {nickname}의
+                  <br />
+                  바이브 태그
+                </>
+              ) : (
+                `${nickname}의 바이브 태그`
+              )}
             </h1>
             <p className="B2 leading-[150%] tracking-[-0.35px] text-[#B9BDC2]">
               {activeTab === "weekly"
-                ? "이번 주 가장 많이 쌓인 보드"
+                ? `이번주 드랍 ${dropCount}개`
                 : `총 드랍 ${dropCount}개`}
             </p>
           </div>

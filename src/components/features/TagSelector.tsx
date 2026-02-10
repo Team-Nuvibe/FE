@@ -88,8 +88,7 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
   const { data: tagsData, isPending: isPendingTags } = useGetFindTags(
     selectedCategory || "",
   );
-  const { data: searchTagsData, isPending: isPendingSearchTags } =
-    useGetSearchTags(debouncedSearchInput);
+  const { data: searchTagsData } = useGetSearchTags(debouncedSearchInput);
 
   const tags = tagsData?.data || [];
   const searchTags = searchTagsData?.data || [];

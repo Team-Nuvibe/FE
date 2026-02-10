@@ -8,15 +8,18 @@ interface UseGetActiveTribeListParams {
   cursorUnread?: boolean;
   cursorLastChatId?: number;
   size?: number;
+  refetchInterval?: number;
 }
 
-function useGetActiveTribeList({
-  cursorFav,
-  cursorLastActivityAt,
-  cursorUnread,
-  cursorLastChatId,
-  size = 20,
-}: UseGetActiveTribeListParams = {}) {
+function useGetActiveTribeList(params: UseGetActiveTribeListParams = {}) {
+  const {
+    cursorFav,
+    cursorLastActivityAt,
+    cursorUnread,
+    cursorLastChatId,
+    size = 20,
+    refetchInterval,
+  } = params;
   return useQuery({
     queryKey: [
       QUERY_KEY.activeTribeList,
@@ -34,6 +37,7 @@ function useGetActiveTribeList({
         cursorLastChatId,
         size,
       ),
+    refetchInterval,
   });
 }
 

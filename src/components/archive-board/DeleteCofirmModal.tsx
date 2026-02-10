@@ -1,16 +1,23 @@
-import WarningIcon from '@/assets/icons/icon_warning.svg?react'
-import { motion, AnimatePresence } from 'framer-motion';
+import WarningIcon from "@/assets/icons/icon_warning.svg?react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DeleteModalProps {
   isOpen: boolean;
-  count: number;
+  count?: number;
   maintext: string;
   subtext: string;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext, subtext }: DeleteModalProps) => {
+export const DeleteConfirmModal = ({
+  isOpen,
+  count,
+  onClose,
+  onConfirm,
+  maintext,
+  subtext,
+}: DeleteModalProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -27,40 +34,32 @@ export const DeleteConfirmModal = ({ isOpen, count, onClose, onConfirm, maintext
             animate={{ scale: 1, opacity: 1, y: -12 }} // -translate-y-3 corresponds to -12px
             exit={{ scale: 0.9, opacity: 0, y: -12 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="
-            w-[304px] h-[174px] max-w-[335px] p-[16px]
-            bg-gray-900/85 backdrop-blur-[22px] rounded-[10px]  
-            flex flex-col items-center justify-center text-center"
+            className="flex h-[174px] w-[304px] max-w-[335px] flex-col items-center justify-center rounded-[10px] bg-gray-900/85 p-[16px] text-center backdrop-blur-[22px]"
           >
-
             {/* 아이콘 */}
-            <WarningIcon className="w-[32px] h-[32px] mb-3" />
+            <WarningIcon className="mb-3 h-[32px] w-[32px]" />
             <div className="mb-4">
-              <div className="text-[17.38px] font-semibold text-white leading-[150%] tracking-[-0.025em]">
-                {count}{maintext}
+              <div className="text-[17.38px] leading-[150%] font-semibold tracking-[-0.025em] text-white">
+                {count}
+                {maintext}
               </div>
               {/* 서브 텍스트 */}
-              <p className="text-[10.43px] font-medium text-gray-300 leading-[150%] tracking-[-0.025em]">
+              <p className="text-[10.43px] leading-[150%] font-medium tracking-[-0.025em] text-gray-300">
                 {subtext}
               </p>
             </div>
-
 
             {/* 버튼 영역 */}
             <div className="flex w-full gap-2">
               <button
                 onClick={onConfirm}
-                className=" 
-                  w-[130px] h-[36px] rounded-[5px] bg-gray-700 flex items-center justify-center
-                  text-gray-300 ST3"
+                className="ST3 flex h-[36px] w-[130px] items-center justify-center rounded-[5px] bg-gray-700 text-gray-300"
               >
                 삭제하기
               </button>
               <button
                 onClick={onClose}
-                className="
-                  w-[130px] h-[36px] rounded-[5px] bg-gray-300
-                  text-gray-800 ST3"
+                className="ST3 h-[36px] w-[130px] rounded-[5px] bg-gray-300 text-gray-800"
               >
                 돌아가기
               </button>

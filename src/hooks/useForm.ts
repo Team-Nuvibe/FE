@@ -11,10 +11,10 @@ interface UseFormProps<T> {
 function useForm<T>({ initialValues, validate }: UseFormProps<T>) {
   const [values, setValues] = useState(initialValues);
 
-  const [touched, setTouched] = useState<Record<string, boolean>>();
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   // {"email": false, "password": true}
 
-  const [errors, setErrors] = useState<Record<string, string>>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
   // { "이메일은 반드시 @를 포함해야 합니다." "email"}
 
   // 사용자가 입력 값을 업데이트 할 때 실행되는 함수

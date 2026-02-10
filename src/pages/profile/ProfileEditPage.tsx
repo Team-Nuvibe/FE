@@ -18,11 +18,14 @@ import {
 } from '@/hooks/mutation/user/useUpdateEmail';
 import { useUpdatePassword } from '@/hooks/mutation/user/useUpdatePassword';
 import { checkPassword } from '@/apis/auth';
+import { useNavbarActions } from '@/hooks/useNavbarStore';
 
 const ProfileEditPage = () => {
     const { type } = useParams();
     const navigate = useNavigate();
     const { email, nickname } = useUserStore();
+
+    const { setNavbarVisible } = useNavbarActions();
 
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -79,6 +82,11 @@ const ProfileEditPage = () => {
             setIsConfirmFocused(false);
         }
     }, [type]);
+
+    useEffect(() => {
+        setNavbarVisible(false); // 페이지 진입 시 네비바 숨기기
+        return () => setNavbarVisible(true); // 페이지 나갈 때 네비바 다시 보이기
+    }, [setNavbarVisible]);
 
     const handleSave = () => {
         // 모바일 키보드 닫기
@@ -237,7 +245,7 @@ const ProfileEditPage = () => {
 
     return (
         <div className="w-full h-full bg-black text-white flex flex-col items-center relative">
-            <div className="w-full max-w-[393px] h-full flex flex-col px-[16px]">
+            <div className="w-full max-w-98.25 h-full flex flex-col px-4">
                 <header className="flex items-center justify-center relative mt-[8.06px]">
                     <button
                         onClick={() => {
@@ -253,33 +261,33 @@ const ProfileEditPage = () => {
                     >
                         <ChevronRightIcon2 className="text-white w-6 h-6" />
                     </button>
-                    <h1 className="text-[20px] font-semibold text-gray-200 leading-[150%] tracking-[-0.025em]">{getTitle()}</h1>
+                    <h1 className="text-[20px] font-semibold text-gray-200 leading-[150%] tracking-[-0.25px]">{getTitle()}</h1>
                 </header>
 
                 <div className="flex-1 w-full">
                     {type === 'nickname' && (
-                        <div className="flex flex-col h-full pb-[calc(120px+env(safe-area-inset-bottom))]">
-                            <div className="flex flex-col mt-[24px]">
-                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">닉네임 변경</label>
+                        <div className="flex flex-col h-full pb-8">
+                            <div className="flex flex-col mt-6">
+                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.25px] mb-3">닉네임 변경</label>
 
-                                <div className="relative w-full bg-gray-800 rounded-[5px] px-[12px] h-[48px] flex items-center mb-[8px]">
+                                <div className="relative w-full bg-gray-900 rounded-[5px] px-3 h-12 flex items-center mb-2">
                                     <input
                                         type="text"
                                         value={newNickname}
                                         onChange={(e) => setNewNickname(e.target.value.slice(0, 15))}
                                         placeholder="닉네임을 입력해주세요."
-                                        className="w-full bg-transparent text-white placeholder:text-gray-600 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0"
+                                        className="w-full bg-transparent text-gray-100 placeholder:text-gray-600 text-[16px] outline-none font-normal leading-[150%] tracking-[-0.4px] border-none focus:ring-0"
                                     />
-                                    <span className={`absolute right-[12px] text-[10px] leading-[150%] tracking-[-0.025em] ${newNickname.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                                    <span className={`absolute right-3 text-[10px] leading-[150%] tracking-[-0.25px] ${newNickname.length > 0 ? 'text-gray-100' : 'text-gray-600'}`}>
                                         ({newNickname.length}/15)
                                     </span>
                                 </div>
 
-                                <p className="text-[#828282] text-[12px] font-normal leading-[150%] tracking-[-0.025em]">
+                                <p className="text-gray-600 text-[12px] font-normal leading-[150%] tracking-[-0.3px]">
                                     닉네임은 변경 후, 14일 뒤에 다시 변경할 수 있어요.
                                 </p>
                             </div>
-
+                            <div className="flex-1" />
                             <button
                                 onClick={() => {
                                     if (newNickname.length === 0) return;
@@ -292,7 +300,7 @@ const ProfileEditPage = () => {
                                     handleSave();
                                 }}
                                 className={`
-                                    mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                    w-full rounded-[5px] h-12 px-12.5 py-1.5 text-[16px] font-semibold leading-[150%] tracking-[-0.04px] flex items-center justify-center
                                     ${newNickname.length > 0 && newNickname !== nickname && !isSaving
                                         ? 'bg-gray-200 text-gray-900'
                                         : 'bg-gray-700 text-gray-900 cursor-not-allowed'
@@ -305,21 +313,21 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'email' && (
-                        <div className="flex flex-col h-full pb-[calc(120px+env(safe-area-inset-bottom))]">
-                            <div className="flex flex-col mt-[24px]">
-                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
+                        <div className="flex flex-col h-full pb-8">
+                            <div className="flex flex-col mt-6">
+                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.35px] mb-3">
                                     현재 이메일
                                 </label>
-                                <div className="w-full bg-gray-800 rounded-[5px] px-[12px] h-[48px] flex items-center mb-[12px]">
-                                    <span className="text-gray-100 text-[16px] font-medium leading-[150%] tracking-[-0.025em]">
+                                <div className="w-full bg-gray-900 rounded-[5px] px-3 py-2.5 h-12 flex items-center mb-4">
+                                    <span className="text-gray-100 text-[16px] font-normal leading-[150%] tracking-[-0.4px]">
                                         {email}
                                     </span>
                                 </div>
 
-                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[8px]">
+                                <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.35px] mb-3">
                                     새로운 이메일
                                 </label>
-                                <div className={`relative w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[6px] h-[48px] flex items-center justify-between border ${newEmail === email && newEmail.length > 0 && !isEmailVerified ? 'border-gray-300' : 'border-transparent'} `}>
+                                <div className={`relative w-full bg-gray-900 rounded-[5px] px-3 py-2.5 h-12 flex items-center justify-between border ${newEmail === email && newEmail.length > 0 && !isEmailVerified ? 'border-gray-300' : 'border-transparent'} `}>
                                     <input
                                         type="text"
                                         value={newEmail}
@@ -327,18 +335,18 @@ const ProfileEditPage = () => {
                                             setNewEmail(e.target.value);
                                             setIsEmailVerified(false);
                                         }}
-                                        placeholder="새로운 이메일을 입력해주세요."
-                                        className="flex-1 bg-transparent text-gray-100 placeholder:text-gray-600 text-[16px] outline-none font-medium placeholder:text-[14px] placeholder:font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                        placeholder="이메일을 입력해주세요."
+                                        className="flex-1 bg-transparent text-gray-100 placeholder:text-gray-600 text-[16px] outline-none font-normal leading-[150%] tracking-[-0.4px] p-0 border-none focus:ring-0 mr-2"
                                     />
                                     <button
                                         onClick={handleVerifyEmail}
                                         disabled={!isValidEmail || isEmailVerified || newEmail === email || isSendingEmail}
-                                        className={`w-[73px] h-[28px] rounded-[4px] text-[10px] font-medium leading-[150%] tracking-[-0.025em] whitespace-nowrap
+                                        className={`w-18.25 h-7 rounded-sm text-[10px] font-medium leading-[150%] tracking-[-0.025em] whitespace-nowrap
                                             ${isEmailVerified
                                                 ? 'bg-gray-600 text-gray-900 cursor-default'
                                                 : isValidEmail && newEmail !== email
                                                     ? 'bg-gray-300 text-gray-900'
-                                                    : 'bg-gray-600 text-gray-900'
+                                                    : 'bg-gray-600 text-gray-800'
                                             }
                                         `}
                                     >
@@ -351,9 +359,9 @@ const ProfileEditPage = () => {
                                     </p>
                                 )}
                             </div>
-
+                            <div className="flex-1" />
                             <button
-                                className={`mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                className={`mt-6 w-full rounded-[5px] h-12 px-12.5 py-1.5 text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
                                     ${isEmailVerified
                                         ? 'bg-gray-200 text-gray-900'
                                         : 'bg-gray-700 text-gray-900 cursor-not-allowed'
@@ -374,9 +382,9 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'password' && (
-                        <div className="flex flex-col pb-[calc(120px+env(safe-area-inset-bottom))]">
+                        <div className="flex flex-col pb-8 h-full">
                             {/* Progress Bar */}
-                            <div className="w-full mt-[23.5px] mb-[20px]">
+                            <div className="w-full mt-[23.5px] mb-5">
                                 {passwordStep === 'verify' ? (
                                     <PwChangeProcess1 className="w-full h-auto" />
                                 ) : (
@@ -386,10 +394,10 @@ const ProfileEditPage = () => {
 
                             {passwordStep === 'verify' ? (
                                 <>
-                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                    <label className="block text-gray-300 text-[14px] font-normal font-weight-400 leading-[150%] tracking-[-0.35px] mb-3">
                                         현재 비밀번호
                                     </label>
-                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center border ${passwordError ? 'border-gray-300' : 'border-transparent'} `}>
+                                    <div className={`w-full bg-gray-900 rounded-[5px] px-3 py-3 h-12 flex items-center border ${passwordError ? 'border-gray-300' : 'border-transparent'} `}>
                                         <input
                                             type={showCurrentPw ? 'text' : 'password'}
                                             value={currentPassword}
@@ -398,30 +406,30 @@ const ProfileEditPage = () => {
                                                 if (passwordError) setPasswordError('');
                                             }}
                                             placeholder="현재 비밀번호를 입력해주세요."
-                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-600 text-[16px] font-weight-500 outline-none font-normal leading-[150%] tracking-[-0.4px] p-0 border-none focus:ring-0 mr-2"
                                         />
                                         <button onClick={() => setShowCurrentPw(!showCurrentPw)} type="button">
                                             {showCurrentPw ? <IconPasswordEyeOpen className="w-6 h-6" /> : <IconPasswordEyeClose className="w-6 h-6" />}
                                         </button>
                                     </div>
                                     {passwordError && (
-                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mt-[8px]">
+                                        <p className="text-gray-300 text-[12px] font-normal font-weight-400 leading-[150%] tracking-[-0.3px] mt-2">
                                             {passwordError}
                                         </p>
                                     )}
                                 </>
                             ) : (
                                 <>
-                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                    <label className="block text-gray-300 text-[14px] font-normal font-weight-400 leading-[150%] tracking-[-0.35px] mb-3">
                                         새 비밀번호
                                     </label>
-                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred ? 'border-gray-300' : 'border-transparent'}`}>
+                                    <div className={`w-full bg-gray-900 rounded-[5px] px-3 py-3 h-12 flex items-center mb-2 border ${newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred ? 'border-gray-300' : 'border-transparent'}`}>
                                         <input
                                             type={showNewPw ? 'text' : 'password'}
                                             value={newPassword}
                                             onChange={(e) => {
                                                 setNewPassword(e.target.value);
-                                                setIsConfirmBlurred(false); // input change resets blur state
+                                                setIsConfirmBlurred(false);
                                                 setIsNewPwBlurred(false);
                                             }}
                                             onFocus={() => setIsNewPwFocused(true)}
@@ -430,7 +438,7 @@ const ProfileEditPage = () => {
                                                 setIsNewPwBlurred(true);
                                             }}
                                             placeholder="8~20자의 영문, 숫자, 특수문자를 조합해 주세요."
-                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-600 font-weight-500 text-[16px] outline-none font-normal leading-[150%] tracking-[-0.4px] p-0 border-none focus:ring-0 mr-2"
                                         />
                                         {isValidPassword && !isNewPwFocused && (!isConfirmBlurred || isPasswordMatch) && !isSameAsCurrent ? (
                                             <IconPasswordAvailable className="w-6 h-6" />
@@ -445,7 +453,7 @@ const ProfileEditPage = () => {
                                         )}
                                     </div>
                                     {newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred && (
-                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
+                                        <p className="text-gray-300 text-[12px] font-normal font-weight-400 leading-[150%] tracking-[-0.3px] mb-4">
                                             {isSameAsCurrent ? "현재 비밀번호와 다른 비밀번호를 입력해 주세요." :
                                                 newPassword.length < 8 ? "비밀번호는 8자 이상 입력해 주세요." :
                                                     newPassword.length > 20 ? "비밀번호는 20자 이하 입력해 주세요." :
@@ -453,12 +461,12 @@ const ProfileEditPage = () => {
                                         </p>
                                     )}
                                     {/* Spacer */}
-                                    {!(newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred) ? <div className="mb-[16px]"></div> : null}
+                                    {!(newPassword.length > 0 && (!isValidPassword || isSameAsCurrent) && isNewPwBlurred) ? <div className="mb-4"></div> : null}
 
-                                    <label className="block text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.025em] mb-[12px]">
+                                    <label className="block text-gray-300 text-[14px] font-normal font-weight-400 leading-[150%] tracking-[-0.35px] mb-3">
                                         새 비밀번호 확인
                                     </label>
-                                    <div className={`w-full bg-gray-800 rounded-[5px] pl-[12px] pr-[11px] py-[6px] h-[48px] flex items-center mb-[8px] border ${confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred ? 'border-gray-300' : 'border-transparent'}`}>
+                                    <div className={`w-full bg-gray-900 rounded-[5px] px-3 py-3 h-12 flex items-center mb-2 border ${confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred ? 'border-gray-300' : 'border-transparent'}`}>
                                         <input
                                             type={showConfirmPw ? 'text' : 'password'}
                                             value={confirmPassword}
@@ -472,7 +480,7 @@ const ProfileEditPage = () => {
                                                 setIsConfirmFocused(false);
                                             }}
                                             placeholder="동일한 비밀번호를 입력해주세요."
-                                            className="flex-1 bg-transparent text-white placeholder:text-gray-500 text-[14px] outline-none font-normal leading-[150%] tracking-[-0.025em] p-0 border-none focus:ring-0 mr-2"
+                                            className="flex-1 bg-transparent text-white placeholder:text-gray-600 text-[16px] outline-none font-normal leading-[150%] tracking-[-0.4px] p-0 border-none focus:ring-0 mr-2"
                                         />
                                         {isPasswordMatch && confirmPassword.length > 0 && !isConfirmFocused ? (
                                             <IconPasswordAvailable className="w-6 h-6" />
@@ -488,14 +496,14 @@ const ProfileEditPage = () => {
                                     </div>
 
                                     {confirmPassword.length > 0 && !isPasswordMatch && isConfirmBlurred && (
-                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.025em] mb-[16px]">
+                                        <p className="text-gray-300 text-[12px] font-normal leading-[150%] tracking-[-0.3px]">
                                             비밀번호를 다시 확인해 주세요.
                                         </p>
                                     )}
-                                    {confirmPassword.length === 0 && <div className="mb-[24px]"></div>}
+                                    {confirmPassword.length === 0 && <div className="mb-6"></div>}
                                 </>
                             )}
-
+                            <div className="flex-1" />
                             <button
                                 onClick={passwordStep === 'verify' ? handleNextStep : handleSave}
                                 disabled={
@@ -504,7 +512,7 @@ const ProfileEditPage = () => {
                                         : !isValidPassword || !isPasswordMatch || isSameAsCurrent || isSaving
                                 }
                                 className={`
-                                    mt-[24px] w-full rounded-[5px] h-[48px] px-[50px] py-[6px] text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
+                                    mt-6 w-full rounded-[5px] h-12 px-12.5 py-1.5 text-[16px] font-semibold leading-[150%] tracking-[-0.4px] flex items-center justify-center
                                     ${(
                                         passwordStep === 'verify'
                                             ? currentPassword.length >= 8 && !passwordError
@@ -520,7 +528,6 @@ const ProfileEditPage = () => {
                         </div>
                     )}
 
-                    {/* Nickname Restriction Modal */}
                     {(() => {
                         if (!nextAvailableDate) return null;
 
@@ -539,7 +546,7 @@ const ProfileEditPage = () => {
                     })()}
                 </div>
 
-                {/* Email Verification Modal & Sheet */}
+                {/* 이메일 인증 모달 및 바텀시트 */}
                 <EmailVerificationModal
                     isOpen={isModalOpen}
                     title="메일함을 확인해주세요"
@@ -562,7 +569,7 @@ const ProfileEditPage = () => {
                 {
                     toastMessage && (
                         <div className="animate-fade-in-out pointer-events-none fixed bottom-[113px] left-1/2 z-[9999] flex w-full max-w-[393px] -translate-x-1/2 justify-center px-[24.5px]">
-                            <div className="flex h-[48px] w-full items-center justify-center rounded-[5px] bg-[#D0D3D7]/85 px-[12px] py-[10px] text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
+                            <div className="flex h-12 w-full items-center justify-center rounded-[5px] bg-[#D0D3D7]/85 px-3 py-2.5 text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
                                 {toastMessage}
                             </div>
                         </div>

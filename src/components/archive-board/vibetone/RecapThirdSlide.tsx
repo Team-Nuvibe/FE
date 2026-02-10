@@ -82,9 +82,9 @@ const RecapThirdSlide = ({
 
   const weekDate = data
     ? {
-      start: formatDate(data.startDate),
-      end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
-    }
+        start: formatDate(data.startDate),
+        end: `~${formatDate(data.endDate).slice(5)}`, // YYYY 제거하고 MM.DD만
+      }
     : { start: "", end: "" };
 
   // API 데이터로부터 패턴 정보 - 직접 메시지 사용
@@ -100,9 +100,25 @@ const RecapThirdSlide = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="H2 leading-[150%] tracking-[-0.5px] text-gray-100">
-              {activeTab === "weekly"
-                ? `${nickname}의 이번주 패턴`
-                : `${nickname}의 패턴`}
+              {activeTab === "weekly" ? (
+                nickname.length > 5 ? (
+                  <>
+                    {nickname}의
+                    <br />
+                    이번주 패턴
+                  </>
+                ) : (
+                  `${nickname}의 이번주 패턴`
+                )
+              ) : nickname.length > 5 ? (
+                <>
+                  {nickname}의
+                  <br />
+                  패턴
+                </>
+              ) : (
+                `${nickname}의 패턴`
+              )}
             </h1>
             <p className="B2 leading-[150%] tracking-[-0.35px] text-[#B9BDC2]">
               {activeTab === "weekly" ? "이번 주 기록 흐름" : "기록 흐름"}
@@ -167,9 +183,9 @@ const RecapThirdSlide = ({
           animate={
             isActive
               ? {
-                ...floatingAnimation,
-                transition: { ...floatingAnimation.transition, delay: 0.5 }, // 엇박자로 움직이게 딜레이
-              }
+                  ...floatingAnimation,
+                  transition: { ...floatingAnimation.transition, delay: 0.5 }, // 엇박자로 움직이게 딜레이
+                }
               : {}
           }
         >
@@ -187,9 +203,9 @@ const RecapThirdSlide = ({
           animate={
             isActive
               ? {
-                ...floatingAnimation,
-                transition: { ...floatingAnimation.transition, delay: 1.0 }, // 엇박자
-              }
+                  ...floatingAnimation,
+                  transition: { ...floatingAnimation.transition, delay: 1.0 }, // 엇박자
+                }
               : {}
           }
         >

@@ -238,6 +238,23 @@ export const VibeCalandarPage = () => {
     }
   }, [currentDate]);
 
+  /* 바이브 드랍 핸들러 */
+  const handleDropVibe = useCallback(() => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        alert("파일을 선택하지 않았습니다.");
+        return;
+      }
+      navigate("/quickdrop", { state: { file } });
+    };
+    fileInput.click();
+  }, [navigate]);
+
   return (
     <div className="flex h-full w-full flex-col">
       <div className="flex w-full items-center justify-between px-4 pt-[27px] pb-[24px]">
@@ -327,9 +344,7 @@ export const VibeCalandarPage = () => {
               imageUrl: item.imageUrl,
             };
           })}
-          onDropClick={() => {
-            /* TODO: 바이브 드랍 페이지로 이동 */
-          }}
+          onDropClick={handleDropVibe}
         />
       )}
     </div>

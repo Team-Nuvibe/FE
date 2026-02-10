@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/immer-FF8800?style=flat-square&logo=immer&logoColor=white"/>
   <img src="https://img.shields.io/badge/date fns-770C56?style=flat-square&logo=datefns&logoColor=white"/>
   <img src="https://img.shields.io/badge/matter js-4B5562?style=flat-square&logo=matterjs&logoColor=white"/>
-  <img src="https://img.shields.io/badge/html2canvas-E72429?style=flat-square&logo=html2canvas&logoColor=white"/>
+  <img src="https://img.shields.io/badge/htmltoimage-E72429?style=flat-square&logo=htmltoimage&logoColor=white"/>
   <img src="https://img.shields.io/badge/axios-5A29E4?style=flat-square&logo=axios&logoColor=white"/>
   <img src="https://img.shields.io/badge/tanstack-000000?style=flat-square&logo=tanstack&logoColor=white"/>
   <img src="https://img.shields.io/badge/react intersection observer-FF4154?style=flat-square&logo=reactintersectionobserver&logoColor=white"/>
@@ -28,12 +28,11 @@
   <img src="https://img.shields.io/badge/firebase-DD2C00?style=flat-square&logo=firebase&logoColor=white"/>
   <img src="https://img.shields.io/badge/react query-FF4154?style=flat-square&logo=reactquery&logoColor=white"/>
 
-
 </p>
 
 ## 🔗 Migration History
 
-본 프로젝트는 원활한 협업을 위해 기존 프론트엔드 전용 레포지토리인 [nuvibe_frontend](https://github.com/j2nooh/nuvibe_frontend)를 통합하여 관리하고 있습니다. 
+본 프로젝트는 원활한 협업을 위해 기존 프론트엔드 전용 레포지토리인 [nuvibe_frontend](https://github.com/j2nooh/nuvibe_frontend)를 통합하여 관리하고 있습니다.
 
 - **이전 날짜:** 2026.01.06
 
@@ -42,7 +41,9 @@
 - **작업 내용:** 기존 FE 전용 레포지토리의 커밋 히스토리 이관 및 환경 설정 최적화
 
 ## 📌 GitHub Convention
+
 ### 📝 Commit
+
 - 작은 단위로 커밋, 유형은 **영어 대문자** 작성
 
 | Type       | Description              |
