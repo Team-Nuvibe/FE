@@ -244,9 +244,9 @@ const ProfileEditPage = () => {
     };
 
     return (
-        <div className="w-full h-full bg-black text-white flex flex-col items-center relative">
+        <div className="w-full h-dvh bg-black text-white flex flex-col items-center relative overflow-hidden">
             <div className="w-full max-w-98.25 h-full flex flex-col px-4">
-                <header className="flex items-center justify-center relative mt-[8.06px]">
+                <header className="flex items-center justify-center relative mt-[8.06px] h-14 shrink-0">
                     <button
                         onClick={() => {
                             if (type === 'password' && passwordStep === 'change') {
@@ -264,9 +264,9 @@ const ProfileEditPage = () => {
                     <h1 className="text-[20px] font-semibold text-gray-200 leading-[150%] tracking-[-0.25px]">{getTitle()}</h1>
                 </header>
 
-                <div className="flex-1 w-full">
+                <div className="flex-1 w-full overflow-y-auto scrollbar-hide flex flex-col">
                     {type === 'nickname' && (
-                        <div className="flex flex-col h-full pb-8">
+                        <div className="flex flex-col flex-1 pb-8">
                             <div className="flex flex-col mt-6">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.25px] mb-3">닉네임 변경</label>
 
@@ -287,7 +287,7 @@ const ProfileEditPage = () => {
                                     닉네임은 변경 후, 14일 뒤에 다시 변경할 수 있어요.
                                 </p>
                             </div>
-                            <div className="flex-1" />
+                            <div className="flex-1 min-h-5" />
                             <button
                                 onClick={() => {
                                     if (newNickname.length === 0) return;
@@ -313,7 +313,7 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'email' && (
-                        <div className="flex flex-col h-full pb-8">
+                        <div className="flex flex-col flex-1 pb-8">
                             <div className="flex flex-col mt-6">
                                 <label className="text-gray-300 text-[14px] font-normal leading-[150%] tracking-[-0.35px] mb-3">
                                     현재 이메일
@@ -359,7 +359,7 @@ const ProfileEditPage = () => {
                                     </p>
                                 )}
                             </div>
-                            <div className="flex-1" />
+                            <div className="flex-1 min-h-5" />
                             <button
                                 className={`mt-6 w-full rounded-[5px] h-12 px-12.5 py-1.5 text-[16px] font-semibold leading-[150%] tracking-[-0.025em] flex items-center justify-center
                                     ${isEmailVerified
@@ -382,7 +382,7 @@ const ProfileEditPage = () => {
                     )}
 
                     {type === 'password' && (
-                        <div className="flex flex-col pb-8 h-full">
+                        <div className="flex flex-col flex-1 pb-8">
                             {/* Progress Bar */}
                             <div className="w-full mt-[23.5px] mb-5">
                                 {passwordStep === 'verify' ? (
@@ -503,7 +503,7 @@ const ProfileEditPage = () => {
                                     {confirmPassword.length === 0 && <div className="mb-6"></div>}
                                 </>
                             )}
-                            <div className="flex-1" />
+                            <div className="flex-1 min-h-5" />
                             <button
                                 onClick={passwordStep === 'verify' ? handleNextStep : handleSave}
                                 disabled={
