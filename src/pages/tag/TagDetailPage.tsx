@@ -10,12 +10,12 @@ import { VibeDropModal } from "@/components/home/VibeDropModal";
 import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
 
 const tagImages = import.meta.glob(
-  "@/assets/images/tag-default-images/*.{png,jpg,jpeg}",
+  "@/assets/images/tag-default-images/*.{webp,jpg,jpeg}",
   {
-    eager: true,
     import: "default",
+    eager: true,
   },
-) as Record<string, string>;
+) as unknown as Record<string, string>;
 
 const allTagImages: Record<string, string> = {};
 
@@ -34,6 +34,12 @@ Object.entries(tagImages).forEach(([path, imageUrl]) => {
 export const TagDetailPage = () => {
   const { tagid } = useParams<{ tagid: string }>();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (tagid && /^[a-z]/.test(tagid)) {
+      const capitalizedTag = tagid.charAt(0).toUpperCase() + tagid.slice(1);
+      navigate(`/tag/${capitalizedTag}`, { replace: true });
+    }
+  }, [tagid, navigate]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
