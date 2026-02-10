@@ -198,7 +198,7 @@ export const ScrapPage = () => {
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-black text-white">
-      <header className="relative mx-4 mt-2 mb-6 flex items-center justify-center pt-[50px]">
+      <header className="relative mx-4 mt-2 mb-6 flex items-center justify-center">
         <h2 className="H2 tracking-tight text-gray-200">
           {tribeId ? "사진 모아보기" : "스크랩 모아보기"}
         </h2>
