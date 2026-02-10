@@ -18,17 +18,7 @@ const MovingDotAnimation = () => {
   return (
     <div className="pointer-events-none relative h-full w-full">
       {/* 애니메이션 컨테이너 - 중앙 위치 */}
-      <div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={
-          isMobile
-            ? {
-                background:
-                  "radial-gradient(circle, rgba(17, 24, 39, 0.3), rgba(156, 163, 175, 0.3))",
-              }
-            : {}
-        }
-      >
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <video
           src={drawingGuideMotion}
           autoPlay
@@ -38,8 +28,10 @@ const MovingDotAnimation = () => {
           webkit-playsinline="true"
           className="mx-auto h-auto w-[90vw] max-w-[361px] object-contain"
           style={{
-            filter: "invert(1) brightness(0.1)",
-            mixBlendMode: "multiply",
+            filter: isMobile
+              ? "invert(1) brightness(1) opacity(0.3)"
+              : "invert(1) brightness(0.1)",
+            mixBlendMode: isMobile ? "normal" : "multiply",
           }}
         />
       </div>
