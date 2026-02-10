@@ -272,7 +272,7 @@ const ProfileSettingPage = () => {
                                 아카이브 보드 알림
                             </h2>
                             <NotificationSettingItem
-                                title="Recap 알림"
+                                title="바이브 톤 알림"
                                 desc="나의 감각이 정리되었을 때 알려드려요."
                                 isOn={settings.recap}
                                 onToggle={() => toggleSetting('recap')}
