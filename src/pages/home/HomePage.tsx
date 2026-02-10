@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { imageMap, allTagImages } from "@/utils/imageMap";
+import { imageMap } from "@/utils/imageMap";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import Icon_notification from "@/assets/icons/icon_notification.svg?react";
