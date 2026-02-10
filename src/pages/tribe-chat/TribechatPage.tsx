@@ -391,7 +391,7 @@ const TribechatPage = () => {
             initial={{ opacity: 0, y: 20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="pointer-events-none fixed bottom-[100px] left-1/2 z-50 flex h-[48px] w-[344px] items-center justify-center rounded-[5px] bg-gray-200/85 py-[10px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25),0_1px_3px_0_rgba(18,18,18,0.3)] backdrop-blur-[30px]"
+            className="pointer-events-none fixed bottom-[113.5px] left-1/2 z-50 flex h-12 w-86 items-center justify-center rounded-[5px] bg-gray-200/85 pl-4 pr-2 py-2.5 shadow-[0_4px_4px_0_rgba(0,0,0,0.25),0_1px_3px_0_rgba(18,18,18,0.3)] backdrop-blur-[30px]"
           >
             <span className="B2 text-center leading-[150%] tracking-[-0.025em] text-black">
               {toastMessage}
