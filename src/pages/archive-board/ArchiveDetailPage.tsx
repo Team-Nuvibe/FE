@@ -23,6 +23,7 @@ import {
   getArchiveBoardDetail,
   deleteArchiveBoardImages,
   updateArchiveBoardName,
+  moveArchiveBoardImages,
 } from "@/apis/archive-board/archive";
 
 // Swiper styles
@@ -32,6 +33,7 @@ interface ModelItem {
   id: string;
   tag: string;
   thumbnail?: string;
+  uploadedAt?: string;
 }
 
 const ArchiveDetailPage = () => {
@@ -84,6 +86,7 @@ const ArchiveDetailPage = () => {
             id: String(img.boardImageId),
             tag: img.imageTag,
             thumbnail: img.imageUrl,
+            uploadedAt: img.uploadedAt,
           }));
 
           // Extract unique tags for filters
@@ -153,17 +156,35 @@ const ArchiveDetailPage = () => {
     }
   };
 
-  const handleBoardSelect = (targetBoard: Board) => {
-    console.log(
-      `Moving items ${selectedIds.join(", ")} to board ${targetBoard.name} (ID: ${targetBoard.id})`,
-    );
-    // TODO: Implement actual move logic API call here
+  const handleBoardSelect = async (targetBoard: Board) => {
+    if (!boardid) return;
 
-    // Reset states
-    setIsBoardSelectorOpen(false);
-    setIsSelectMode(false);
-    setIsMoveMode(false);
-    setSelectedIds([]);
+    try {
+      const boardImageIds = selectedIds.map((id) => parseInt(id));
+      await moveArchiveBoardImages(
+        parseInt(boardid),
+        targetBoard.id,
+        boardImageIds,
+      );
+
+      console.log(
+        `Successfully moved ${boardImageIds.length} images to board ${targetBoard.name}`,
+      );
+
+      // Update local state: remove moved images from current board
+      setAllModelItems((prev) =>
+        prev.filter((item) => !selectedIds.includes(item.id)),
+      );
+
+      // Reset states
+      setIsBoardSelectorOpen(false);
+      setIsSelectMode(false);
+      setIsMoveMode(false);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error("Failed to move images:", error);
+      // TODO: Show error toast to user
+    }
   };
 
   // Rename Logic
@@ -260,10 +281,11 @@ const ArchiveDetailPage = () => {
                     selectedFilter === filter ? "최신순" : filter,
                   )
                 }
-                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${selectedFilter === filter
-                  ? "bg-gray-200 text-black"
-                  : "bg-gray-900 text-gray-200"
-                  }`}
+                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${
+                  selectedFilter === filter
+                    ? "bg-gray-200 text-black"
+                    : "bg-gray-900 text-gray-200"
+                }`}
               >
                 {filter === "최신순" ? filter : `#${filter}`}
               </button>
@@ -304,8 +326,9 @@ const ArchiveDetailPage = () => {
 
                 {isSelectMode && (
                   <div
-                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${isSelected ? "bg-black/40" : "bg-black/10"
-                      }`}
+                    className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${
+                      isSelected ? "bg-black/40" : "bg-black/10"
+                    }`}
                   >
                     {isSelected ? (
                       <SelectedImageIcon className="h-[42px] w-[42px]" />
@@ -329,8 +352,8 @@ const ArchiveDetailPage = () => {
             onDelete={
               !isMoveMode
                 ? () => {
-                  if (selectedIds.length > 0) setIsDeleteModalOpen(true);
-                }
+                    if (selectedIds.length > 0) setIsDeleteModalOpen(true);
+                  }
                 : undefined
             }
             onMove={isMoveMode ? handleOpenBoardSelector : undefined}
@@ -365,6 +388,7 @@ const ArchiveDetailPage = () => {
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
             boardTitle={boardTitle}
+            createdAt={selectedItem.uploadedAt}
             onTagUpdate={(newTag) => {
               if (selectedItem) {
                 const updatedItem = { ...selectedItem, tag: newTag };

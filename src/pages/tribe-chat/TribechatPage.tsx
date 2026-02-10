@@ -230,8 +230,9 @@ const TribechatPage = () => {
             onClick={() => setActiveTab("ing")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${activeTab === "ing" ? "text-gray-200" : "text-gray-600"
-                }`}
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
+                activeTab === "ing" ? "text-gray-200" : "text-gray-600"
+              }`}
             >
               활성화
             </span>
@@ -250,8 +251,9 @@ const TribechatPage = () => {
             onClick={() => setActiveTab("waiting")}
           >
             <span
-              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${activeTab === "waiting" ? "text-gray-200" : "text-gray-600"
-                }`}
+              className={`ST2 leading-[150%] tracking-[-0.025em] transition-colors duration-200 ${
+                activeTab === "waiting" ? "text-gray-200" : "text-gray-600"
+              }`}
             >
               비활성화
             </span>

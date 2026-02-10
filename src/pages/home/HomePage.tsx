@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import Img_3 from "@/assets/images/img_3.png";
+import { useEffect, useRef, useState } from "react";
+import { imageMap, allTagImages } from "@/utils/imageMap";
 import Icon_shortcut_quickdrop from "@/assets/icons/icon_shortcut_quickdrop.svg?react";
 import Icon_plus from "@/assets/icons/icon_plus.svg?react";
 import Icon_notification from "@/assets/icons/icon_notification.svg?react";
@@ -13,38 +13,9 @@ import useGetDropMission from "@/hooks/queries/useGetDropMission";
 import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
 import Union from "@/assets/icons/Union.svg?react";
 import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
-import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
-
-const tagImages = import.meta.glob(
-  "@/assets/images/tag-default-images/**/*.{png,jpg,jpeg}",
-  {
-    eager: true,
-    import: "default",
-  },
-) as Record<string, string>;
-
-const imageMap: Record<string, Record<string, string>> = {};
-const allTagImages: Record<string, string> = {};
-
-Object.entries(tagImages).forEach(([path, imageUrl]) => {
-  const parts = path.split("/");
-  const category = parts[parts.length - 2].toLowerCase();
-  const fileName = parts[parts.length - 1];
-
-  if (fileName.length > 4) {
-    const tagNameWithExt = fileName.substring(4);
-    const tagName = tagNameWithExt.split(".")[0].toLowerCase();
-
-    if (!imageMap[category]) {
-      imageMap[category] = {};
-    }
-    imageMap[category][tagName] = imageUrl;
-    allTagImages[tagName] = imageUrl;
-  }
-});
 
 const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);

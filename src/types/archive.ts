@@ -18,6 +18,7 @@ export interface ArchiveBoardImage {
   imageId: number;
   imageUrl: string;
   imageTag: string;
+  uploadedAt?: string; // Optional as API may not always include it
 }
 
 // 아카이브 보드 상세 타입
@@ -66,7 +67,7 @@ export interface TagUsageRankingResponse {
   period: string;
   startDate: string;
   endDate: string;
-  totalDropCount: number;
+  totalDropsCount: number;
   ranks: TagRankItem[];
 }
 
@@ -96,7 +97,7 @@ export interface MostUsedBoardResponse {
   period: string;
   startDate: string;
   endDate: string;
-  totalDropCount: number;
+  totalDropsCount: number;
   boardId: number;
   boardName: string;
   boardImages: string[];

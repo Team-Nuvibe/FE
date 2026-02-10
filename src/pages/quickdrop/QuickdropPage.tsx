@@ -85,10 +85,10 @@ export const QuickdropPage = () => {
     userTribeId: number;
     isActivatable: boolean; // counts >= 5
     joinStatus?:
-    | "new_waiting"
-    | "new_active"
-    | "already_waiting"
-    | "already_active";
+      | "new_waiting"
+      | "new_active"
+      | "already_waiting"
+      | "already_active";
   } | null>(null);
 
   // Tribe Chat Queries and Mutations
@@ -98,6 +98,8 @@ export const QuickdropPage = () => {
   const { mutate: activateUserTribe, isPending: isActivating } =
     useActivateUserTribe();
   const { mutate: sendChatMessage } = useSendChatMessage();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -164,8 +166,12 @@ export const QuickdropPage = () => {
 
   // 이미지 업로드 핸들러
   const handleBoardComplete = async (selectedBoard: Board) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!imageData.image || !imageData.tag) {
       console.error("Image or tag is missing");
+      setIsSubmitting(false);
       return;
     }
 
@@ -189,6 +195,7 @@ export const QuickdropPage = () => {
       if (!imageId) {
         console.error("❌ Critical: imageId is missing from response!");
         alert("이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
+        setIsSubmitting(false);
         return;
       }
 
@@ -292,7 +299,7 @@ export const QuickdropPage = () => {
             if (
               joinError.response?.status === 400 &&
               joinError.response?.data?.message ===
-              "이미 해당 태그의 트라이브에 가입되어 있습니다."
+                "이미 해당 태그의 트라이브에 가입되어 있습니다."
             ) {
               console.log("ℹ️ Already joined, checking lists...");
 
@@ -349,6 +356,7 @@ export const QuickdropPage = () => {
             alert(
               "트라이브 정보 로딩에 실패했습니다. 잠시 후 다시 시도해주세요.",
             );
+            setIsSubmitting(false);
           },
         },
       );
@@ -356,6 +364,7 @@ export const QuickdropPage = () => {
       console.error("Failed to upload image:", error);
       // TODO: 사용자에게 에러 메시지 표시
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+      setIsSubmitting(false);
     }
   };
 
@@ -435,9 +444,10 @@ export const QuickdropPage = () => {
           <div className="relative flex flex-col items-center justify-center gap-4">
             {/* 배경 조명 효과 */}
             <div
-              className="absolute -bottom-50 left-1/2 -translate-x-1/2 w-full h-dvh pointer-events-none"
+              className="pointer-events-none absolute -bottom-50 left-1/2 h-dvh w-full -translate-x-1/2"
               style={{
-                background: "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
+                background:
+                  "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
                 filter: "blur(30px)",
               }}
             />

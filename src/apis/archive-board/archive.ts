@@ -129,3 +129,19 @@ export const getArchiveBoardDetail = async (
   );
   return data;
 };
+
+// 이미지 아카이브 보드 이동
+export const moveArchiveBoardImages = async (
+  boardId: number,
+  targetBoardId: number,
+  boardImageIds: number[],
+): Promise<ApiResponse<null>> => {
+  const { data } = await axiosInstance.patch<ApiResponse<null>>(
+    `/api/archive/${boardId}/images/move`,
+    {
+      targetBoardId,
+      boardImageIds,
+    },
+  );
+  return data;
+};

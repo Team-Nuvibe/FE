@@ -54,13 +54,14 @@ const LoginPage = () => {
     }
   }, [location.state]);
 
-  const { values, errors, getInputProps } = useForm<UserSigninInformation>({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validate: validateSignin,
-  });
+  const { values, errors, touched, getInputProps } =
+    useForm<UserSigninInformation>({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validate: validateSignin,
+    });
 
   const isDisabled =
     Object.values(errors || {}).some((error) => error.length > 0) || // 오류 있으면 true
@@ -135,6 +136,11 @@ const LoginPage = () => {
               type="email"
               placeholder="이메일을 입력해주세요."
             />
+            {touched.email && errors.email && (
+              <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
+                {errors.email}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-3">
             <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
@@ -153,6 +159,11 @@ const LoginPage = () => {
                 </button>
               }
             />
+            {touched.password && errors.password && (
+              <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
+                {errors.password}
+              </p>
+            )}
           </div>
           <div className="B2 mb-2 flex items-center justify-between pt-[50px] leading-[150%] tracking-[-0.35px] text-gray-300">
             <div className="flex items-center gap-2">

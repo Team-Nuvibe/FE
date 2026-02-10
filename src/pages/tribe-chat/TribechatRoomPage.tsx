@@ -100,9 +100,9 @@ const TribechatRoomPage = () => {
           isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
           userProfile: item.sender
             ? {
-              name: item.sender.nickname || "Unknown",
-              avatar: item.sender.profileImage || "#E2E2E2",
-            }
+                name: item.sender.nickname || "Unknown",
+                avatar: item.sender.profileImage || "#E2E2E2",
+              }
             : undefined,
           reactions,
           myReactions: {
@@ -271,7 +271,7 @@ const TribechatRoomPage = () => {
           aria-label="사진 보기"
           onClick={() =>
             navigate("/tribe-chat/scrap", {
-              state: { tribeId: Number(tribeId) },
+              state: { tribeId: Number(tribeId), imageTag },
             })
           }
         >

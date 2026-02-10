@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CloseIcon from "@/assets/icons/icon_xbutton_24.svg?react";
 import RefreshIcon from "@/assets/icons/icon_refreshbutton.svg?react";
 import DownloadIcon from "@/assets/icons/icon_savebutton.svg?react";
+import DropIcon from "@/assets/logos/Subtract.svg?react";
 
 import defaultCoverImage from "@/assets/images/img_blur.svg";
 import MovingDotAnimation from "@/components/archive-board/vibecalendar/MovingDotAnimation";
@@ -158,34 +159,70 @@ const RevealImagePage: React.FC = () => {
     navigate(-1); // 뒤로가기
   };
 
-  const handleDownload = async () => {
-    if (isDownloading) return;
+  // 원본 이미지와 스크래치 캔버스를 합성하여 Blob으로 반환하는 공통 함수
+  const getCompositeBlob = async (): Promise<Blob | null> => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (!canvas || !container) return null;
 
+    const downloadCanvas = document.createElement("canvas");
+    const rect = container.getBoundingClientRect();
+    const scale = 2;
+    downloadCanvas.width = rect.width * scale;
+    downloadCanvas.height = rect.height * scale;
+    const ctx = downloadCanvas.getContext("2d");
+    if (!ctx) throw new Error("Context failed");
+    ctx.scale(scale, scale);
+
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = imageUrl;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+
+    ctx.drawImage(img, 0, 0, rect.width, rect.height);
+    ctx.drawImage(canvas, 0, 0, rect.width, rect.height);
+
+    return new Promise<Blob | null>((resolve) => {
+      downloadCanvas.toBlob(resolve, "image/png");
+    });
+  };
+
+  // Drop Vibe 버튼 클릭
+  const handleDropVibe = async () => {
+    if (isDownloading) return;
     setIsDownloading(true);
 
     try {
-      const downloadCanvas = document.createElement("canvas");
-      const rect = container.getBoundingClientRect();
-      const scale = 2;
-      downloadCanvas.width = rect.width * scale;
-      downloadCanvas.height = rect.height * scale;
-      const ctx = downloadCanvas.getContext("2d");
-      if (!ctx) throw new Error("Context failed");
-      ctx.scale(scale, scale);
+      const blob = await getCompositeBlob();
+      if (!blob) throw new Error("Blob creation failed");
 
-      const img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.src = imageUrl;
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
+      const file = new File([blob], `RevealVibe_${Date.now()}.png`, {
+        type: "image/png",
       });
 
-      ctx.drawImage(img, 0, 0, rect.width, rect.height);
-      ctx.drawImage(canvas, 0, 0, rect.width, rect.height);
+      navigate("/quickdrop", {
+        state: {
+          file,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      showToast("오류가 발생했습니다");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      const blob = await getCompositeBlob();
+      if (!blob) throw new Error("Blob creation failed");
 
       const currentCount = parseInt(
         localStorage.getItem("revealVibeCount") || "0",
@@ -194,12 +231,6 @@ const RevealImagePage: React.FC = () => {
       const newCount = currentCount + 1;
       localStorage.setItem("revealVibeCount", newCount.toString());
       const fileName = `RevealVibe${newCount}.png`;
-
-      const blob = await new Promise<Blob | null>((resolve) => {
-        downloadCanvas.toBlob(resolve, "image/png");
-      });
-
-      if (!blob) throw new Error("Blob creation failed");
 
       const file = new File([blob], fileName, { type: "image/png" });
 
@@ -335,12 +366,19 @@ const RevealImagePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative z-30 px-4 pb-6">
+      {/* 하단 Drop Vibe 버튼 */}
+      <div className="absolute bottom-20 left-1/2 z-30 -translate-x-1/2">
         <button
-          onClick={handleClose}
-          className="ST1 flex h-[48px] w-full items-center justify-center gap-2 rounded-[10px] border border-gray-700 bg-transparent text-gray-200"
+          onClick={handleDropVibe}
+          className="mx-auto flex h-12 w-[230px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
         >
-          Drop Your Current Vibe
+          <DropIcon className="h-5.25 w-5.25" />
+          <span
+            className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
+            style={{ WebkitTextFillColor: "transparent" }}
+          >
+            Drop Your Current Vibe
+          </span>
         </button>
       </div>
 
