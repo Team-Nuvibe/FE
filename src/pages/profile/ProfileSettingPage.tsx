@@ -232,7 +232,7 @@ const ProfileSettingPage = () => {
                             <div className="mt-7">
                                 <p className="text-white font-normal">
                                     이용자는 언제든지 개인정보 열람, 수정, 삭제를 요청할 수 있으며,<br />
-                                    문의는 서비스 고객 문의 메일 support@nuvibe.com을 통해<br /> 가능합니다.
+                                    문의는 서비스 고객 문의 메일 nuvibe.official@gmail.com을 통해<br /> 가능합니다.
                                 </p>
                             </div>
                         </div>
