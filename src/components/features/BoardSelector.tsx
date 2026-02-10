@@ -1,16 +1,11 @@
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?react";
-import IconQuickdropAdd from "@/assets/icons/icon_quickdrop_add.svg";
-import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
-import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
 import IconPlus from "@/assets/icons/icon_plus.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
 import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
-import Union from "@/assets/icons/Union.svg?react";
 import { useState, useEffect } from "react";
-import { AddBoardModal } from "../quickdrop/AddBoardModal";
 import {
   getArchiveList,
   createArchiveBoard,

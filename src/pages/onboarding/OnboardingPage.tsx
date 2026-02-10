@@ -1,9 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
-import Onboarding1_1 from "@/assets/images/img_onboarding1_1.svg";
 import Onboarding1_2 from "@/assets/images/img_onboarding1_2.svg";
-import Onboarding2_1 from "@/assets/images/img_onboarding2_1.svg";
 import Onboarding2_2 from "@/assets/images/img_onboarding2_2.svg?react";
 import Onboarding2_3 from "@/assets/images/img_onboarding2_3.svg?react";
 import Onboarding2_4 from "@/assets/images/img_onboarding2_4.svg?react";
@@ -17,8 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
-import ChatMessageItem from "@/components/tribe-chat/ChatMessageItem";
-import EmojiReactions from "@/components/tribe-chat/EmojiReactions";
 
 export const OnboardingPage = () => {
   const navigate = useNavigate();

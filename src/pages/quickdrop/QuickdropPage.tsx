@@ -9,7 +9,6 @@ import { Pagination } from "swiper/modules";
 import IconChevronRightWhiteSquare from "@/assets/icons/icon_chevron_right_white_square.svg?react";
 import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
-import ImgTempUploaded from "@/assets/images/img_temp_uploaded.svg?react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
