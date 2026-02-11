@@ -286,13 +286,17 @@ const ArchiveDetailPage = () => {
                     selectedFilter === filter ? "최신순" : filter,
                   )
                 }
-                className={`ST2 rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${
+                className={`rounded-[5px] px-3 py-1.5 whitespace-nowrap transition-colors ${
                   selectedFilter === filter
                     ? "bg-gray-200 text-black"
-                    : "bg-gray-900 text-gray-200"
+                    : "bg-gray-900"
                 }`}
               >
-                {filter === "최신순" ? filter : `#${filter}`}
+                <span
+                  className={`ST2 leading-[150%] tracking-[-0.025em] ${selectedFilter === filter ? "text-black" : "bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text text-transparent"}`}
+                >
+                  {filter === "최신순" ? filter : `#${filter}`}
+                </span>
               </button>
             </SwiperSlide>
           ))}
