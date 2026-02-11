@@ -20,9 +20,7 @@ const InputBox = ({
     <div className="relative flex flex-col gap-1">
       <div
         className={`relative flex h-[48px] w-full max-w-[393px] items-center justify-between rounded-[5px] border bg-gray-900 p-3 transition-colors ${
-          hasError
-            ? "border-gray-300"
-            : "border-transparent focus-within:border-gray-300"
+          hasError ? "border-gray-300" : "border-transparent"
         }`}
       >
         <input
