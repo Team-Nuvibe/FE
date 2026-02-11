@@ -82,6 +82,12 @@ export interface ChatGridResponse {
 // 이모지 타입
 export type EmojiType = "LIKE" | "COOL" | "WOW";
 
+// 트라이브 챗 무음 토글 응답
+export interface UserTribeMuteResponse {
+  userTribeId: number;
+  isMuted: boolean;
+}
+
 // 트라이브 챗 즐겨찾기 응답
 export interface UserTribeFavoriteResponse {
   userTribeId: number;
@@ -130,6 +136,7 @@ export interface ActiveTribeItem {
   imageTag: string;
   counts: number;
   isFavorite: boolean;
+  isMuted: boolean;
   lastActivityAt: string;
   unreadCount: number;
 }

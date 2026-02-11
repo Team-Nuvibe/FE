@@ -98,8 +98,8 @@ export const OnboardingPage = () => {
                   <IconChevronRightWhiteSquare className="w-4" />
                 </div>
                 {/* TODO: 그라데이션 안되는 버그 픽스 */}
-                <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text leading-[150%] tracking-tight text-transparent">
-                  #Raw
+                <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,#FFFFFF_0%,rgba(247,247,247,0.3)_100%)] bg-clip-text leading-[150%] tracking-tight text-transparent">
+                  #Still
                 </p>
                 <p className="font-[Montserrat] text-[10px] font-light text-white italic">
                   2025. 11. 24

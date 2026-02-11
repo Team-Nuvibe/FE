@@ -16,37 +16,18 @@ export const NotificationPage = () => {
 
   // 드롭 미션 데이터 미리 불러오기
   const { data: dropMissionData } = useGetDropMission();
+  
 
-  // 시간순(최신순) 정렬 및 트라이브챗 음소거 시점 기준 필터링 적용
+  // 시간순(최신순) 정렬
   const sortedNotifications = useMemo(() => {
-    // 로컬 스토리지에서 음소거된 tribeId 목록 불러오기
-    const historyData: Record<number, { start: string, end: string | null }[]> = JSON.parse(localStorage.getItem("muteHistory") || "{}");
-    return notifications
-      .filter(noti => {
-        // NOTI-02와 NOTI-03의 id 참조 위치가 다름을 반영
-        const targetTribeId = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" 
-        ? noti.relatedId // 02는 relatedId가 방 ID
-        : noti.tribeId;  // 03은 tribeId가 방 ID
-        const intervals = historyData[Number(targetTribeId)];
-        const isTarget = noti.type === "TRIBE_CHAT_IMAGE_UPLOADED" || noti.type === "IMAGE_REACTION";
-        
-        if (intervals && isTarget) {
-          const notiTime = new Date(noti.createdAt).getTime();
-          // 알림 시각이 하나라도 음소거 구간 내에 있다면 영구 제외
-          const isMutedInHistory = intervals.some(interval => {
-            const startTime = new Date(interval.start).getTime();
-            // end가 null이면 현재까지 음소거 중인 상태로 간주
-            const endTime = interval.end ? new Date(interval.end).getTime() : Infinity;
-            return notiTime >= startTime && notiTime <= endTime;
-          });
-          if (isMutedInHistory) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [notifications]);
+  return [...notifications].sort((a, b) => {
+    const bt = Date.parse(b.createdAt ?? "") || 0;
+    const at = Date.parse(a.createdAt ?? "") || 0;
+    if (bt !== at) return bt - at;
+    return (b.notificationId ?? 0) - (a.notificationId ?? 0);
+  });
+}, [notifications]);
+
 
   const handleDelete = (id: number) => {
     deleteNoti(id);
@@ -159,7 +140,7 @@ export const NotificationPage = () => {
             <div className="flex flex-col items-center justify-center pt-50">
               <p className="text-gray-500">불러오는 중...</p>
             </div>
-          ) : notifications.length === 0 ? (
+          ) : sortedNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center pt-50">
               <div className="flex h-12 w-12 items-center justify-center mb-3">
                 <img

@@ -12,6 +12,7 @@ import useToggleTribeFavorite from "@/hooks/mutation/tribe-chat/useToggleTribeFa
 import useLeaveTribe from "@/hooks/mutation/tribe-chat/useLeaveTribe";
 import useMarkTribeAsRead from "@/hooks/mutation/tribe-chat/useMarkTribeAsRead";
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
+import useToggleTribeMute from "@/hooks/mutation/tribe-chat/useToggleTribeMute";
 
 const TribechatPage = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const TribechatPage = () => {
     useGetWaitingTribeList();
 
   // Mutation 훅
+  const { mutate: toggleMute } = useToggleTribeMute();
   const { mutate: toggleFavorite } = useToggleTribeFavorite();
   const { mutate: leaveTribe } = useLeaveTribe();
   const { mutate: markAsRead } = useMarkTribeAsRead();
@@ -120,27 +122,28 @@ const TribechatPage = () => {
         },
       });
     } else if (action === "mute") {
-      const now = new Date().toISOString();
-      setMuteHistory((prev) => {
-        const history = prev[tribeId] || [];
-        const lastInterval = history[history.length - 1];
-
-        // 마지막 구간이 null인 경우 (열려 있는 경우), 무음 해제 시점 기록
-        if (lastInterval && !lastInterval.end) {
-          // 무음 해제: 마지막 구간만 닫아서 반환
-          return {
-            ...prev,
-            [tribeId]: [...history.slice(0, -1), { ...lastInterval, end: now }],
-          };
-        } else {
-          // 무음 설정: 새로운 구간 추가해서 반환
-          return {
-            ...prev,
-            [tribeId]: [...history, { start: now, end: null }],
-          };
-        }
+      toggleMute(userTribeId, {
+        onSuccess: (res) => {
+          showToast(
+            res.data.isMuted ? "무음 설정되었습니다." : "무음 해제되었습니다.",
+          );
+          const now = new Date().toISOString();
+          setMuteHistory((prev) => {
+            const history = prev[tribeId] || [];
+            const last = history[history.length - 1];
+            if (res.data.isMuted) {
+              return { ...prev, [tribeId]: [...history, { start: now, end: null }],};
+            } 
+            if (last && !last.end) {
+              return { ...prev, [tribeId]: [...history.slice(0, -1), { ...last, end: now }],};
+            }
+            return prev;
+          });
+        },
+        onError: () => {
+          showToast("무음 상태 변경에 실패했습니다.");
+        },
       });
-      showToast("음소거 상태가 변경되었습니다.");
     } else if (action === "read") {
       // 읽음 처리
       markAsRead(tribeId, {
