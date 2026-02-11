@@ -74,6 +74,9 @@ const LoginPage = () => {
         password: values.password,
       },
       {
+        onSuccess: () => {
+          navigate(fromPath, { replace: true });
+        },
         onError: (error: unknown) => {
           const errorMessage = (error as any)?.response?.data?.message || "";
 
