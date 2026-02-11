@@ -4,6 +4,7 @@ import { useUserStore } from "@/hooks/useUserStore";
 import FolderIcon from "@/assets/icons/icon_folder_vibetone.svg?react";
 import type { MostUsedBoardResponse } from "@/types/archive";
 import { useNavigate } from "react-router";
+import BackLight from "@/assets/images/img_backlight.svg?react";
 
 const RecapSecondSlide = ({
   isActive,
@@ -66,23 +67,41 @@ const RecapSecondSlide = ({
   // 이미지 애니메이션 변수
   const imageVariants = {
     closed: {
+      x: 0,
       y: 100,
       scale: 0.8,
       opacity: 0,
       rotate: 0,
     },
-    open: (index: number) => ({
-      y: index === 1 ? CENTER_IMAGE_Y : SIDE_IMAGE_Y, // 상수 사용
-      scale: 1,
-      opacity: 1,
-      rotate: (index - 1) * 20,
-      transition: {
-        type: "spring" as const,
-        stiffness: 200,
-        damping: 18,
-        delay: index * 0.1,
-      },
-    }),
+    open: ({ index }: { index: number }) => {
+      let x = 0;
+      let rotate = 0;
+
+      if (index === 0) {
+        x = 0;
+        rotate = 0;
+      } else if (index === 1) {
+        x = -50;
+        rotate = -15;
+      } else {
+        x = 50;
+        rotate = 15;
+      }
+
+      return {
+        x,
+        y: index === 0 ? CENTER_IMAGE_Y : SIDE_IMAGE_Y,
+        scale: 1,
+        opacity: 1,
+        rotate,
+        transition: {
+          type: "spring" as const,
+          stiffness: 200,
+          damping: 18,
+          delay: index * 0.1,
+        },
+      };
+    },
   };
 
   return (
@@ -131,8 +150,7 @@ const RecapSecondSlide = ({
       {/* --- [폴더 애니메이션 본체] --- */}
       <div className="relative mx-auto mt-22 mb-4 h-[220px] w-[280px]">
         {/* 배경 광원 효과 */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15)_0%,transparent_60%)]" />
-
+        <BackLight className="absolute bottom-0 left-1/2 -translate-x-1/2" />
         {/* 1. Folder Back (뒷면) */}
         <div className="absolute bottom-4 left-1/2 h-[195px] w-[215px] -translate-x-1/2 rounded-[10px] border-[0.5px] border-solid border-[#36383E] bg-gray-800 opacity-50" />
 
@@ -142,16 +160,15 @@ const RecapSecondSlide = ({
             {images.map((src, index) => (
               <motion.div
                 key={index}
-                custom={index}
+                custom={{ index, count: images.length }}
                 variants={imageVariants}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
-                className={`absolute origin-bottom overflow-hidden rounded-[5px] border-[3px] shadow-2xl ${
-                  index === 1 ? "h-[198px] w-[149px]" : "h-[146px] w-[110px]"
+                className={`shadow-3xl absolute origin-bottom overflow-hidden rounded-[5px] ${
+                  index === 0 ? "h-[198px] w-[149px]" : "h-[146px] w-[110px]"
                 }`}
                 style={{
-                  zIndex: index === 1 ? 20 : 10,
-                  x: (index - 1) * 50,
+                  zIndex: index === 0 ? 20 : 10,
                 }}
               >
                 <img
