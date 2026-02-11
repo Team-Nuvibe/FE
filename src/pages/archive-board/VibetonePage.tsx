@@ -267,6 +267,8 @@ const VibeTonePage = () => {
             ) : (
               <Swiper
                 modules={[Pagination]}
+                initialSlide={activeSlideIndex}
+                onSwiper={(swiper) => setActiveSlideIndex(swiper.activeIndex)}
                 onSlideChange={(swiper) =>
                   setActiveSlideIndex(swiper.activeIndex)
                 }
