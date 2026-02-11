@@ -27,7 +27,7 @@ export const CropToolbar = ({
       </div>
       <div className="scrollbar-hide flex items-center justify-center gap-5 overflow-x-auto pt-[21px]">
         <div className={`ST2 flex flex-col items-center gap-[10px]`}>
-          <p className="text-[12px]">원본</p>
+          <p className="text-[12px]">전체</p>
           <button
             key="original"
             onClick={() => {
