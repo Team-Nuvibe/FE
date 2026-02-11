@@ -54,7 +54,7 @@ const ArchiveDetailPage = () => {
   // State Management
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSelectMode, setIsSelectMode] = useState(false);
-  const [isMoveMode, setIsMoveMode] = useState(false); // New: Move mode state
+  const [isMoveMode, setIsMoveMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // Modals & Sheets State
@@ -222,7 +222,11 @@ const ArchiveDetailPage = () => {
 
         {/* Title Display */}
         <h1 className="H2 max-w-[200px] truncate text-gray-200">
-          {boardTitle}
+          {isSelectMode
+            ? isMoveMode
+              ? "이미지 이동하기"
+              : "이미지 삭제하기"
+            : boardTitle}
         </h1>
 
         {/* Etc Button */}
