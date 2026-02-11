@@ -56,8 +56,6 @@ export const TagDetailPage = () => {
     size: 5,
   });
 
-  console.log(chatGridData);
-
   const inputImageRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,37 +118,31 @@ export const TagDetailPage = () => {
           className={`flex flex-col gap-4 py-6 ${tagDetails?.data.hasImages ? "pl-4" : "px-4"}`}
         >
           <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
-          {!isChatGridPending && (
-            <>
-              {!tagDetails?.data.hasImages && (
-                <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
-                  <p>아직 드랍된 이미지가 없어요.</p>
-                  <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
+          {tagDetails?.data.tribeId === null && (
+            <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
+              <p>아직 드랍된 이미지가 없어요.</p>
+              <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
+            </div>
+          )}
+          {!isChatGridPending && tagDetails?.data.hasImages && (
+            <div className="flex gap-2 overflow-x-auto">
+              {chatGridData?.data.items.map((item, index) => (
+                <div
+                  key={item.chatId}
+                  className={`relative aspect-3/4 w-[101px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] ${
+                    index === chatGridData.data.items.length - 1 ? "mr-4" : ""
+                  }`}
+                  style={{
+                    backgroundImage: `url(${item.imageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <div className="absolute inset-0 z-20 rounded-[5px] bg-gray-900/70 backdrop-blur-[4px]" />
                 </div>
-              )}
-              {tagDetails?.data.hasImages && (
-                <div className="flex gap-2 overflow-x-auto">
-                  {chatGridData?.data.items.map((item, index) => (
-                    <div
-                      key={item.chatId}
-                      className={`relative aspect-3/4 w-[101px] shrink-0 cursor-pointer overflow-hidden rounded-[5px] ${
-                        index === chatGridData.data.items.length - 1
-                          ? "mr-4"
-                          : ""
-                      }`}
-                      style={{
-                        backgroundImage: `url(${item.imageUrl})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      <div className="absolute inset-0 z-20 rounded-[5px] bg-gray-900/70 backdrop-blur-[4px]" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+              ))}
+            </div>
           )}
         </section>
       </main>

@@ -36,7 +36,7 @@ export const RotationToolbar = ({
           </button>
           <div className="flex h-[18px] items-center justify-center">
             <div
-              className={`h-[8px] w-[8px] rounded-full ${isFlipped ? "bg-white" : "opacity-0"}`}
+              className={`h-[8px] w-[8px] rounded-full ${isFlipped && activeRotationTool === "rotate" ? "bg-white" : "opacity-0"}`}
             />
           </div>
         </div>
@@ -59,7 +59,7 @@ export const RotationToolbar = ({
           </button>
           <div className="flex h-[18px] items-center justify-center">
             <div
-              className={`h-[8px] w-[8px] rounded-full ${rotation === 0 ? "opacity-0" : "bg-white"}`}
+              className={`h-[8px] w-[8px] rounded-full ${rotation !== 0 && activeRotationTool === "flip" ? "bg-white" : "opacity-0"}`}
             />
           </div>
         </div>
