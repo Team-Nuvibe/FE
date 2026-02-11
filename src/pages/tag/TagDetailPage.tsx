@@ -70,6 +70,8 @@ export const TagDetailPage = () => {
     });
   };
 
+  console.log(tagDetails?.data);
+
   useEffect(() => {
     setNavbarVisible(false);
     return () => {
@@ -118,7 +120,7 @@ export const TagDetailPage = () => {
           className={`flex flex-col gap-4 py-6 ${tagDetails?.data.hasImages ? "pl-4" : "px-4"}`}
         >
           <h2 className="H2 text-gray-200">트라이브 챗 속 이미지</h2>
-          {tagDetails?.data.tribeId === null && (
+          {!isChatGridPending && !tagDetails?.data.hasImages && (
             <div className="flex w-full flex-col items-center justify-center rounded-[5px] border-[1px] border-dashed border-gray-700 bg-gray-900 py-[50px] text-[12px] font-medium tracking-tight text-gray-300">
               <p>아직 드랍된 이미지가 없어요.</p>
               <p>첫 번째 #{tagDetails?.data.tag}을 드랍해보세요!</p>
