@@ -409,14 +409,9 @@ export const ImageEditor = ({
     }
 
     if (toolId === "rotation") {
-      const fit = getRotatedFitZoom(
-        imageOriginalSize.width,
-        imageOriginalSize.height,
-        editState.rotation.angle,
-      );
       setEditState((prev) => ({
         ...prev,
-        crop: { ...prev.crop, zoom: fit, x: 0, y: 0 },
+        crop: { ...prev.crop, zoom: 1, x: 0, y: 0 },
       }));
     }
 
@@ -583,10 +578,22 @@ export const ImageEditor = ({
               readOnly={activeTool !== "crop" && activeTool !== "rotation"}
               cropMode={activeTool === "rotation" ? "original" : cropMode}
               restrictPosition={
-                activeTool === "rotation" ? false : cropMode === "fixedratio"
+                activeTool === "rotation" || cropMode === "fixedratio"
               }
-              minZoom={0.2}
-              maxZoom={4}
+              minZoom={
+                activeTool === "rotation"
+                  ? 1 // 회전 탭이면 줌 1로 고정 (축소 불가)
+                  : cropMode === "original"
+                    ? currentFitZoom / 2
+                    : 1
+              }
+              maxZoom={
+                activeTool === "rotation"
+                  ? 1 // 회전 탭이면 줌 1로 고정 (확대 불가)
+                  : cropMode === "original"
+                    ? currentFitZoom
+                    : 3
+              }
             />
           </div>
         </div>
@@ -626,16 +633,11 @@ export const ImageEditor = ({
           rotation={editState.rotation.angle}
           isFlipped={editState.rotation.flipHorizontal}
           onRotationChange={(angle) => {
-            const newFitZoom = getRotatedFitZoom(
-              imageOriginalSize.width,
-              imageOriginalSize.height,
-              angle,
-            );
             setEditState((prev) => ({
               ...prev,
               crop: {
                 ...prev.crop,
-                zoom: newFitZoom,
+                zoom: 1,
                 x: 0,
                 y: 0,
               },
