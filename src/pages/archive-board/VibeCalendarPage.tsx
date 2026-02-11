@@ -118,7 +118,7 @@ const CalendarGrid = React.memo(
                 >
                   {/* 다이아몬드 아이콘 */}
                   <div
-                    className={`size-1.75 rotate-45 rounded-[2px] transition-colors ${hasData ? "bg-[#D9D9D9]" : "bg-transparent"} `}
+                    className={`size-1.75 rotate-45 rounded-[2px] transition-colors ${isToday && hasData ? "bg-gray-900" : hasData ? "bg-[#D9D9D9]" : "bg-transparent"} `}
                   />
 
                   {/* Day Number */}
@@ -141,7 +141,7 @@ const CalendarGrid = React.memo(
 export const VibeCalandarPage = () => {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [activeDates, setActiveDates] = useState<string[]>([]);
   const [calendarImages, setCalendarImages] = useState<
     CalendarImageItemWithSource[]
@@ -173,7 +173,12 @@ export const VibeCalandarPage = () => {
       }
     };
     fetchMonthlyData();
-    setSelectedDate(null);
+    setSelectedDate((prev) => {
+      if (prev && isSameMonth(prev, currentDate)) {
+        return prev;
+      }
+      return null;
+    });
   }, [currentDate]);
 
   const handleSelectDate = useCallback((date: Date) => {
