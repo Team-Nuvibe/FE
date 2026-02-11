@@ -37,7 +37,7 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
     return (
       <div className="absolute right-0 bottom-[120px] left-0 z-40 mx-auto w-[341px]">
         <div className="animate-slide-up flex w-full items-start gap-4 rounded-[10px] bg-gray-900 p-4">
-          {/* 썸네일 placeholder - Figma 디자인과 일치 */}
+          {/* 썸네일 placeholder */}
           <div className="h-[120px] w-[90px] shrink-0 rounded-[5px] border border-dashed border-gray-700 bg-gray-800" />
 
           <div className="flex flex-1 flex-col justify-end gap-[42px]">
@@ -49,7 +49,7 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
             </div>
 
             <button
-              className="ST2 h-[36px] w-full rounded-[5px] bg-[#b9bdc2] text-gray-800"
+              className="ST2 relative z-10 h-[36px] w-full rounded-[5px] border-none bg-gray-300 text-gray-800"
               onClick={onDropClick}
             >
               바이브 드랍하기
@@ -60,10 +60,13 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
     );
   }
 
-  // 데이터가 있는 경우 (기존 Swiper UI)
+  // 데이터가 있는 경우
   return (
     <div className="absolute right-0 bottom-[120px] left-0 z-40 mx-auto flex w-[341px] flex-col items-center">
-      <div className="animate-slide-up relative w-full rounded-[10px] bg-gray-900 shadow-[inset_0_0_30px_0_rgba(255,255,255,0.2)]">
+      <div className="animate-slide-up relative w-full rounded-[10px] bg-gray-900">
+        {/* Shadow Layer */}
+        <div className="pointer-events-none absolute inset-0 z-10 rounded-[10px] shadow-[inset_0_0_30px_0_rgba(255,255,255,0.2)]" />
+
         <Swiper
           modules={[Pagination]}
           spaceBetween={0}
@@ -72,7 +75,7 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
             clickable: true,
             el: ".bottom-card-pagination",
           }}
-          className="w-full"
+          className="relative z-20 w-full"
         >
           {vibeData.map((item, index) => (
             <SwiperSlide key={index}>
@@ -94,7 +97,7 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
                   </div>
 
                   <button
-                    className="ST2 h-[36px] w-full rounded-[8px] bg-gray-300 text-gray-800"
+                    className="ST2 relative z-20 h-[36px] w-full rounded-[8px] border-none bg-gray-300 text-gray-800"
                     onClick={() =>
                       navigate("/archive-board/reveal", {
                         state: {
