@@ -103,6 +103,13 @@ const VibeTonePage = () => {
     fileInput.click();
   };
 
+  // 애니메이션 재실행을 위한 키
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   const handleSaveCard = async () => {
     if (isSaving) return;
     setIsSaving(true);
@@ -273,6 +280,7 @@ const VibeTonePage = () => {
                 {/* Slide 1: 물리 엔진 기반 태그 애니메이션 (RecapFirstSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapFirstSlide
+                    key={`first-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 0}
                     activeTab={activeTab}
                     data={tagRankingData?.data}
@@ -282,6 +290,7 @@ const VibeTonePage = () => {
                 {/* Slide 2: 폴더 팝업 애니메이션 (RecapSecondSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapSecondSlide
+                    key={`second-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 1}
                     activeTab={activeTab}
                     data={mostUsedBoardData?.data}
@@ -291,6 +300,7 @@ const VibeTonePage = () => {
                 {/* Slide 3: 패턴 분석 (RecapThirdSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapThirdSlide
+                    key={`third-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 2}
                     activeTab={activeTab}
                     data={usagePatternData?.data}
@@ -327,6 +337,7 @@ const VibeTonePage = () => {
             <button
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-gray-800"
               aria-label="Redo"
+              onClick={handleRefresh}
             >
               <RefreshIcon />
             </button>
