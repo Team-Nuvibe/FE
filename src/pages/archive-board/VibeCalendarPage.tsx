@@ -23,7 +23,7 @@ import { useNavigate } from "react-router";
 import { Swiper, SwiperSlide, type SwiperClass } from "swiper/react";
 import "swiper/css";
 import ChevronLeftIcon from "@/assets/icons/icon_chevron_left.svg?react";
-import MovemonthIcon from "@/assets/icons/icon_backbutton.svg?react";
+import MovemonthIcon from "@/assets/icons/icon_chevron_left_calendar.svg?react";
 
 import { useNavbarActions } from "../../hooks/useNavbarStore";
 import {
@@ -266,14 +266,14 @@ export const VibeCalandarPage = () => {
       </div>
 
       <div className="flex w-full flex-col items-center justify-center pb-[28px]">
-        <span className="mb-1 text-[10px] text-gray-400">
+        <span className="text-[10px] text-gray-400">
           {format(currentDate, "yyyy")}
         </span>
-        <div className="flex w-full justify-between px-[35.03px]">
+        <div className="flex w-full items-center justify-center gap-4 px-[35.03px]">
           <button onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
             <MovemonthIcon />
           </button>
-          <span className="px-4 text-[24px] font-bold text-white">
+          <span className="H2 px-4 text-white">
             {format(currentDate, "M")}월
           </span>
           <button onClick={() => setCurrentDate(addMonths(currentDate, 1))}>
