@@ -114,7 +114,11 @@ export const BoardSelector = ({
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
               }`}
-              onClick={() => onNext(selectedBoard!)}
+              onClick={() => {
+                if (selectedBoard) {
+                  onNext(selectedBoard!);
+                }
+              }}
             >
               완료
             </p>
@@ -295,17 +299,6 @@ export const BoardSelector = ({
           </div>
         </>
       )}
-      {/* {isModalOpen && (
-        <>
-          <div className="fixed inset-0 z-40 bg-black/50" />
-          <div className="fixed right-0 bottom-0 left-0 z-50 mx-auto max-w-[393px]">
-            <AddBoardModal
-              onClose={() => setIsModalOpen(false)}
-              onAdd={handleAddBoard}
-            />
-          </div>
-        </>
-      )} */}
       <BoardBottomSheet
         isOpen={isModalOpen}
         initialTitle=""

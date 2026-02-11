@@ -128,8 +128,10 @@ export const TagSelector = ({ onNext, onPrevious }: TagSelectorProps) => {
                 : "cursor-not-allowed text-gray-700"
             }`}
             onClick={() => {
-              addRecentSearch(selectedTag);
-              onNext(selectedTag);
+              if (selectedTag) {
+                addRecentSearch(selectedTag);
+                onNext(selectedTag);
+              }
             }}
           >
             다음
