@@ -303,11 +303,10 @@ const RevealImagePage: React.FC = () => {
       <div className="relative z-30 flex items-start justify-between px-4 pb-6">
         <div>
           <p className="H2 text-gray-200">
-            선명해진 과거의 <br />
-            {tag}을 확인해보세요
+            선명해진 과거의 <br />#{tag}을 확인해보세요
           </p>
         </div>
-        <div className="flex items-center gap-3 pt-6">
+        <div className="flex items-center gap-6 pt-6">
           <button onClick={handleReset} disabled={isDownloading}>
             <RefreshIcon className={isDownloading ? "opacity-50" : ""} />
           </button>
