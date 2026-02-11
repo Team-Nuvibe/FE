@@ -498,7 +498,7 @@ const ArchivePage = () => {
                           </p>
                           {/* 보드 내의 태그 갯수 */}
                           <p className="flex items-end text-[7px] font-normal text-gray-300">
-                            {board.tagCount} tag
+                            {board.tagCount} 태그
                           </p>
                         </div>
 
