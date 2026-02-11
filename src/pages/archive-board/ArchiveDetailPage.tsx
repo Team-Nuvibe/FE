@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import EtcButton from "@/assets/icons/icon_etcbutton.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
+import DropIcon from "@/assets/logos/Subtract.svg?react";
 
 // Components
 import { CountBottomSheet } from "@/components/archive-board/CountBottomSheet";
@@ -39,6 +40,9 @@ interface ModelItem {
 const ArchiveDetailPage = () => {
   const { boardid } = useParams<{ boardid: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { showDropVibeButton?: boolean };
+  const showDropVibeButton = state?.showDropVibeButton;
 
   // Title state to allow renaming
   const [boardTitle, setBoardTitle] = useState<string>(boardid || "");
@@ -205,14 +209,46 @@ const ArchiveDetailPage = () => {
   const { setNavbarVisible } = useNavbarActions();
 
   useEffect(() => {
-    // 선택 모드이거나(OR) 수정 모달이 열려있거나(OR) 상세 모달이 열려있으면 네비바를 숨김.
+    // 선택 모드이거나(OR) 수정 모달이 열려있거나(OR) 상세 모달이 열려있거나(OR) showDropVibeButton이 true이면 네비바를 숨김.
     const shouldHideNavbar =
-      isSelectMode || isEditNameModalOpen || !!selectedItem;
+      isSelectMode ||
+      isEditNameModalOpen ||
+      !!selectedItem ||
+      !!showDropVibeButton;
     setNavbarVisible(!shouldHideNavbar);
 
     // 컴포넌트 언마운트 시 네비바 다시 보이게 복구
     return () => setNavbarVisible(true);
-  }, [isSelectMode, isEditNameModalOpen, selectedItem, setNavbarVisible]);
+  }, [
+    isSelectMode,
+    isEditNameModalOpen,
+    selectedItem,
+    setNavbarVisible,
+    showDropVibeButton,
+  ]);
+
+  // Drop Vibe 버튼 클릭
+  const handleDropVibe = () => {
+    // 파일 선택 다이얼로그 열기
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        navigate("/quickdrop", {
+          state: {
+            file,
+            boardId: boardid ? parseInt(boardid, 10) : undefined,
+            boardName: boardTitle,
+          },
+        });
+      }
+    };
+
+    fileInput.click();
+  };
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
@@ -430,6 +466,32 @@ const ArchiveDetailPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 하단 Drop Vibe 버튼 */}
+      {showDropVibeButton && !isSelectMode && (
+        <>
+          <div
+            className="pointer-events-none fixed bottom-0 left-1/2 z-40 h-46.75 w-full max-w-107.5 -translate-x-1/2"
+            style={{
+              background: `linear-gradient(0deg, #121212 0%, rgba(18, 18, 18, 0.00) 100%)`,
+            }}
+          />
+          <div className="absolute bottom-15 left-1/2 z-50 -translate-x-1/2">
+            <button
+              onClick={handleDropVibe}
+              className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+            >
+              <DropIcon className="h-5.25 w-5.25" />
+              <span
+                className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
+                style={{ WebkitTextFillColor: "transparent" }}
+              >
+                Drop Your Vibe
+              </span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
