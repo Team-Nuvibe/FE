@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import Profile from "@/assets/icons/icon_subtract_vibetone.svg?react";
 import { useUserStore } from "@/hooks/useUserStore";
+import { ProfileImageDisplay } from "@/components/common/ProfileImageDisplay";
 import type { UserUsagePatternResponse } from "@/types/archive";
 
 // ----------------------------------------------------------------------
@@ -147,17 +147,10 @@ const RecapThirdSlide = ({
           className="relative z-10 flex h-[160px] w-[160px] items-center justify-center"
           variants={centerImageVariants}
         >
-          {/* Profile SVG (외곽 프레임) */}
-          <Profile className="absolute inset-0 h-full w-full" />
-
-          {/* 중앙 이미지 */}
-          <div className="relative z-10 h-[110px] w-[110px] overflow-hidden rounded-[40px]">
-            <img
-              src={profileImage}
-              alt="pattern center"
-              className="h-full w-full object-cover"
-            />
-          </div>
+          <ProfileImageDisplay
+            src={profileImage}
+            className="h-[160px] w-[160px]"
+          />
         </motion.div>
 
         {/* 2. 텍스트 버블들 (절대 위치로 배치) */}
@@ -198,7 +191,7 @@ const RecapThirdSlide = ({
 
         {/* 버블 3 */}
         <motion.div
-          className="absolute right-5 bottom-[15%] z-20"
+          className="absolute right-5 bottom-[17%] z-20"
           variants={bubbleVariants}
           animate={
             isActive
