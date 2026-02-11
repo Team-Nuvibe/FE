@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BackButton } from "../../components/onboarding/BackButton";
-import { useParams } from "react-router-dom";
+import BackButton from "@/assets/icons/icon_chevron_left.svg?react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import EtcButton from "@/assets/icons/icon_etcbutton.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
@@ -38,6 +38,7 @@ interface ModelItem {
 
 const ArchiveDetailPage = () => {
   const { boardid } = useParams<{ boardid: string }>();
+  const navigate = useNavigate();
 
   // Title state to allow renaming
   const [boardTitle, setBoardTitle] = useState<string>(boardid || "");
@@ -217,7 +218,7 @@ const ArchiveDetailPage = () => {
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white">
       {/* Header */}
       <div className="z-10 flex items-center justify-between px-4 pt-6 pb-4">
-        <BackButton className="h-6 w-6" />
+        <BackButton className="h-6 w-6" onClick={() => navigate(-1)} />
 
         {/* Title Display */}
         <h1 className="H2 max-w-[200px] truncate text-gray-200">
