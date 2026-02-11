@@ -16,6 +16,7 @@ interface ImageDetailModalProps {
   onClose: () => void;
   boardTitle?: string;
   createdAt?: string;
+  onTagUpdate?: (newTag: string) => void;
 }
 
 export const ImageDetailModal = ({
