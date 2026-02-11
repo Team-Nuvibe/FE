@@ -214,7 +214,7 @@ const VibeTonePage = () => {
         <button
           onClick={() => setActiveTab("weekly")}
           className={`relative flex w-[52px] justify-center transition-all duration-200 ${
-            activeTab === "weekly" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+            activeTab === "weekly" ? "ST2 text-gray-200" : "B2 text-gray-600"
           }`}
         >
           주간
@@ -230,7 +230,7 @@ const VibeTonePage = () => {
         <button
           onClick={() => setActiveTab("all")}
           className={`relative flex w-[52px] justify-center transition-all duration-200 ${
-            activeTab === "all" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+            activeTab === "all" ? "ST2 text-gray-200" : "B2 text-gray-600"
           }`}
         >
           전체
