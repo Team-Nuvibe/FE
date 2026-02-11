@@ -7,7 +7,6 @@ import RefreshIcon from "@/assets/icons/icon_refreshbutton.svg?react";
 import DownloadIcon from "@/assets/icons/icon_savebutton.svg?react";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
 
-import defaultCoverImage from "@/assets/images/img_blur.svg";
 import MovingDotAnimation from "@/components/archive-board/vibecalendar/MovingDotAnimation";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
 
@@ -19,6 +18,182 @@ interface LocationState {
   imageUrl: string;
   tag: string;
 }
+
+// Blur Box ( 모바일 환경을 위함 )
+const boxesForGauss = (sigma: number, n: number) => {
+  const wIdeal = Math.sqrt((12 * sigma * sigma) / n + 1);
+  let wl = Math.floor(wIdeal);
+  if (wl % 2 === 0) wl--;
+  const wu = wl + 2;
+
+  const mIdeal =
+    (12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4);
+  const m = Math.round(mIdeal);
+
+  const sizes = [];
+  for (let i = 0; i < n; i++) sizes.push(i < m ? wl : wu);
+  return sizes;
+};
+
+const boxBlurH = (
+  scl: Uint8ClampedArray,
+  tcl: Uint8ClampedArray,
+  w: number,
+  h: number,
+  r: number,
+) => {
+  const iarr = 1 / (r + r + 1);
+  for (let i = 0; i < h; i++) {
+    let ti = i * w,
+      li = ti,
+      ri = ti + r;
+    const fv = [scl[ti * 4], scl[ti * 4 + 1], scl[ti * 4 + 2]];
+    const lv = [
+      scl[(ti + w - 1) * 4],
+      scl[(ti + w - 1) * 4 + 1],
+      scl[(ti + w - 1) * 4 + 2],
+    ];
+    const val = [(r + 1) * fv[0], (r + 1) * fv[1], (r + 1) * fv[2]];
+    for (let j = 0; j < r; j++) {
+      val[0] += scl[(ti + j) * 4];
+      val[1] += scl[(ti + j) * 4 + 1];
+      val[2] += scl[(ti + j) * 4 + 2];
+    }
+    for (let j = 0; j <= r; j++) {
+      val[0] += scl[ri * 4] - fv[0];
+      val[1] += scl[ri * 4 + 1] - fv[1];
+      val[2] += scl[ri * 4 + 2] - fv[2];
+      ri++;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti++;
+    }
+    for (let j = r + 1; j < w - r; j++) {
+      val[0] += scl[ri * 4] - scl[li * 4];
+      val[1] += scl[ri * 4 + 1] - scl[li * 4 + 1];
+      val[2] += scl[ri * 4 + 2] - scl[li * 4 + 2];
+      ri++;
+      li++;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti++;
+    }
+    for (let j = w - r; j < w; j++) {
+      val[0] += lv[0] - scl[li * 4];
+      val[1] += lv[1] - scl[li * 4 + 1];
+      val[2] += lv[2] - scl[li * 4 + 2];
+      li++;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti++;
+    }
+  }
+};
+
+const boxBlurT = (
+  scl: Uint8ClampedArray,
+  tcl: Uint8ClampedArray,
+  w: number,
+  h: number,
+  r: number,
+) => {
+  const iarr = 1 / (r + r + 1);
+  for (let i = 0; i < w; i++) {
+    let ti = i,
+      li = ti,
+      ri = ti + r * w;
+    const fv = [scl[ti * 4], scl[ti * 4 + 1], scl[ti * 4 + 2]];
+    const lv = [
+      scl[(ti + w * (h - 1)) * 4],
+      scl[(ti + w * (h - 1)) * 4 + 1],
+      scl[(ti + w * (h - 1)) * 4 + 2],
+    ];
+    const val = [(r + 1) * fv[0], (r + 1) * fv[1], (r + 1) * fv[2]];
+    for (let j = 0; j < r; j++) {
+      val[0] += scl[(ti + j * w) * 4];
+      val[1] += scl[(ti + j * w) * 4 + 1];
+      val[2] += scl[(ti + j * w) * 4 + 2];
+    }
+    for (let j = 0; j <= r; j++) {
+      val[0] += scl[ri * 4] - fv[0];
+      val[1] += scl[ri * 4 + 1] - fv[1];
+      val[2] += scl[ri * 4 + 2] - fv[2];
+      ri += w;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti += w;
+    }
+    for (let j = r + 1; j < h - r; j++) {
+      val[0] += scl[ri * 4] - scl[li * 4];
+      val[1] += scl[ri * 4 + 1] - scl[li * 4 + 1];
+      val[2] += scl[ri * 4 + 2] - scl[li * 4 + 2];
+      li += w;
+      ri += w;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti += w;
+    }
+    for (let j = h - r; j < h; j++) {
+      val[0] += lv[0] - scl[li * 4];
+      val[1] += lv[1] - scl[li * 4 + 1];
+      val[2] += lv[2] - scl[li * 4 + 2];
+      li += w;
+      tcl[ti * 4] = Math.round(val[0] * iarr);
+      tcl[ti * 4 + 1] = Math.round(val[1] * iarr);
+      tcl[ti * 4 + 2] = Math.round(val[2] * iarr);
+      ti += w;
+    }
+  }
+};
+
+const boxBlur = (
+  scl: Uint8ClampedArray,
+  tcl: Uint8ClampedArray,
+  w: number,
+  h: number,
+  r: number,
+) => {
+  for (let i = 0; i < scl.length; i++) tcl[i] = scl[i];
+  boxBlurH(tcl, scl, w, h, r);
+  boxBlurT(scl, tcl, w, h, r);
+};
+
+const stackBlurCanvasRGB = (
+  canvas: HTMLCanvasElement,
+  top_x: number,
+  top_y: number,
+  width: number,
+  height: number,
+  radius: number,
+) => {
+  if (isNaN(radius) || radius < 1) return;
+  radius |= 0;
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  let imageData;
+  try {
+    imageData = context.getImageData(top_x, top_y, width, height);
+  } catch {
+    return;
+  }
+
+  const boxes = boxesForGauss(radius, 3);
+  const pixels = imageData.data;
+  const temp1 = new Uint8ClampedArray(pixels);
+  const temp2 = new Uint8ClampedArray(pixels);
+
+  boxBlur(temp1, temp2, width, height, (boxes[0] - 1) / 2);
+  boxBlur(temp2, temp1, width, height, (boxes[1] - 1) / 2);
+  boxBlur(temp1, temp2, width, height, (boxes[2] - 1) / 2);
+
+  imageData.data.set(temp2);
+  context.putImageData(imageData, top_x, top_y);
+};
 
 const RevealImagePage: React.FC = () => {
   const navigate = useNavigate();
@@ -58,22 +233,80 @@ const RevealImagePage: React.FC = () => {
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
-    const coverImg = new Image();
-    coverImg.crossOrigin = "Anonymous";
-    coverImg.src = defaultCoverImage;
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    // Force reload to avoid CORS issues from cached images
+    img.src = `${imageUrl}${imageUrl.includes("?") ? "&" : "?"}t=${Date.now()}`;
 
-    coverImg.onload = () => {
+    img.onload = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 2, 3);
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(coverImg, 0, 0, canvas.width, canvas.height);
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const bleed = 80;
+
+      // Mobile compatibility: Use manual StackBlur for high quality smooth blur
+      const tempCanvas = document.createElement("canvas");
+      const tempCtx = tempCanvas.getContext("2d");
+
+      if (tempCtx) {
+        // Downscale slightly for performance (0.5 is good balance of quality/speed)
+        const scale = 0.5;
+        tempCanvas.width = canvas.width * scale;
+        tempCanvas.height = canvas.height * scale;
+
+        tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        // StackBlur
+        // 40px blur
+        const radius = Math.round(40 * scale);
+        stackBlurCanvasRGB(
+          tempCanvas,
+          0,
+          0,
+          tempCanvas.width,
+          tempCanvas.height,
+          radius,
+        );
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        // Draw blurred image with bleed
+        ctx.drawImage(
+          tempCanvas,
+          0,
+          0,
+          tempCanvas.width,
+          tempCanvas.height,
+          -bleed,
+          -bleed,
+          canvas.width + bleed * 2,
+          canvas.height + bleed * 2,
+        );
+      } else {
+        // Fallback
+        ctx.drawImage(
+          img,
+          -bleed,
+          -bleed,
+          canvas.width + bleed * 2,
+          canvas.height + bleed * 2,
+        );
+      }
+
+      // Color overlay #B9BDC2 with 20% opacity
+      ctx.fillStyle = "rgba(185, 189, 194, 0.2)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
-    coverImg.onerror = () => {
+    img.onerror = () => {
       // 에러 처리
     };
-  }, []);
+  }, [imageUrl]);
 
   useEffect(() => {
     drawLayer();
