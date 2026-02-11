@@ -135,6 +135,7 @@ const LoginPage = () => {
               {...getInputProps("email")}
               type="email"
               placeholder="이메일을 입력해주세요."
+              hasError={Boolean(touched.email && errors.email)}
             />
             {touched.email && errors.email && (
               <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
@@ -150,6 +151,7 @@ const LoginPage = () => {
               {...getInputProps("password")}
               type={isPasswordVisible ? "text" : "password"}
               placeholder="비밀번호를 입력해주세요."
+              hasError={Boolean(touched.password && errors.password)}
               rightElement={
                 <button
                   type="button"

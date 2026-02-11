@@ -23,7 +23,7 @@ import { useNavigate } from "react-router";
 import { Swiper, SwiperSlide, type SwiperClass } from "swiper/react";
 import "swiper/css";
 import ChevronLeftIcon from "@/assets/icons/icon_chevron_left.svg?react";
-import MovemonthIcon from "@/assets/icons/icon_backbutton.svg?react";
+import MovemonthIcon from "@/assets/icons/icon_chevron_left_calendar.svg?react";
 
 import { useNavbarActions } from "../../hooks/useNavbarStore";
 import {
@@ -118,7 +118,7 @@ const CalendarGrid = React.memo(
                 >
                   {/* 다이아몬드 아이콘 */}
                   <div
-                    className={`size-1.75 rotate-45 rounded-[2px] transition-colors ${hasData ? "bg-[#D9D9D9]" : "bg-transparent"} `}
+                    className={`size-1.75 rotate-45 rounded-[2px] transition-colors ${isToday && hasData ? "bg-gray-900" : hasData ? "bg-[#D9D9D9]" : "bg-transparent"} `}
                   />
 
                   {/* Day Number */}
@@ -141,7 +141,7 @@ const CalendarGrid = React.memo(
 export const VibeCalandarPage = () => {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [activeDates, setActiveDates] = useState<string[]>([]);
   const [calendarImages, setCalendarImages] = useState<
     CalendarImageItemWithSource[]
@@ -173,7 +173,12 @@ export const VibeCalandarPage = () => {
       }
     };
     fetchMonthlyData();
-    setSelectedDate(null);
+    setSelectedDate((prev) => {
+      if (prev && isSameMonth(prev, currentDate)) {
+        return prev;
+      }
+      return null;
+    });
   }, [currentDate]);
 
   const handleSelectDate = useCallback((date: Date) => {
@@ -266,14 +271,14 @@ export const VibeCalandarPage = () => {
       </div>
 
       <div className="flex w-full flex-col items-center justify-center pb-[28px]">
-        <span className="mb-1 text-[10px] text-gray-400">
+        <span className="text-[10px] text-gray-400">
           {format(currentDate, "yyyy")}
         </span>
-        <div className="flex w-full justify-between px-[35.03px]">
+        <div className="flex w-full items-center justify-center gap-4 px-[35.03px]">
           <button onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
             <MovemonthIcon />
           </button>
-          <span className="px-4 text-[24px] font-bold text-white">
+          <span className="H2 px-4 text-white">
             {format(currentDate, "M")}월
           </span>
           <button onClick={() => setCurrentDate(addMonths(currentDate, 1))}>

@@ -58,6 +58,8 @@ export const QuickdropPage = () => {
   const {
     file: initialFile,
     tag: preSelectedTag,
+    boardId: initialBoardId, // Added boardId from state
+    boardName: initialBoardName, // Added boardName from state
     fromTribe,
     tribeId,
   } = location.state || {};
@@ -82,7 +84,15 @@ export const QuickdropPage = () => {
     image: null,
     imageUrl: null,
     tag: preSelectedTag === "Tribe" ? "" : preSelectedTag || "",
-    board: null,
+    board:
+      initialBoardId && initialBoardName
+        ? {
+            id: initialBoardId,
+            name: initialBoardName,
+            thumbnailUrl: "",
+            tagCount: 0,
+          }
+        : null,
   });
   const [editorState, setEditorState] = useState<{
     brightness: number;
@@ -186,11 +196,18 @@ export const QuickdropPage = () => {
   };
 
   // 이미지 업로드 핸들러
-  const handleBoardComplete = async (selectedBoard: Board) => {
+  const handleBoardComplete = async (
+    selectedBoard: Board,
+    currentImage?: Blob,
+    currentTag?: string,
+  ) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    if (!imageData.image || !imageData.tag) {
+    const imageToUse = currentImage || imageData.image;
+    const tagToUse = currentTag || imageData.tag;
+
+    if (!imageToUse || !tagToUse) {
       console.error("Image or tag is missing");
       setIsSubmitting(false);
       return;
@@ -203,8 +220,7 @@ export const QuickdropPage = () => {
       // 2. Presigned URL 발급 API 호출
       // Capitalize: 첫 글자만 대문자 (예: alone → Alone)
       const capitalizedTagForPresigned =
-        imageData.tag.charAt(0).toUpperCase() +
-        imageData.tag.slice(1).toLowerCase();
+        tagToUse.charAt(0).toUpperCase() + tagToUse.slice(1).toLowerCase();
       const response = await postPresignedUrl(
         capitalizedTagForPresigned,
         originalFileName,
@@ -223,9 +239,9 @@ export const QuickdropPage = () => {
       // 3. S3에 직접 PUT으로 이미지 업로드 (fetch 사용 - axios는 CORS 이슈 발생)
       const uploadResponse = await fetch(presignedUrl, {
         method: "PUT",
-        body: imageData.image,
+        body: imageToUse,
         headers: {
-          "Content-Type": imageData.image.type,
+          "Content-Type": imageToUse.type,
         },
       });
 
@@ -273,7 +289,7 @@ export const QuickdropPage = () => {
             onSuccess: () => {
               console.log("✅ Message sent successfully, navigating back");
               navigate(`/tribe-chat/${tribeId}`, {
-                state: { imageTag: imageData.tag },
+                state: { imageTag: tagToUse },
               });
             },
             onError: (error) => {
@@ -326,8 +342,8 @@ export const QuickdropPage = () => {
 
               try {
                 const capitalizedTag =
-                  imageData.tag.charAt(0).toUpperCase() +
-                  imageData.tag.slice(1).toLowerCase();
+                  tagToUse.charAt(0).toUpperCase() +
+                  tagToUse.slice(1).toLowerCase();
 
                 // 1. 대기 중인 트라이브 목록 확인
                 const waitingResponse = await getWaitingTribeList();
@@ -435,7 +451,15 @@ export const QuickdropPage = () => {
             });
             setEditorState(currentState);
             if (preSelectedTag) {
-              setStep("board");
+              // 태그가 있으면 Board 단계로, Board도 있으면 완료 처리
+              if (initialBoardId) {
+                // Board가 이미 있으면 바로 완료 처리
+                if (imageData.board) {
+                  handleBoardComplete(imageData.board);
+                }
+              } else {
+                setStep("board");
+              }
             } else {
               setStep("tag");
             }
@@ -446,7 +470,11 @@ export const QuickdropPage = () => {
         <TagSelector
           onNext={(selectedTag) => {
             setImageData((prev) => ({ ...prev, tag: selectedTag }));
-            setStep("board");
+            if (initialBoardId && imageData.board) {
+              handleBoardComplete(imageData.board, undefined, selectedTag);
+            } else {
+              setStep("board");
+            }
           }}
           onPrevious={() => setStep("edit")}
         />

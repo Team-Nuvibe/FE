@@ -36,12 +36,16 @@ const TribechatPage = () => {
   });
 
   // React Query 훅
-  const { data: activeTribeData, isLoading: isLoadingActive } =
-    useGetActiveTribeList({
-      refetchInterval: 1000, // 1초마다 자동 갱신
-    });
-  const { data: waitingTribeData, isLoading: isLoadingWaiting } =
-    useGetWaitingTribeList();
+  const {
+    data: activeTribeData,
+    isLoading: isLoadingActive,
+    refetch: refetchActive,
+  } = useGetActiveTribeList();
+  const {
+    data: waitingTribeData,
+    isLoading: isLoadingWaiting,
+    refetch: refetchWaiting,
+  } = useGetWaitingTribeList();
 
   // Mutation 훅
   const { mutate: toggleMute } = useToggleTribeMute();
@@ -71,6 +75,14 @@ const TribechatPage = () => {
     if (tabParam === "waiting") setActiveTab("waiting");
     else if (tabParam === "ing") setActiveTab("ing");
   }, [search]);
+
+  useEffect(() => {
+    if (activeTab === "ing") {
+      refetchActive();
+    } else {
+      refetchWaiting();
+    }
+  }, [activeTab, refetchActive, refetchWaiting]);
 
   useEffect(() => {
     if (toastMessage) {

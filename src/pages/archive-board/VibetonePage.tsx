@@ -103,6 +103,13 @@ const VibeTonePage = () => {
     fileInput.click();
   };
 
+  // 애니메이션 재실행을 위한 키
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   const handleSaveCard = async () => {
     if (isSaving) return;
     setIsSaving(true);
@@ -118,11 +125,19 @@ const VibeTonePage = () => {
         throw new Error("Active slide not found");
       }
 
+      // 슬라이드 내부의 컨텐츠만 저장 (padding 제외)
+      const contentToSave = activeSlide.firstElementChild as HTMLElement;
+
+      if (!contentToSave) {
+        alert("저장할 컨텐츠를 찾을 수 없습니다.");
+        throw new Error("Content not found");
+      }
+
       // 이미지 데이터 URL로 변환 (toPng 사용)
-      const dataUrl = await toPng(activeSlide, {
+      const dataUrl = await toPng(contentToSave, {
         cacheBust: true,
         backgroundColor: "#000000",
-        pixelRatio: 2, // 고해상도
+        pixelRatio: 3,
       });
 
       // Data URL을 Blob으로 변환
@@ -214,7 +229,7 @@ const VibeTonePage = () => {
         <button
           onClick={() => setActiveTab("weekly")}
           className={`relative flex w-[52px] justify-center transition-all duration-200 ${
-            activeTab === "weekly" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+            activeTab === "weekly" ? "ST2 text-gray-200" : "B2 text-gray-600"
           }`}
         >
           주간
@@ -230,7 +245,7 @@ const VibeTonePage = () => {
         <button
           onClick={() => setActiveTab("all")}
           className={`relative flex w-[52px] justify-center transition-all duration-200 ${
-            activeTab === "all" ? "ST2 text-gray-200" : "ST2 text-gray-600"
+            activeTab === "all" ? "ST2 text-gray-200" : "B2 text-gray-600"
           }`}
         >
           전체
@@ -260,6 +275,8 @@ const VibeTonePage = () => {
             ) : (
               <Swiper
                 modules={[Pagination]}
+                initialSlide={activeSlideIndex}
+                onSwiper={(swiper) => setActiveSlideIndex(swiper.activeIndex)}
                 onSlideChange={(swiper) =>
                   setActiveSlideIndex(swiper.activeIndex)
                 }
@@ -273,6 +290,7 @@ const VibeTonePage = () => {
                 {/* Slide 1: 물리 엔진 기반 태그 애니메이션 (RecapFirstSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapFirstSlide
+                    key={`first-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 0}
                     activeTab={activeTab}
                     data={tagRankingData?.data}
@@ -282,6 +300,7 @@ const VibeTonePage = () => {
                 {/* Slide 2: 폴더 팝업 애니메이션 (RecapSecondSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapSecondSlide
+                    key={`second-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 1}
                     activeTab={activeTab}
                     data={mostUsedBoardData?.data}
@@ -291,6 +310,7 @@ const VibeTonePage = () => {
                 {/* Slide 3: 패턴 분석 (RecapThirdSlide) */}
                 <SwiperSlide className="flex items-center justify-center overflow-y-auto px-4">
                   <RecapThirdSlide
+                    key={`third-${activeTab}-${refreshKey}`}
                     isActive={activeSlideIndex === 2}
                     activeTab={activeTab}
                     data={usagePatternData?.data}
@@ -327,6 +347,7 @@ const VibeTonePage = () => {
             <button
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-gray-800"
               aria-label="Redo"
+              onClick={handleRefresh}
             >
               <RefreshIcon />
             </button>

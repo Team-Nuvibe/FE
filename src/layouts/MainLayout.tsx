@@ -37,11 +37,14 @@ const MainLayout = () => {
       {/* 하단 공통 컴포넌트 */}
       {isNavbarVisible && (
         <>
-          <div className="pointer-events-none fixed bottom-0 left-1/2 z-40 h-46.75 w-full max-w-107.5 -translate-x-1/2"
-            style={{
-              background: `linear-gradient(0deg, #121212 0%, rgba(18, 18, 18, 0.00) 100%)`
-            }}
-          />
+          {location.pathname !== "/archive-board/vibecalendar" && (
+            <div
+              className="pointer-events-none fixed bottom-0 left-1/2 z-40 h-46.75 w-full max-w-107.5 -translate-x-1/2"
+              style={{
+                background: `linear-gradient(0deg, #121212 0%, rgba(18, 18, 18, 0.00) 100%)`,
+              }}
+            />
+          )}
           <div className="pointer-events-none fixed bottom-0 left-1/2 z-50 h-0 w-full max-w-107.5 -translate-x-1/2 overflow-visible">
             <div className="pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2">
               <Navbar />
