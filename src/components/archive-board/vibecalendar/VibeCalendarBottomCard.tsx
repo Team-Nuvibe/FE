@@ -92,7 +92,7 @@ const VibeCalendarBottomCard: React.FC<VibeCalendarBottomCardProps> = ({
                   <div>
                     <p className="H3 text-gray-100">{item.label}</p>
                     <span className="H1 bg-[linear-gradient(90deg,#FFF_35.59%,rgba(247,247,247,0.30)_105%)] bg-clip-text text-transparent">
-                      {item.tag}
+                      #{item.tag}
                     </span>
                   </div>
 

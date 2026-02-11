@@ -424,29 +424,25 @@ const RevealImagePage: React.FC = () => {
   };
 
   // Drop Vibe 버튼 클릭
-  const handleDropVibe = async () => {
-    if (isDownloading) return;
-    setIsDownloading(true);
+  const handleDropVibe = () => {
+    // 파일 선택 다이얼로그 열기
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
 
-    try {
-      const blob = await getCompositeBlob();
-      if (!blob) throw new Error("Blob creation failed");
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        navigate("/quickdrop", {
+          state: {
+            file,
+            tag: tag,
+          },
+        });
+      }
+    };
 
-      const file = new File([blob], `RevealVibe_${Date.now()}.png`, {
-        type: "image/png",
-      });
-
-      navigate("/quickdrop", {
-        state: {
-          file,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      showToast("오류가 발생했습니다");
-    } finally {
-      setIsDownloading(false);
-    }
+    fileInput.click();
   };
 
   const handleDownload = async () => {
