@@ -336,7 +336,7 @@ const ArchiveDetailPage = () => {
                 {isSelectMode && (
                   <div
                     className={`absolute inset-0 z-20 flex items-center justify-center transition-colors ${
-                      isSelected ? "bg-black/40" : "bg-black/10"
+                      isSelected ? "bg-white/40" : ""
                     }`}
                   >
                     {isSelected ? (
