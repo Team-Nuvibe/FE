@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/hooks/useUserStore";
-import FolderIcon from "@/assets/icons/icon_folder_vibetone.svg?react";
+import FolderIcon from "@/assets/icons/icon_folder_vibetone2.svg?react";
 import type { MostUsedBoardResponse } from "@/types/archive";
 import { useNavigate } from "react-router";
 import BackLight from "@/assets/images/img_backlight.svg?react";
@@ -152,7 +152,7 @@ const RecapSecondSlide = ({
         {/* 배경 광원 효과 */}
         <BackLight className="absolute bottom-0 left-1/2 -translate-x-1/2" />
         {/* 1. Folder Back (뒷면) */}
-        <div className="absolute bottom-4 left-1/2 h-[195px] w-[215px] -translate-x-1/2 rounded-[10px] border-[0.5px] border-solid border-[#36383E] bg-gray-800 opacity-50" />
+        <div className="absolute bottom-5 left-1/2 h-[195px] w-[215px] -translate-x-1/2 rounded-[10px] border-[0.5px] border-solid border-[#36383E] bg-gray-800 opacity-50" />
 
         {/* 2. Images (중간 레이어 - 팝업 애니메이션) */}
         <div className="pointer-events-none absolute bottom-4 left-0 z-10 flex h-full w-full items-end justify-center">
