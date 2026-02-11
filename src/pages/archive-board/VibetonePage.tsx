@@ -125,11 +125,19 @@ const VibeTonePage = () => {
         throw new Error("Active slide not found");
       }
 
+      // 슬라이드 내부의 컨텐츠만 저장 (padding 제외)
+      const contentToSave = activeSlide.firstElementChild as HTMLElement;
+
+      if (!contentToSave) {
+        alert("저장할 컨텐츠를 찾을 수 없습니다.");
+        throw new Error("Content not found");
+      }
+
       // 이미지 데이터 URL로 변환 (toPng 사용)
-      const dataUrl = await toPng(activeSlide, {
+      const dataUrl = await toPng(contentToSave, {
         cacheBust: true,
         backgroundColor: "#000000",
-        pixelRatio: 2, // 고해상도
+        pixelRatio: 3,
       });
 
       // Data URL을 Blob으로 변환
