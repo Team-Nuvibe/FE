@@ -124,13 +124,13 @@ const RecapThirdSlide = ({
               {activeTab === "weekly" ? "이번 주 기록 흐름" : "기록 흐름"}
             </p>
           </div>
-          {activeTab === "weekly" && (
-            <span className="text-right text-[10px] leading-[150%] font-light text-gray-100">
+          <span className="text-right text-[10px] leading-[150%] font-light text-gray-100">
+            <>
               {weekDate.start}
               <br />
               {weekDate.end}
-            </span>
-          )}
+            </>
+          </span>
         </div>
       </div>
 

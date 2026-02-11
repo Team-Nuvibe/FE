@@ -118,13 +118,13 @@ const RecapSecondSlide = ({
                 : "가장 많이 쌓인 보드"}
             </p>
           </div>
-          {activeTab === "weekly" && (
-            <span className="text-right text-[10px] leading-[150%] font-light text-gray-100">
+          <span className="text-right text-[10px] leading-[150%] font-light text-gray-100">
+            <>
               {weekDate.start}
               <br />
               {weekDate.end}
-            </span>
-          )}
+            </>
+          </span>
         </div>
       </div>
 
