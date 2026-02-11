@@ -22,8 +22,12 @@ export const useFcmToken = (isAuthenticated: boolean) => {
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') return;
 
+                // 등록한 SW를 명시적으로 가져와서 getToken에 넘김
+                const swRegistration = await navigator.serviceWorker.ready;
+
                 const currentToken = await getToken(messaging, {
                     vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration: swRegistration,
                 });
                 if (currentToken) {
                     setToken(currentToken);

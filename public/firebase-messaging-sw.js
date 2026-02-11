@@ -14,10 +14,15 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    const notificationTitle = payload.notification.title;
+    // notification payload면 자동 알림이 뜰 수 있으니 여기서 또 띄우지 않기
+    if (payload.notification) return;
+
+    // data-only일 때만 직접 띄우기
+    const notificationTitle = payload?.data?.title ?? "알림";
     const notificationOptions = {
-        body: payload.notification.body,
-        icon: '/vite.svg'
+        body: payload?.data?.body ?? "",
+        icon: '/vite.svg',
+        data: payload?.data ?? {},
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
