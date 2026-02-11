@@ -286,7 +286,7 @@ const RevealImagePage: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="pointer-events-none absolute inset-0 z-40 bg-transparent"
+            className="pointer-events-none absolute inset-0 z-40 bg-black/60"
           />
         )}
       </AnimatePresence>
@@ -356,7 +356,7 @@ const RevealImagePage: React.FC = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-transparent"
+                className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
               >
                 <MovingDotAnimation />
               </motion.div>
