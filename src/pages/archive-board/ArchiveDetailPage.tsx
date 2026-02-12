@@ -468,7 +468,7 @@ const ArchiveDetailPage = () => {
       </AnimatePresence>
 
       {/* 하단 Drop Vibe 버튼 */}
-      {showDropVibeButton && !isSelectMode && (
+      {showDropVibeButton && !isSelectMode && !isMenuOpen && !selectedItem && (
         <>
           <div
             className="pointer-events-none fixed bottom-0 left-1/2 z-40 h-46.75 w-full max-w-107.5 -translate-x-1/2"

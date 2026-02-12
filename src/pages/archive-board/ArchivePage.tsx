@@ -340,7 +340,7 @@ const ArchivePage = () => {
                         <span className="bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text leading-[150%] tracking-[-0.045em] text-transparent">
                           #{post.tag}
                         </span>
-                        <div className="font-italic text-[10px] leading-[150%] font-light text-[#F7F7F7]">
+                        <div className="font-italic text-[10px] leading-[150%] font-light text-[#F7F7F7] italic">
                           {post.uploadedAt}
                         </div>
                       </div>
