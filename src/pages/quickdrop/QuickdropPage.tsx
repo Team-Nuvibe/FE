@@ -408,7 +408,7 @@ export const QuickdropPage = () => {
   };
 
   return (
-    <div className="flex h-dvh w-full flex-col bg-black">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-black">
       {step === "pick" && (
         <div className="flex h-full flex-col items-center justify-center gap-6 px-10 text-center">
           <header className="fixed top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
@@ -491,7 +491,7 @@ export const QuickdropPage = () => {
         />
       )}
       {step === "uploaded" && (
-        <div className="flex h-full items-center justify-center">
+        <div className="flex h-full items-center justify-center overflow-hidden">
           <div className="relative flex flex-col items-center justify-center gap-4">
             {/* 배경 조명 효과 */}
             <div
@@ -531,7 +531,12 @@ export const QuickdropPage = () => {
               slidesPerView={1}
               onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
             >
-              <SwiperSlide>
+              <SwiperSlide
+                style={{
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                }}
+              >
                 <div
                   className="h-full w-full rounded-[15px] bg-gradient-to-t from-white/30 to-gray-800/30 p-[1px]"
                   style={{ boxShadow: "0px 5px 5px 0px rgba(18, 18, 18, 0.5)" }}
@@ -607,7 +612,12 @@ export const QuickdropPage = () => {
                   </div>
                 </div>
               </SwiperSlide>
-              <SwiperSlide>
+              <SwiperSlide
+                style={{
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                }}
+              >
                 <div
                   className="h-full w-full rounded-[15px] bg-gradient-to-b from-white/30 to-gray-800/30 p-[1px]"
                   style={{ boxShadow: "0px 5px 5px 0px rgba(18, 18, 18, 0.5)" }}
