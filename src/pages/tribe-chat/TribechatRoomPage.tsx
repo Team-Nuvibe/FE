@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
-import { useQueryClient } from "@tanstack/react-query";
+import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "@/constants/key";
 import { type ApiResponse } from "@/types/common";
 import { type ChatTimelineResponse } from "@/types/tribeChat";
@@ -13,7 +13,7 @@ import ChatMessageItem, {
 } from "@/components/tribe-chat/ChatMessageItem";
 import DateDivider from "@/components/tribe-chat/DateDivider";
 // React Query Hooks
-import useGetChatTimeline from "@/hooks/queries/tribe-chat/useGetChatTimeline";
+import useInfiniteChatTimeline from "@/hooks/queries/tribe-chat/useInfiniteChatTimeline";
 import useReactToChatEmoji from "@/hooks/mutation/tribe-chat/useReactToChatEmoji";
 import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap";
 import DropIcon from "@/assets/logos/Subtract.svg?react";
@@ -40,12 +40,14 @@ const TribechatRoomPage = () => {
   const imageTag = stateImageTag || foundTribe?.imageTag || "Tribe";
 
   // React Query - Timeline Data
+  // React Query - Timeline Data
   const {
     data: timelineData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
-    isError,
-    error,
-  } = useGetChatTimeline({
+  } = useInfiniteChatTimeline({
     tribeId: Number(tribeId),
     size: 20,
   });
@@ -54,65 +56,54 @@ const TribechatRoomPage = () => {
   const { mutate: toggleScrapMutation } = useToggleImageScrap();
   const { mutate: reactToEmoji } = useReactToChatEmoji();
 
-  // API 응답 로그 (디버깅용)
-  useEffect(() => {
-    console.log("🔍 TribeId from URL:", tribeId);
-    console.log("🔍 Timeline Loading:", isLoading);
-    console.log("🔍 Timeline Error:", isError, error);
-
-    if (timelineData) {
-      console.log("📨 Chat Timeline Data:", timelineData);
-      console.log("📨 Timeline Items:", timelineData.data?.items);
-    } else if (!isLoading) {
-      console.warn("⚠️ No timeline data received");
-    }
-  }, [timelineData, isLoading, isError, error, tribeId]);
-
+  // Transform API response to ChatMessage format
   // Transform API response to ChatMessage format
   const messages: ChatMessage[] = useMemo(() => {
-    return (
-      timelineData?.data.items.map((item) => {
-        // reactionSummary를 reactions 객체로 변환
-        const reactions = {
-          amazing: 0,
-          like: 0,
-          nice: 0,
-        };
-        item.reactionsSummary?.forEach((reaction) => {
-          if (reaction.type === "WOW") reactions.amazing += reaction.count;
-          if (reaction.type === "LIKE") reactions.like += reaction.count;
-          if (reaction.type === "COOL") reactions.nice += reaction.count;
-        });
+    if (!timelineData) return [];
+    return timelineData.pages.flatMap(
+      (page: ApiResponse<ChatTimelineResponse>) =>
+        page.data.items.map((item) => {
+          // reactionSummary를 reactions 객체로 변환
+          const reactions = {
+            amazing: 0,
+            like: 0,
+            nice: 0,
+          };
+          item.reactionsSummary?.forEach((reaction) => {
+            if (reaction.type === "WOW") reactions.amazing += reaction.count;
+            if (reaction.type === "LIKE") reactions.like += reaction.count;
+            if (reaction.type === "COOL") reactions.nice += reaction.count;
+          });
 
-        return {
-          id: item.chatId.toString(),
-          imageUrl: item.imageUrl,
-          timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }),
-          date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          }),
-          isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
-          userProfile: item.sender
-            ? {
-                name: item.sender.nickname || "Unknown",
-                avatar: item.sender.profileImage || "#E2E2E2",
-              }
-            : undefined,
-          reactions,
-          myReactions: {
-            amazing: item.myReactionType === "WOW",
-            like: item.myReactionType === "LIKE",
-            nice: item.myReactionType === "COOL",
-          },
-          isScrapped: item.isScrapped ?? false, // API 값을 사용하거나 기본값 false
-        };
-      }) ?? []
+          return {
+            id: item.chatId.toString(),
+            imageUrl: item.imageUrl,
+            timestamp: new Date(item.createdAt).toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }),
+            date: new Date(item.createdAt).toLocaleDateString("ko-KR", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }),
+            isMine: item.sender ? item.sender.nickname === nickname : true, // sender가 없으면 내가 보낸 메시지
+            userProfile: item.sender
+              ? {
+                  name: item.sender.nickname || "Unknown",
+                  avatar: item.sender.profileImage || "#E2E2E2",
+                }
+              : undefined,
+            reactions,
+            myReactions: {
+              amazing: item.myReactionType === "WOW",
+              like: item.myReactionType === "LIKE",
+              nice: item.myReactionType === "COOL",
+            },
+            isScrapped: item.isScrapped ?? false, // API 값을 사용하거나 기본값 false
+          };
+        }),
     );
   }, [timelineData, nickname]);
 
@@ -120,11 +111,6 @@ const TribechatRoomPage = () => {
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.1,
   });
-
-  // TODO: 나중에 useInfiniteQuery로 교체
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetInfiniteMessages(...);
-  const hasNextPage = false; // 임시
-  const isFetchingNextPage = false; // 임시
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -151,37 +137,39 @@ const TribechatRoomPage = () => {
   }, [targetMessageId, messages]);
 
   // 역방향 무한 스크롤: 상단 도달 시 과거 메시지 로드
+  // 역방향 무한 스크롤: 상단 도달 시 과거 메시지 로드
   useEffect(() => {
     if (inView && hasNextPage) {
-      // TODO: 나중에 fetchNextPage() 호출
       console.log("Load more messages...");
-      // fetchNextPage();
+      fetchNextPage();
     }
-  }, [inView, hasNextPage]);
+  }, [inView, hasNextPage, fetchNextPage]);
 
   // 스크랩 토글
   const toggleScrap = (messageId: string) => {
     toggleScrapMutation(Number(messageId), {
       onSuccess: () => {
-        console.log("✅ Scrap toggled successfully");
+        console.log("Scrap toggled success");
         // 현재 페이지의 타임라인 캐시 업데이트 (optimistic UI update effect)
-        queryClient.setQueryData<ApiResponse<ChatTimelineResponse>>(
-          [QUERY_KEY.chatTimeline, Number(tribeId), undefined, 20],
-          (oldData) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
+        queryClient.setQueryData<
+          InfiniteData<ApiResponse<ChatTimelineResponse>>
+        >([QUERY_KEY.chatTimeline, Number(tribeId), 20], (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
               data: {
-                ...oldData.data,
-                items: oldData.data.items.map((item) =>
+                ...page.data,
+                items: page.data.items.map((item) =>
                   item.chatId === Number(messageId)
                     ? { ...item, isScrapped: !item.isScrapped }
                     : item,
                 ),
               },
-            };
-          },
-        );
+            })),
+          };
+        });
         // 다른 관련 쿼리 무효화 (detail, grid 등)
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEY.scrapedImages],
@@ -191,7 +179,7 @@ const TribechatRoomPage = () => {
         });
       },
       onError: () => {
-        console.error("❌ Failed to toggle scrap");
+        console.error("Failed to toggle scrap");
       },
     });
   };
@@ -214,10 +202,10 @@ const TribechatRoomPage = () => {
       },
       {
         onSuccess: () => {
-          console.log(`✅ Emoji ${reactionType} added`);
+          console.log(`Emoji added`);
         },
         onError: () => {
-          console.error(`❌ Failed to add emoji ${reactionType}`);
+          console.error(`Failed to add emoji`);
         },
       },
     );
