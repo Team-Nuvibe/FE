@@ -20,7 +20,6 @@ import {
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
 import { checkImageStatus } from "@/apis/tribe-chat/chat";
 import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
-import Ellipse from "@/assets/icons/Ellipse.svg?react";
 
 import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
