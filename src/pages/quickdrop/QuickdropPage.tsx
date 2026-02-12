@@ -518,6 +518,10 @@ export const QuickdropPage = () => {
             <Swiper
               modules={[Pagination, EffectFlip]}
               effect="flip"
+              flipEffect={{
+                slideShadows: false,
+                limitRotation: true,
+              }}
               className="h-[388px] w-[291px]"
               pagination={{
                 clickable: true,
