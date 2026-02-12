@@ -5,7 +5,7 @@ import { TagSelector } from "../../components/features/TagSelector";
 import { postPresignedUrl } from "@/apis/vibedrop";
 import { BoardSelector } from "../../components/features/BoardSelector";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination, EffectFlip } from "swiper/modules";
 import IconChevronRightWhiteSquare from "@/assets/icons/icon_chevron_right_white_square.svg?react";
 import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
@@ -111,6 +111,7 @@ export const QuickdropPage = () => {
   });
   const [paginationEl, setPaginationEl] = useState<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [uploadedAt, setUploadedAt] = useState<Date | null>(null);
   const [uploadedTribeInfo, setUploadedTribeInfo] = useState<{
     tribeId: number;
     userTribeId: number;
@@ -308,6 +309,7 @@ export const QuickdropPage = () => {
       console.log("✅ Image added to archive board successfully");
 
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
+      setUploadedAt(new Date());
 
       // 6. 트라이브 입장/생성 및 정보 조회
       // Join/Create Tribe to get updated member counts
@@ -493,11 +495,15 @@ export const QuickdropPage = () => {
           <div className="relative flex flex-col items-center justify-center gap-4">
             {/* 배경 조명 효과 */}
             <div
-              className="pointer-events-none absolute -bottom-50 left-1/2 h-dvh w-full -translate-x-1/2"
+              className="pointer-events-none absolute -top-10 left-1/2 h-dvh w-full -translate-x-1/2 scale-y-150"
               style={{
                 background:
-                  "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.25) 20%, transparent 100%)",
-                filter: "blur(30px)",
+                  "radial-gradient(ellipse 50% 80% at 50% 25%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 30%, transparent 70%)",
+                filter: "blur(40px)",
+                maskImage:
+                  "linear-gradient(to bottom, white 10%, white 45%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, white 10%, white 45%, transparent 100%)",
               }}
             />
             {imageData.board?.tagCount === 0 && (
@@ -510,165 +516,202 @@ export const QuickdropPage = () => {
               </p>
             )}
             <Swiper
-              modules={[Pagination]}
+              modules={[Pagination, EffectFlip]}
+              effect="flip"
               className="h-[388px] w-[291px]"
               pagination={{
                 clickable: true,
                 el: paginationEl,
                 type: "bullets",
               }}
-              spaceBetween={100}
               slidesPerView={1}
               onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
             >
               <SwiperSlide>
-                <div className="relative h-full w-full overflow-hidden rounded-[15px]">
-                  {/* 선명한 이미지 레이어 (상단) */}
-                  <div
-                    className="absolute inset-0 rounded-[15px]"
-                    style={{
-                      backgroundImage: `url(${imageData.imageUrl})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      maskImage:
-                        "linear-gradient(to bottom, black 50%, transparent 100%)",
-                      WebkitMaskImage:
-                        "linear-gradient(to bottom, black 50%, transparent 100%)",
-                    }}
-                  />
-                  {/* 블러 + 어두운 이미지 레이어 (하단) */}
-                  <div
-                    className="absolute inset-0 rounded-[15px]"
-                    style={{
-                      backgroundImage: `url(${imageData.imageUrl})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      filter: "blur(15px)",
-                      maskImage:
-                        "linear-gradient(to bottom, transparent 50%, black 100%)",
-                      WebkitMaskImage:
-                        "linear-gradient(to bottom, transparent 50%, black 100%)",
-                    }}
-                  />
-                  {/* 어두운 그라데이션 오버레이 */}
-                  <div
-                    className="absolute inset-0 rounded-[15px]"
-                    style={{
-                      background:
-                        "linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.8) 100%)",
-                    }}
-                  />
-                  <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-4">
-                    <div className="flex items-center">
-                      <p className="text-[10px] font-normal tracking-tight text-white">
-                        {imageData.board?.name}
+                <div
+                  className="h-full w-full rounded-[15px] bg-gradient-to-t from-white/30 to-gray-800/30 p-[1px]"
+                  style={{ boxShadow: "0px 5px 5px 0px rgba(18, 18, 18, 0.5)" }}
+                >
+                  <div className="relative h-full w-full overflow-hidden rounded-[13px]">
+                    {/* 선명한 이미지 레이어 (상단) */}
+                    <div
+                      className="absolute inset-0 rounded-[13px]"
+                      style={{
+                        backgroundImage: `url(${imageData.imageUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        maskImage:
+                          "linear-gradient(to bottom, black 50%, transparent 100%)",
+                        WebkitMaskImage:
+                          "linear-gradient(to bottom, black 50%, transparent 100%)",
+                      }}
+                    />
+                    {/* 블러 + 어두운 이미지 레이어 (하단) */}
+                    <div
+                      className="absolute inset-0 rounded-[13px]"
+                      style={{
+                        backgroundImage: `url(${imageData.imageUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        filter: "blur(15px)",
+                        maskImage:
+                          "linear-gradient(to bottom, transparent 50%, black 100%)",
+                        WebkitMaskImage:
+                          "linear-gradient(to bottom, transparent 50%, black 100%)",
+                      }}
+                    />
+                    {/* 어두운 그라데이션 오버레이 */}
+                    <div
+                      className="absolute inset-0 rounded-[13px]"
+                      style={{
+                        background:
+                          "linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.8) 100%)",
+                      }}
+                    />
+                    {/* 상단 빛 효과 */}
+                    <div
+                      className="pointer-events-none absolute -top-14 left-1/2 h-[280px] w-[250px] -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        background:
+                          "radial-gradient(circle, rgba(255, 255, 255, 0.11) 0%, transparent 80%)",
+                      }}
+                    />
+                    <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-4">
+                      <div className="flex items-center">
+                        <p className="text-[10px] font-normal tracking-tight text-white">
+                          {imageData.board?.name}
+                        </p>
+                        <IconChevronRightWhiteSquare className="w-4" />
+                      </div>
+                      {/* TODO: 그라데이션 안되는 버그 픽스 */}
+                      <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text tracking-tight text-transparent">
+                        #{imageData.tag}
                       </p>
-                      <IconChevronRightWhiteSquare className="w-4" />
+                      <p className="font-[Montserrat] text-[10px] font-light italic">
+                        {uploadedAt && (
+                          <>
+                            {uploadedAt.getFullYear()}.{" "}
+                            {String(uploadedAt.getMonth() + 1).padStart(2, "0")}
+                            . {String(uploadedAt.getDate()).padStart(2, "0")}.
+                            {"\u00A0\u00A0\u00A0"}|{"\u00A0\u00A0\u00A0"}
+                            {String(uploadedAt.getHours()).padStart(2, "0")}:
+                            {String(uploadedAt.getMinutes()).padStart(2, "0")}
+                          </>
+                        )}
+                      </p>
                     </div>
-                    {/* TODO: 그라데이션 안되는 버그 픽스 */}
-                    <p className="ST0 mb-3 inline-block bg-[linear-gradient(to_right,white_50%,#8F9297_100%)] bg-clip-text tracking-tight text-transparent">
-                      #{imageData.tag}
-                    </p>
-                    <p className="font-[Montserrat] text-[10px] font-light italic">
-                      2025. 03. 21.
-                      {"\u00A0\u00A0\u00A0"}|{"\u00A0\u00A0\u00A0"}09:41
-                    </p>
                   </div>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
-                <div className="relative h-full w-full overflow-hidden rounded-[15px] bg-gray-900">
-                  <div className="relative z-10 flex h-full flex-col justify-between px-5 py-6 tracking-tight">
-                    <div className="flex flex-col items-center justify-center">
-                      <IconRectangleGray3 />
-                      <p className="B0 mb-2 text-gray-300">
-                        #{imageData.tag} 트라이브챗
-                      </p>
-                      <p className="mb-8 text-center text-[12px] font-medium text-gray-500">
-                        {uploadedTribeInfo?.joinStatus === "already_active" ? (
-                          <>
-                            이미 참여 중인 채팅방이에요. <br />
-                            해당 트라이브 챗으로 이동할까요?
-                          </>
-                        ) : uploadedTribeInfo?.joinStatus ===
-                          "already_waiting" ? (
-                          "아직 활성화 되지 않은 트라이브 챗 입니다"
-                        ) : uploadedTribeInfo?.isActivatable ? (
-                          <>
-                            더 많은 사람들과 바이브를 나눌 수 있어요 <br />
-                            입장해볼까요?
-                          </>
-                        ) : (
-                          <>
-                            아직 인원이 부족해요 <br /> Tribe Chat이 생성되면
-                            알려드릴게요!
-                          </>
-                        )}
-                      </p>
-                      <div className="relative mt-4 mb-8">
-                        <div className="aspect-3/4 w-[96px] -rotate-[20deg] rounded-[5px] bg-gray-300/60 blur-[1px]"></div>
-                        <div className="absolute top-0 aspect-3/4 w-[96px] -rotate-[10deg] rounded-[5px] bg-gray-200 blur-[1px]"></div>
-                        <div
-                          className="absolute top-0 aspect-3/4 w-[96px] rotate-0 rounded-[5px]"
-                          style={{
-                            backgroundImage: `url(${
-                              allTagImages[imageData.tag.toLowerCase()] ||
-                              imageData.imageUrl
-                            })`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                          }}
-                        ></div>
+                <div
+                  className="h-full w-full rounded-[15px] bg-gradient-to-b from-white/30 to-gray-800/30 p-[1px]"
+                  style={{ boxShadow: "0px 5px 5px 0px rgba(18, 18, 18, 0.5)" }}
+                >
+                  <div className="relative h-full w-full overflow-hidden rounded-[13px] bg-gray-900">
+                    {/* 상단 빛 효과 */}
+                    <div
+                      className="pointer-events-none absolute -top-14 left-1/2 h-[280px] w-[250px] -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        background:
+                          "radial-gradient(circle, rgba(255, 255, 255, 0.11) 0%, transparent 80%)",
+                      }}
+                    />
+                    <div className="relative z-10 flex h-full flex-col justify-between px-5 py-6 tracking-tight">
+                      <div className="flex flex-col items-center justify-center">
+                        <IconRectangleGray3 />
+                        <p className="B0 mb-2 text-gray-300">
+                          #{imageData.tag} 트라이브챗
+                        </p>
+                        <p className="mb-8 text-center text-[12px] font-medium text-gray-500">
+                          {uploadedTribeInfo?.joinStatus ===
+                          "already_active" ? (
+                            <>
+                              이미 참여 중인 채팅방이에요. <br />
+                              해당 트라이브 챗으로 이동할까요?
+                            </>
+                          ) : uploadedTribeInfo?.joinStatus ===
+                            "already_waiting" ? (
+                            "아직 활성화 되지 않은 트라이브 챗 입니다"
+                          ) : uploadedTribeInfo?.isActivatable ? (
+                            <>
+                              더 많은 사람들과 바이브를 나눌 수 있어요 <br />
+                              입장해볼까요?
+                            </>
+                          ) : (
+                            <>
+                              아직 인원이 부족해요 <br /> Tribe Chat이 생성되면
+                              알려드릴게요!
+                            </>
+                          )}
+                        </p>
+                        <div className="relative mt-4 mb-8">
+                          <div className="aspect-3/4 w-[96px] -rotate-[20deg] rounded-[5px] bg-gray-300/60 blur-[1px]"></div>
+                          <div className="absolute top-0 aspect-3/4 w-[96px] -rotate-[10deg] rounded-[5px] bg-gray-200 blur-[0.7px]"></div>
+                          <div
+                            className="absolute top-0 aspect-3/4 w-[96px] rotate-0 rounded-[5px]"
+                            style={{
+                              backgroundImage: `url(${
+                                allTagImages[imageData.tag.toLowerCase()] ||
+                                imageData.imageUrl
+                              })`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }}
+                          ></div>
+                        </div>
                       </div>
-                    </div>
-                    {uploadedTribeInfo?.joinStatus === "already_waiting" ? (
-                      // 이미 대기 중인 경우: "나중에 입장하기" 버튼만
-                      <button
-                        className="w-full cursor-pointer rounded-[5px] bg-gray-800 py-[6px]"
-                        onClick={() => handleJoinTribe(false)}
-                        disabled={isJoiningTribe}
-                      >
-                        <p className="B2 text-gray-300">나중에 입장하기</p>
-                      </button>
-                    ) : uploadedTribeInfo?.isActivatable ||
-                      uploadedTribeInfo?.joinStatus === "already_active" ? (
-                      // 5명 이상 OR 이미 활성화된 경우: 두 버튼
-                      <div className="flex justify-center gap-2">
+                      {uploadedTribeInfo?.joinStatus === "already_waiting" ? (
+                        // 이미 대기 중인 경우: "나중에 입장하기" 버튼만
                         <button
-                          className="w-30 cursor-pointer rounded-[5px] bg-gray-800 py-[6px]"
+                          className="w-full cursor-pointer rounded-[5px] bg-gray-800 py-[6px]"
                           onClick={() => handleJoinTribe(false)}
                           disabled={isJoiningTribe}
                         >
-                          <p className="B2 text-gray-300">
-                            {uploadedTribeInfo?.joinStatus === "already_active"
-                              ? "홈으로 이동하기"
-                              : "나중에 입장하기"}
-                          </p>
+                          <p className="B2 text-gray-300">나중에 입장하기</p>
                         </button>
+                      ) : uploadedTribeInfo?.isActivatable ||
+                        uploadedTribeInfo?.joinStatus === "already_active" ? (
+                        // 5명 이상 OR 이미 활성화된 경우: 두 버튼
+                        <div className="flex justify-center gap-2">
+                          <button
+                            className="w-30 cursor-pointer rounded-[5px] bg-gray-800 py-[6px]"
+                            onClick={() => handleJoinTribe(false)}
+                            disabled={isJoiningTribe}
+                          >
+                            <p className="B2 text-gray-300">
+                              {uploadedTribeInfo?.joinStatus ===
+                              "already_active"
+                                ? "홈으로 이동하기"
+                                : "나중에 입장하기"}
+                            </p>
+                          </button>
+                          <button
+                            className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={() => handleJoinTribe(true)}
+                            disabled={isJoiningTribe || isActivating}
+                          >
+                            <p className="B2 text-gray-800">
+                              {uploadedTribeInfo?.joinStatus ===
+                              "already_active"
+                                ? "채팅으로 이동하기"
+                                : isJoiningTribe
+                                  ? "입장 중..."
+                                  : "입장하기"}
+                            </p>
+                          </button>
+                        </div>
+                      ) : (
+                        // 5명 미만 : "나중에 입장하기" 버튼만
                         <button
-                          className="w-30 cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
-                          onClick={() => handleJoinTribe(true)}
-                          disabled={isJoiningTribe || isActivating}
+                          className="w-full cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={() => handleJoinTribe(false)}
+                          disabled={isJoiningTribe}
                         >
-                          <p className="B2 text-gray-800">
-                            {uploadedTribeInfo?.joinStatus === "already_active"
-                              ? "채팅으로 이동하기"
-                              : isJoiningTribe
-                                ? "입장 중..."
-                                : "입장하기"}
-                          </p>
+                          <p className="B2 text-gray-800">나중에 입장하기</p>
                         </button>
-                      </div>
-                    ) : (
-                      // 5명 미만 : "나중에 입장하기" 버튼만
-                      <button
-                        className="w-full cursor-pointer rounded-[5px] bg-gray-300 py-[6px] disabled:cursor-not-allowed disabled:opacity-50"
-                        onClick={() => handleJoinTribe(false)}
-                        disabled={isJoiningTribe}
-                      >
-                        <p className="B2 text-gray-800">나중에 입장하기</p>
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </SwiperSlide>
