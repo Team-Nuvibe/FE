@@ -2,6 +2,8 @@ import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?react";
 import IconQuickdropAdd from "@/assets/icons/icon_quickdrop_add.svg";
 import IconSelectImage from "@/assets/icons/icon_select_image.svg?react";
+import IconPlus from "@/assets/icons/icon_plus.svg?react";
+import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
 import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
@@ -229,6 +231,22 @@ export const BoardSelector = (props: BoardSelectorProps) => {
             />
           </div>
           <div className="mx-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-[10px]">
+              <div
+                className="flex cursor-pointer items-center gap-6"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+                  <div className="absolute top-2 left-1/2 h-[60px] w-[45px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full scale-y-[150%] rounded-[5px]" />
+                  <IconPlus className="absolute top-1/2 left-1/2 z-20 h-[21px] w-[21px] -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <div className="flex flex-col gap-2 tracking-tight text-gray-100">
+                  <h3 className="H3">보드 추가하기</h3>
+                </div>
+              </div>
+              <div className="h-[0.5px] w-full bg-gray-700" />
+            </div>
             {boards.map((board) => (
               <div key={board.id} className="flex flex-col gap-[10px]">
                 <div
