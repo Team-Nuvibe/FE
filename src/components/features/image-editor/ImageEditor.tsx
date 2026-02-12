@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconAdjustment from "@/assets/icons/icon_quickdrop_adjustment.svg?react";
 import IconAdjustmentActive from "@/assets/icons/icon_quickdrop_adjustment_active.svg?react";
@@ -12,29 +12,12 @@ import { AdjustmentToolbar } from "./AdjustmentToolbar";
 import { CropperView } from "./CropperView";
 import { CropToolbar } from "./CropToolbar";
 import { RotationToolbar } from "./RotationToolbar";
+import type { EditState, ImageAdjustmentLevels } from "@/types/vibedrop";
 
 interface ImageEditorProps {
   file: File;
-  initialState: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  };
-
-  onNext: (
-    blob: Blob,
-    adjustmentLevels: {
-      brightness: number;
-      contrast: number;
-      structure: number;
-      temperature: number;
-      saturation: number;
-      exposure: number;
-    },
-  ) => void;
+  initialState: ImageAdjustmentLevels;
+  onNext: (blob: Blob, adjustmentLevels: ImageAdjustmentLevels) => void;
 }
 
 export const ImageEditor = ({
@@ -43,28 +26,7 @@ export const ImageEditor = ({
   onNext,
 }: ImageEditorProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  const [editState, setEditState] = useState<{
-    adjustment: {
-      brightness: number;
-      contrast: number;
-      structure: number;
-      temperature: number;
-      saturation: number;
-      exposure: number;
-    };
-    crop: {
-      x: number;
-      y: number;
-      zoom: number;
-      croppedAreaPixels: any;
-    };
-    rotation: {
-      angle: number;
-      flipHorizontal: boolean;
-      flipVertical: boolean;
-    };
-  }>({
+  const [editState, setEditState] = useState<EditState>({
     adjustment: {
       brightness: 0,
       contrast: 0,
@@ -92,7 +54,17 @@ export const ImageEditor = ({
   const [cropMode, setCropMode] = useState<"original" | "fixedratio">(
     "fixedratio",
   );
-  const [fillColor, setFillColor] = useState(0);
+  const [imageOriginalSize, setImageOriginalSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  const [fillColor, setFillColor] = useState(50);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState<
+    { width: number; height: number } | undefined
+  >(undefined);
 
   const navigate = useNavigate();
 
@@ -114,14 +86,17 @@ export const ImageEditor = ({
     },
   ];
 
-  const getFilterStyle = (levels: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  }) => {
+  // 여백 색상 계산 함수 (0: 어두움 #212224, 100: 밝음 #FAFAFA)
+  const getFillColorRGB = (value: number) => {
+    const ratio = value / 100;
+    const r = Math.round(33 + (250 - 33) * ratio);
+    const g = Math.round(34 + (250 - 34) * ratio);
+    const b = Math.round(36 + (250 - 36) * ratio);
+    return { r, g, b };
+  };
+
+  // 이미지 조정 스타일 계산
+  const getFilterStyle = (levels: ImageAdjustmentLevels) => {
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
@@ -136,6 +111,71 @@ export const ImageEditor = ({
     }deg) saturate(${100 + levels.saturation * 2}%)`.trim();
   };
 
+  const getRotatedFitZoom = (
+    width: number,
+    height: number,
+    rotation: number,
+  ) => {
+    if (width === 0 || height === 0) return 1;
+
+    const imageRatio = width / height;
+    const targetRatio = 3 / 4;
+
+    // 1. zoom=1일 때의 기준 치수 계산 (Unrotated)
+    // react-easy-crop은 이미지가 크롭 영역보다 '넓으면' 높이를 맞추고, '좁으면' 너비를 맞춤 (cover 기준)
+    let w_zoom1, h_zoom1;
+
+    if (imageRatio > targetRatio) {
+      // 이미지 비율이 타겟보다 큼 (더 넓적함) -> Zoom 1일 때 높이가 맞음
+      // 타겟(크롭) 높이를 1.333 (1 / 0.75)으로 정규화했을 때
+      h_zoom1 = 1 / targetRatio;
+      w_zoom1 = h_zoom1 * imageRatio;
+    } else {
+      // 이미지 비율이 타겟보다 작음 (더 길쭉함) -> Zoom 1일 때 너비가 맞음
+      // 타겟(크롭) 너비를 1로 정규화했을 때
+      w_zoom1 = 1;
+      h_zoom1 = w_zoom1 / imageRatio;
+    }
+
+    // 2. 회전 적용 (크기 스왑)
+    const isRotated = rotation % 180 !== 0;
+    const w_rotated = isRotated ? h_zoom1 : w_zoom1;
+    const h_rotated = isRotated ? w_zoom1 : h_zoom1;
+
+    // 3. 3:4 영역(1 x 1.333) 안에 전체(contain)가 들어가기 위한 줌 계산
+    // 가로가 1 안에, 세로가 1.333 안에 들어와야 함
+    const zoomW = 1 / w_rotated;
+    const zoomH = 1 / targetRatio / h_rotated;
+
+    return Math.min(zoomW, zoomH);
+  };
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect) {
+          setContainerSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
+        }
+      }
+    });
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const currentFitZoom = getRotatedFitZoom(
+    imageOriginalSize.width,
+    imageOriginalSize.height,
+    editState.rotation.angle,
+  );
+
+  // 이미지 내보내기 핸들러
   const handleExportImage = () => {
     if (!previewUrl || !editState.crop.croppedAreaPixels) return;
 
@@ -185,9 +225,9 @@ export const ImageEditor = ({
 
       if (!cropCtx) return;
 
-      // 배경을 색으로 채움 (여백)
-      const hex = Math.round(fillColor).toString(16).padStart(2, "0");
-      cropCtx.fillStyle = `#${hex}${hex}${hex}`;
+      // 여백 색상 채우기
+      const { r, g, b } = getFillColorRGB(fillColor);
+      cropCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       cropCtx.fillRect(0, 0, cropWidth, cropHeight);
 
       // 원본 이미지가 그려진 임시 캔버스(canvas)를 cropCanvas에 그림
@@ -246,6 +286,7 @@ export const ImageEditor = ({
     };
   };
 
+  // 이미지 편집 적용 핸들러
   const handleApplyEdit = () => {
     if (!previewUrl || !editState.crop.croppedAreaPixels) return;
 
@@ -292,8 +333,8 @@ export const ImageEditor = ({
       if (!cropCtx) return;
 
       // 배경을 색으로 채움
-      const hex = Math.round(fillColor).toString(16).padStart(2, "0");
-      cropCtx.fillStyle = `#${hex}${hex}${hex}`;
+      const { r, g, b } = getFillColorRGB(fillColor);
+      cropCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       cropCtx.fillRect(0, 0, cropWidth, cropHeight);
 
       // 회전된 이미지를 크롭 영역만큼 그리기
@@ -339,16 +380,45 @@ export const ImageEditor = ({
     };
   };
 
+  const handleCropChange = (newCrop: EditState["crop"]) => {
+    // 부동소수점 오차 정규화 (threshold: 0.1 픽셀 미만)
+    const threshold = 0.1;
+    const normalizedCrop = {
+      ...newCrop,
+      x: Math.abs(newCrop.x) < threshold ? 0 : newCrop.x,
+      y: Math.abs(newCrop.y) < threshold ? 0 : newCrop.y,
+    };
+
+    // original 모드에서 zoom이 fitZoom에 매우 가까울 때 정규화
+    if (cropMode === "original" && Math.abs(newCrop.zoom - fitZoom) < 0.01) {
+      setEditState((prev) => ({
+        ...prev,
+        crop: { ...normalizedCrop, zoom: fitZoom },
+      }));
+    } else {
+      setEditState((prev) => ({
+        ...prev,
+        crop: normalizedCrop,
+      }));
+    }
+  };
+
   const handleToolChange = (toolId: string) => {
-    if (
-      (activeTool === "crop" && toolId !== "crop") ||
-      (activeTool === "rotation" && toolId !== "rotation")
-    ) {
+    if (activeTool === "crop" && toolId !== "crop") {
       handleApplyEdit();
     }
+
+    if (toolId === "rotation") {
+      setEditState((prev) => ({
+        ...prev,
+        crop: { ...prev.crop, zoom: 1, x: 0, y: 0 },
+      }));
+    }
+
     setActiveTool(toolId);
   };
 
+  // 원본 버튼 핸들러
   const handleReset = () => {
     if (!file) return;
 
@@ -374,7 +444,14 @@ export const ImageEditor = ({
     };
 
     setEditState({
-      adjustment: initialState,
+      adjustment: {
+        brightness: 0,
+        contrast: 0,
+        structure: 0,
+        temperature: 0,
+        saturation: 0,
+        exposure: 0,
+      },
       crop: {
         x: 0,
         y: 0,
@@ -389,7 +466,7 @@ export const ImageEditor = ({
     });
 
     setCropMode("fixedratio");
-    setFillColor(0);
+    setFillColor(50);
     // setActiveTool("adjustment");
   };
 
@@ -403,22 +480,24 @@ export const ImageEditor = ({
     img.onload = () => {
       const width = img.naturalWidth;
       const height = img.naturalHeight;
+      setImageOriginalSize({ width, height });
       const imageRatio = width / height;
       setIsWideImage(imageRatio > 3 / 4);
 
-      // fitZoom 계산 (이미지가 3:4 프레임 안에 딱 맞게 들어가는 줌 레벨)
-      // react-easy-crop에서 objectFit="cover"일 때(즉 꽉 채울 때) 기준
-      const TARGET_ASPECT = 3 / 4;
-      let fit = 1;
-      if (imageRatio > TARGET_ASPECT) {
-        // 이미지가 더 넓음 -> 높이가 맞음, 너비가 잘림
-        // 전체 너비를 보려면 축소해야 함
-        fit = TARGET_ASPECT / imageRatio;
-      } else {
-        // 이미지가 더 높음 -> 너비가 맞음, 높이가 잘림
-        // 전체 높이를 보려면 축소해야 함
-        fit = imageRatio / TARGET_ASPECT;
-      }
+      // // fitZoom 계산 (이미지가 3:4 프레임 안에 딱 맞게 들어가는 줌 레벨)
+      // // react-easy-crop에서 objectFit="cover"일 때(즉 꽉 채울 때) 기준
+      // const TARGET_ASPECT = 3 / 4;
+      // let fit = 1;
+      // if (imageRatio > TARGET_ASPECT) {
+      //   // 이미지가 더 넓음 -> 높이가 맞음, 너비가 잘림
+      //   // 전체 너비를 보려면 축소해야 함
+      //   fit = TARGET_ASPECT / imageRatio;
+      // } else {
+      //   // 이미지가 더 높음 -> 너비가 맞음, 높이가 잘림
+      //   // 전체 높이를 보려면 축소해야 함
+      //   fit = imageRatio / TARGET_ASPECT;
+      // }
+      const fit = getRotatedFitZoom(width, height, 0);
       setFitZoom(fit);
     };
 
@@ -433,6 +512,9 @@ export const ImageEditor = ({
       adjustment: initialState,
     }));
   }, [initialState]);
+
+  console.log(editState.crop);
+  console.log(fitZoom, currentFitZoom);
 
   return (
     <div className="flex h-dvh flex-col">
@@ -469,7 +551,10 @@ export const ImageEditor = ({
         <div
           className="relative flex aspect-[3/4] h-auto max-h-full w-auto max-w-full items-center justify-center overflow-hidden transition-colors duration-100"
           style={{
-            backgroundColor: `rgb(${fillColor}, ${fillColor}, ${fillColor})`,
+            backgroundColor: (() => {
+              const { r, g, b } = getFillColorRGB(fillColor);
+              return `rgb(${r}, ${g}, ${b})`;
+            })(),
           }}
         >
           {/* Dummy Image for Layout Sizing */}
@@ -480,31 +565,34 @@ export const ImageEditor = ({
             aria-hidden="true"
           />
 
-          <div className="absolute inset-0 h-full w-full">
+          <div className="absolute inset-0 h-full w-full" ref={containerRef}>
             <CropperView
               image={previewUrl!}
               crop={editState.crop}
               adjustment={editState.adjustment}
               rotation={editState.rotation.angle}
+              cropSize={containerSize}
               flipHorizontal={editState.rotation.flipHorizontal}
-              onCropChange={(newCrop) =>
-                setEditState((prev) => ({ ...prev, crop: newCrop }))
-              }
+              onCropChange={handleCropChange}
               isWideImage={isWideImage}
               readOnly={activeTool !== "crop" && activeTool !== "rotation"}
               cropMode={activeTool === "rotation" ? "original" : cropMode}
               restrictPosition={
-                activeTool === "rotation" ? false : cropMode === "fixedratio"
+                activeTool === "rotation" || cropMode === "fixedratio"
               }
               minZoom={
-                activeTool === "rotation" || cropMode === "original"
-                  ? fitZoom / 2
-                  : 1
+                activeTool === "rotation"
+                  ? 1 // 회전 탭이면 줌 1로 고정 (축소 불가)
+                  : cropMode === "original"
+                    ? currentFitZoom / 2
+                    : 1
               }
               maxZoom={
-                activeTool === "rotation" || cropMode === "original"
-                  ? fitZoom
-                  : 3
+                activeTool === "rotation"
+                  ? 1 // 회전 탭이면 줌 1로 고정 (확대 불가)
+                  : cropMode === "original"
+                    ? currentFitZoom
+                    : 3
               }
             />
           </div>
@@ -544,12 +632,18 @@ export const ImageEditor = ({
         <RotationToolbar
           rotation={editState.rotation.angle}
           isFlipped={editState.rotation.flipHorizontal}
-          onRotationChange={(angle) =>
+          onRotationChange={(angle) => {
             setEditState((prev) => ({
               ...prev,
+              crop: {
+                ...prev.crop,
+                zoom: 1,
+                x: 0,
+                y: 0,
+              },
               rotation: { ...prev.rotation, angle },
-            }))
-          }
+            }));
+          }}
           onFlipChange={(isFlipped) =>
             setEditState((prev) => ({
               ...prev,

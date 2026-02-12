@@ -1,3 +1,4 @@
+import type { ImageAdjustmentLevels } from "@/types/vibedrop";
 import { useCallback } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 
@@ -11,14 +12,7 @@ interface CropState {
 interface CropperViewProps {
   image: string;
   crop: CropState;
-  adjustment: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  };
+  adjustment: ImageAdjustmentLevels;
   rotation?: number;
   flipHorizontal?: boolean;
   isWideImage: boolean;
@@ -28,6 +22,7 @@ interface CropperViewProps {
   minZoom?: number;
   maxZoom?: number;
   restrictPosition?: boolean;
+  cropSize?: { width: number; height: number };
 }
 
 export const CropperView = ({
@@ -42,6 +37,7 @@ export const CropperView = ({
   minZoom = 1,
   maxZoom = 3,
   restrictPosition,
+  cropSize,
 }: CropperViewProps) => {
   const onCropComplete = useCallback(
     (_croppedArea: Area, croppedAreaPixels: Area) => {
@@ -53,14 +49,7 @@ export const CropperView = ({
     [onCropChange, crop],
   );
 
-  const getFilterStyle = (levels: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  }) => {
+  const getFilterStyle = (levels: ImageAdjustmentLevels) => {
     const exposureFactor = 1 + (levels.exposure / 50) * 0.5;
     const brightnessFactor = 1 + (levels.brightness / 50) * 0.2;
     const finalBrightness = brightnessFactor * exposureFactor * 100;
@@ -87,19 +76,18 @@ export const CropperView = ({
         zoom={crop.zoom}
         rotation={rotation}
         aspect={3 / 4}
+        cropSize={cropSize}
         onCropChange={(newCrop) => onCropChange({ ...crop, ...newCrop })}
         onZoomChange={(newZoom) => onCropChange({ ...crop, zoom: newZoom })}
         onCropComplete={onCropComplete}
         objectFit="cover"
-        restrictPosition={restrictPosition ?? (cropMode === "fixedratio")}
+        restrictPosition={restrictPosition ?? cropMode === "fixedratio"}
         minZoom={minZoom}
         maxZoom={maxZoom}
         showGrid={!readOnly}
         style={{
           mediaStyle: {
             filter: getFilterStyle(adjustment),
-            // objectFit: cover 사용 시 width/height 오버라이드 불필요하거나,
-            // 커버 동작을 위해 auto/auto로 두는 편이 나음. 기존 로직 제거.
             maxWidth: "none",
             maxHeight: "none",
           },

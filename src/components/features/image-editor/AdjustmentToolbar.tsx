@@ -11,24 +11,11 @@ import IconTemperature from "@/assets/icons/icon_temperature.svg?react";
 import IconTemperatureActive from "@/assets/icons/icon_temperature_active.svg?react";
 import IconExposure from "@/assets/icons/icon_exposure.svg?react";
 import IconExposureActive from "@/assets/icons/icon_exposure_active.svg?react";
+import type { ImageAdjustmentLevels } from "@/types/vibedrop";
 
 interface AdjustmentToolbarProps {
-  levels: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  };
-  onChange: (newLevels: {
-    brightness: number;
-    contrast: number;
-    structure: number;
-    temperature: number;
-    saturation: number;
-    exposure: number;
-  }) => void;
+  levels: ImageAdjustmentLevels;
+  onChange: (newLevels: ImageAdjustmentLevels) => void;
 }
 
 export const AdjustmentToolbar = ({
@@ -36,10 +23,10 @@ export const AdjustmentToolbar = ({
   onChange,
 }: AdjustmentToolbarProps) => {
   const [activeAdjustmentTool, setActiveAdjustmentTool] =
-    useState<keyof typeof levels>("brightness");
+    useState<keyof ImageAdjustmentLevels>("brightness");
 
   const adjustmentTools: {
-    id: keyof typeof levels;
+    id: keyof ImageAdjustmentLevels;
     icon: React.ComponentType;
     activeIcon: React.ComponentType;
     label: string;
@@ -103,6 +90,7 @@ export const AdjustmentToolbar = ({
       <div className="scrollbar-hide flex gap-5 overflow-x-auto pt-[21px]">
         {adjustmentTools.map((tool) => (
           <div
+            key={tool.id}
             className={`ST2 flex flex-col items-center gap-[10px] ${
               tool.id === "brightness" && `pl-6`
             } ${tool.id === "saturation" && `pr-6`}`}

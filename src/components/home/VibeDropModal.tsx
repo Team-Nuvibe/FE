@@ -3,12 +3,14 @@ import IconRectangleGray3 from "@/assets/icons/icon_rectangle_gray3.svg?react";
 interface VibeDropModalProps {
   tag: string;
   onClose?: () => void;
+  onClick: () => void;
   imageUrl: string;
 }
 
 export const VibeDropModal = ({
   tag,
   onClose,
+  onClick,
   imageUrl,
 }: VibeDropModalProps) => {
   return (
@@ -45,7 +47,10 @@ export const VibeDropModal = ({
             돌아가기
           </p>
         </button>
-        <button className="flex w-[120px] items-center justify-center rounded-[5px] bg-gray-300 py-[6px]">
+        <button
+          className="flex w-[120px] items-center justify-center rounded-[5px] bg-gray-300 py-[6px]"
+          onClick={onClick}
+        >
           <p className="text-[14px] font-medium tracking-tight text-gray-800">
             바이브 드랍하기
           </p>

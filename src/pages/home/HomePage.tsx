@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import useGetAllCategoriesTags from "@/hooks/queries/useGetAllCategoriesTags";
 import useGetDropMission from "@/hooks/queries/useGetDropMission";
 import useGetArchiveList from "@/hooks/queries/archive-board/useGetArchiveList";
-import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
+import IconFolderHome from "@/assets/icons/icon_folder_home.svg?react";
 import { BoardBottomSheet } from "@/components/archive-board/BoardBottomSheet";
 import { createArchiveBoard } from "@/apis/archive-board/archive";
 import { useNavbarActions } from "@/hooks/useNavbarStore";
@@ -111,17 +111,6 @@ const HomePage = () => {
     return () => window.removeEventListener("resize", handleScroll);
   }, []);
 
-  // const inputImageRef = useRef<HTMLInputElement>(null);
-
-  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0];
-  //   if (!file) {
-  //     alert("파일을 선택하지 않았습니다.");
-  //     return;
-  //   }
-  //   navigate("/quickdrop", { state: { file, tag: dropMission?.data.tag } });
-  // };
-
   const handleCreateBoardSave = async (boardName: string) => {
     if (!boardName || boardName.trim() === "") return;
 
@@ -174,17 +163,10 @@ const HomePage = () => {
               </h1>
             </div>
           </div>
-          <div className="relative z-10 mr-4 mb-9 cursor-pointer">
+          <div className="relative z-10 mr-4 mb-7 cursor-pointer">
             <Icon_shortcut_quickdrop
               onClick={() => navigate(`/tag/${dropMission?.data.tag}`)}
             />
-            {/* <input
-              type="file"
-              className="hidden"
-              accept="image/*"
-              ref={inputImageRef}
-              onChange={handleImageChange}
-            /> */}
           </div>
         </div>
       </header>
@@ -211,20 +193,20 @@ const HomePage = () => {
               className={`flex w-[123px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
             >
               {/* 폴더 컨테이너 */}
-              <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[5px] border-[0.5px] border-gray-700 bg-[#212224]/80">
+              <div className="relative aspect-square w-full max-w-[123px] shrink-0 overflow-hidden rounded-[5px] bg-[#212224]/80">
                 {/* 내부 이미지 (썸네일) */}
                 {board.thumbnailUrl ? (
                   <img
                     src={board.thumbnailUrl}
                     alt="thumbnail"
-                    className="absolute top-2 left-1/2 w-[79px] -translate-x-1/2 rounded-[3px] object-cover"
+                    className="absolute top-[3%] left-[16%] h-[88%] w-[66%] py-2"
                   />
                 ) : (
-                  <div className="absolute top-2 left-1/2 h-[104.5px] w-[79px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
+                  <div className="absolute top-[3%] left-[16%] h-[88%] w-[66%] bg-gray-800" />
                 )}
 
                 {/* 폴더 오버레이 아이콘 */}
-                <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+                <IconFolderHome className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
 
                 {/* 폴더 제목 (하단) */}
                 <div className="absolute right-[6px] bottom-[10px] left-[6.39px] z-20 flex justify-between gap-[6px] tracking-tight">

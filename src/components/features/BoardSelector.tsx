@@ -2,6 +2,8 @@ import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
+import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
+import IconFolderVibedrop from "@/assets/icons/icon_folder_vibedrop.svg?react";
 import IconPlus from "@/assets/icons/icon_plus.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
 import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
@@ -46,10 +48,8 @@ export const BoardSelector = ({
     const fetchBoards = async () => {
       try {
         const response = await getArchiveList();
-        console.log(response);
 
         if (response.data) {
-          console.log(response.data);
           const mappedBoards: Board[] = response.data.map((board) => ({
             id: board.boardId,
             name: board.name,
@@ -109,7 +109,11 @@ export const BoardSelector = ({
                   ? "cursor-pointer text-white"
                   : "cursor-not-allowed text-gray-700"
               }`}
-              onClick={() => onNext(selectedBoard!)}
+              onClick={() => {
+                if (selectedBoard) {
+                  onNext(selectedBoard!);
+                }
+              }}
             >
               완료
             </p>
@@ -154,7 +158,7 @@ export const BoardSelector = ({
                   <div className="absolute top-2 left-1/2 h-[94px] w-[71px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
 
                   {/* 폴더 오버레이 아이콘 */}
-                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full scale-y-[150%]" />
+                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full scale-y-[150%] rounded-[5px]" />
                   <IconPlus className="absolute top-[50px] left-1/2 z-20 h-[21px] w-[21px] -translate-x-1/2" />
                 </div>
               </div>
@@ -290,17 +294,6 @@ export const BoardSelector = ({
           </div>
         </>
       )}
-      {/* {isModalOpen && (
-        <>
-          <div className="fixed inset-0 z-40 bg-black/50" />
-          <div className="fixed right-0 bottom-0 left-0 z-50 mx-auto max-w-[393px]">
-            <AddBoardModal
-              onClose={() => setIsModalOpen(false)}
-              onAdd={handleAddBoard}
-            />
-          </div>
-        </>
-      )} */}
       <BoardBottomSheet
         isOpen={isModalOpen}
         initialTitle=""
