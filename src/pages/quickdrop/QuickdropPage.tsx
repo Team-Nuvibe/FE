@@ -20,8 +20,6 @@ import {
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
 import { checkImageStatus } from "@/apis/tribe-chat/chat";
 import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
-import ImgVibedropEllipse from "@/assets/images/img_vibedrop_ellipse.svg?react";
-
 import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
 const tagImages = import.meta.glob(
@@ -492,22 +490,18 @@ export const QuickdropPage = () => {
         />
       )}
       {step === "uploaded" && (
-        <div className="flex h-full items-center justify-center overflow-hidden">
+        <div className="flex h-full items-center justify-center">
           <div className="relative flex flex-col items-center justify-center gap-4">
-            {/* 배경 조명 효과
+            {/* 배경 조명 효과 */}
             <div
-              className="pointer-events-none absolute -top-10 left-1/2 h-dvh w-full -translate-x-1/2 scale-y-150"
+              className="pointer-events-none absolute left-1/2 h-[100dvh] w-[80%] -translate-x-1/2 -translate-y-[8%]"
               style={{
                 background:
-                  "radial-gradient(ellipse 50% 80% at 50% 25%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 30%, transparent 70%)",
-                filter: "blur(40px)",
-                maskImage:
-                  "linear-gradient(to bottom, white 10%, white 45%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, white 10%, white 45%, transparent 100%)",
+                  "linear-gradient(180deg, rgba(226, 226, 226, 0.37) 4.49%, rgba(226, 226, 226, 0.002) 95%)",
+                filter: "blur(45px)",
+                borderRadius: "50%",
               }}
-            /> */}
-            <ImgVibedropEllipse className="absolute h-dvh" />
+            />
             {imageData.board?.tagCount === 0 && (
               <p
                 className={`B2 text-white transition-opacity duration-200 ${
