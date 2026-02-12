@@ -65,15 +65,6 @@ export const ScrapPage = () => {
     tribeId: tribeId ?? 0,
   });
 
-  // 디버깅용 로그
-  console.log("🔍 ScrapPage Debug Info:");
-  console.log("State:", { tribeId, passedTags, currentTag, viewMode });
-  console.log("Fetched Data:", {
-    allData: allData?.data,
-    chatGridData: chatGridData?.data,
-    tribeScrapData: tribeScrapData?.data,
-  });
-
   // Determine data source and items
   let items: DisplayItem[] = [];
   if (tribeId) {

@@ -84,7 +84,6 @@ const ArchiveDetailPage = () => {
         const response = await getArchiveBoardDetail(boardIdNum);
 
         if (response.data) {
-          console.log("📋 Board detail loaded:", response.data);
           const detail = response.data;
 
           const mappedItems: ModelItem[] = detail.images.map((img) => ({
@@ -199,7 +198,6 @@ const ArchiveDetailPage = () => {
     try {
       await updateArchiveBoardName(parseInt(boardid), newTitle);
       setBoardTitle(newTitle);
-      console.log("Board name updated to:", newTitle);
     } catch (error) {
       console.error("Failed to update board name:", error);
       // TODO: Show error toast to user

@@ -109,10 +109,8 @@ const ArchivePage = () => {
     const fetchBoards = async () => {
       try {
         const response = await getArchiveList();
-        console.log(response);
 
         if (response.data) {
-          console.log(response.data);
           const mappedBoards: ArchiveBoard[] = response.data.map((board) => ({
             id: board.boardId.toString(),
             title: board.name,
