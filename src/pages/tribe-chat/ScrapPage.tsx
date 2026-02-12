@@ -1,0 +1,341 @@
+import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import useGetAllScrapedImages from "@/hooks/queries/tribe-chat/useGetAllScrapedImages";
+import useGetTribeScrapedImages from "@/hooks/queries/tribe-chat/useGetTribeScrapedImages";
+import useGetChatGrid from "@/hooks/queries/tribe-chat/useGetChatGrid";
+import { type ChatGridItem, type ScrapedImageItem } from "@/types/tribeChat";
+import IconChatScrap from "@/assets/icons/icon_scrap gray.svg?react";
+import { ImageDetailModal } from "@/components/tribe-chat/ImageDetailModal";
+import { DeleteConfirmModal } from "@/components/archive-board/DeleteCofirmModal";
+import { toggleImageScrap } from "@/apis/tribe-chat/scrapimage";
+import { getChatDetail } from "@/apis/tribe-chat/chat";
+import { useUserStore } from "@/hooks/useUserStore";
+import { getImageDetail } from "@/apis/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "@/constants/key";
+
+type DisplayItem = ChatGridItem | ScrapedImageItem;
+
+export const ScrapPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as {
+    tribeId?: number;
+    tags?: string[];
+    imageTag?: string;
+  };
+  const tribeId = state?.tribeId;
+  const passedTags = state?.tags ?? [];
+  const imageTag = state?.imageTag;
+  const { nickname: currentUserNickname } = useUserStore();
+  const queryClient = useQueryClient();
+
+  // Global Mode State
+  const [currentTag, setCurrentTag] = useState<string | undefined>(undefined);
+
+  // Tribe Mode State
+  const [viewMode, setViewMode] = useState<"recent" | "scrap">("recent");
+
+  // Modal State
+  const [selectedItem, setSelectedItem] = useState<{
+    item: DisplayItem;
+    chatSenderNickname: string;
+    isScraped?: boolean;
+    boardTitle?: string;
+  } | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingScrapToggle, setPendingScrapToggle] = useState<{
+    chatId: number;
+    currentStatus: boolean;
+  } | null>(null);
+
+  // 1. Global Mode: Fetch all scraped images
+  const { data: allData } = useGetAllScrapedImages({
+    imageTag: currentTag,
+  });
+
+  // 2. Tribe Mode (Recent): Fetch chat grid
+  const { data: chatGridData } = useGetChatGrid({
+    tribeId: tribeId ?? 0,
+  });
+
+  // 3. Tribe Mode (Scrap): Fetch tribe scraped images
+  const { data: tribeScrapData } = useGetTribeScrapedImages({
+    tribeId: tribeId ?? 0,
+  });
+
+  // Determine data source and items
+  let items: DisplayItem[] = [];
+  if (tribeId) {
+    if (viewMode === "recent") {
+      items = chatGridData?.data.items ?? [];
+    } else {
+      items = tribeScrapData?.data.items ?? [];
+    }
+  } else {
+    items = allData?.data.items ?? [];
+  }
+
+  // 날짜별 그룹화 (YYYY.MM.DD)
+  const groupedItems = items.reduce(
+    (acc, item) => {
+      const date = new Date(item.createdAt)
+        .toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\. /g, ".")
+        .replace(/\.$/, ""); // 2024.01.01 형식
+
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(item);
+      return acc;
+    },
+    {} as Record<string, DisplayItem[]>,
+  );
+
+  const handleImageClick = async (item: DisplayItem) => {
+    try {
+      // Both ChatGridItem and ScrapedImageItem now have chatSenderNickname
+      const chatSenderNickname = item.chatSenderNickname || "";
+      let isScraped = true; // Default to true for scrap page items
+      let boardTitle: string | undefined = undefined;
+
+      // Fetch isScraped status from getChatDetail API for ChatGridItem in tribe mode
+      if (tribeId && "chatId" in item && item.chatId) {
+        const response = await getChatDetail(item.chatId);
+        isScraped = response.data.isScraped;
+      }
+
+      // Fetch boardTitle from getImageDetail API
+      try {
+        const imageDetailResponse = await getImageDetail(item.imageId);
+        boardTitle = imageDetailResponse.data.boardName;
+      } catch (error) {
+        console.error("Failed to fetch board title:", error);
+      }
+
+      setSelectedItem({
+        item,
+        chatSenderNickname,
+        isScraped,
+        boardTitle,
+      });
+    } catch (error) {
+      console.error("Failed to fetch detail:", error);
+      // Fallback: open modal without complete info
+      setSelectedItem({
+        item,
+        chatSenderNickname: item.chatSenderNickname || "",
+        isScraped: true, // 스크랩 페이지에서는 기본적으로 true
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+  };
+
+  const handleScrapToggle = async (chatId: number, currentStatus: boolean) => {
+    // If currently scrapped (Active), show delete confirmation modal
+    if (currentStatus) {
+      setPendingScrapToggle({ chatId, currentStatus });
+      setShowDeleteModal(true);
+    } else {
+      // If not scrapped (InActive), toggle directly
+      try {
+        await toggleImageScrap(chatId);
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY.chatGrid] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY.scrapedImages] });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY.tribeScrapedImages],
+        });
+      } catch (error) {
+        console.error("Failed to toggle scrap:", error);
+      }
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingScrapToggle) return;
+
+    try {
+      await toggleImageScrap(pendingScrapToggle.chatId);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+      setSelectedItem(null);
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.chatGrid] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.scrapedImages] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.tribeScrapedImages],
+      });
+    } catch (error) {
+      console.error("Failed to toggle scrap:", error);
+      setShowDeleteModal(false);
+      setPendingScrapToggle(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setPendingScrapToggle(null);
+  };
+
+  return (
+    <div className="flex h-full min-h-screen flex-col bg-black text-white">
+      <header className="relative mx-4 mt-2 mb-6 flex items-center justify-center">
+        <h2 className="H2 tracking-tight text-gray-200">
+          {tribeId ? "사진 모아보기" : "스크랩 모아보기"}
+        </h2>
+        <button
+          className="absolute left-0 h-6 w-6 cursor-pointer"
+          onClick={() => navigate(-1)}
+        >
+          <IconChevronLeft className="text-white" />
+        </button>
+      </header>
+
+      {/* Filter Section */}
+      <section className="scrollbar-hide mx-4 flex gap-2 overflow-x-auto pb-2">
+        {tribeId ? (
+          // Tribe Mode Filters
+          <>
+            <button
+              className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${viewMode === "recent" ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+              onClick={() => setViewMode("recent")}
+            >
+              <p
+                className={`ST2 tracking-tight ${viewMode === "recent" ? `text-gray-900` : `text-gray-400`}`}
+              >
+                최근 항목
+              </p>
+            </button>
+            <button
+              className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${viewMode === "scrap" ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+              onClick={() => setViewMode("scrap")}
+            >
+              <p
+                className={`ST2 tracking-tight ${viewMode === "scrap" ? `text-gray-900` : `text-gray-400`}`}
+              >
+                스크랩 모아보기
+              </p>
+            </button>
+          </>
+        ) : (
+          // Global Mode Tag Filters
+          <>
+            <button
+              className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${!currentTag ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+              onClick={() => setCurrentTag(undefined)}
+            >
+              <p
+                className={`ST2 tracking-tight ${!currentTag ? `text-gray-900` : `text-gray-400`}`}
+              >
+                전체
+              </p>
+            </button>
+            {passedTags.map((tag) => (
+              <button
+                key={tag}
+                className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${currentTag === tag ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+                onClick={() => setCurrentTag(tag)}
+              >
+                <p
+                  className={`ST2 tracking-tight ${currentTag === tag ? `text-gray-900` : `text-gray-400`}`}
+                >
+                  #{tag}
+                </p>
+              </button>
+            ))}
+          </>
+        )}
+      </section>
+
+      <div className="mx-4 mt-4 flex flex-1 flex-col gap-6 overflow-y-auto pb-20">
+        {Object.entries(groupedItems).length > 0 ? (
+          Object.entries(groupedItems).map(([date, groupItems]) => (
+            <div key={date} className="flex flex-col gap-3">
+              <p className="B2 tracking-tight text-gray-500">{date}</p>
+              <div className="grid grid-cols-3 gap-2">
+                {groupItems.map((item) => {
+                  const key =
+                    "scrapedImageId" in item
+                      ? item.scrapedImageId
+                      : item.chatId;
+                  return (
+                    <div
+                      key={key}
+                      className="aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[5px] bg-gray-800"
+                      onClick={() => handleImageClick(item)}
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={`img-${item.imageId}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="mt-55 flex w-full flex-col items-center justify-center">
+            <IconChatScrap className="h-12 w-12 text-gray-500" />
+            <p className="B1 mt-3 text-gray-500">
+              {tribeId && viewMode === "recent"
+                ? "이미지가 없습니다."
+                : "스크랩한 이미지가 없습니다."}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Image Detail Modal */}
+      {selectedItem && (
+        <ImageDetailModal
+          item={{
+            id:
+              "chatId" in selectedItem.item && selectedItem.item.chatId
+                ? selectedItem.item.chatId.toString()
+                : "scrapedImageId" in selectedItem.item
+                  ? selectedItem.item.scrapedImageId.toString()
+                  : selectedItem.item.chatId.toString(),
+            tag:
+              "imageTag" in selectedItem.item
+                ? selectedItem.item.imageTag
+                : imageTag || "",
+            thumbnail: selectedItem.item.imageUrl,
+          }}
+          chatId={
+            "chatId" in selectedItem.item ? selectedItem.item.chatId : undefined
+          }
+          isScraped={selectedItem.isScraped}
+          senderNickname={selectedItem.chatSenderNickname}
+          currentUserNickname={currentUserNickname}
+          boardTitle={selectedItem.boardTitle}
+          onClose={handleCloseModal}
+          onScrapToggle={
+            "chatId" in selectedItem.item ? handleScrapToggle : undefined
+          }
+          createdAt={selectedItem.item.createdAt}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        maintext="스크랩을 취소하시겠습니까?"
+        subtext="스크랩을 취소하면 해당 이미지가 사라져요."
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
+    </div>
+  );
+};

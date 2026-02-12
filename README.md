@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# ก Nuvibe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p> NuVibe는 이미지를 태그로 기록해 취향을 쌓고, 같은 감각을 가진 사람들과 연결되는 아카이브 기반 네트워킹 서비스입니다. </p>
 
-Currently, two official plugins are available:
+## ⚙ 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<p>
+  <img src="https://img.shields.io/badge/TYPESCRIPT-3178C6?style=flat-square&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REACT-61DAFB?style=flat-square&logo=react&logoColor=white"/>
+  <img src="https://img.shields.io/badge/VITE-646CFF?style=flat-square&logo=vite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TAILWINDCSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white"/>
+  <br />
+  <img src="https://img.shields.io/badge/REACT ROUTER-CA4245?style=flat-square&logo=reactrouter&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REACT HOOK FORM-EC5990?style=flat-square&logo=reacthookform&logoColor=white"/>
+  <img src="https://img.shields.io/badge/ZOD-408AFF?style=flat-square&logo=zod&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SWIPER-6332F6?style=flat-square&logo=swiper&logoColor=white"/>
+  <img src="https://img.shields.io/badge/FRAMER MOTION-1E5397?style=flat-square&logo=framermotion&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Zustand-FF8800?style=flat-square&logo=Zustand&logoColor=white"/>
+  <img src="https://img.shields.io/badge/immer-FF8800?style=flat-square&logo=immer&logoColor=white"/>
+  <img src="https://img.shields.io/badge/date fns-770C56?style=flat-square&logo=datefns&logoColor=white"/>
+  <img src="https://img.shields.io/badge/matter js-4B5562?style=flat-square&logo=matterjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/htmltoimage-E72429?style=flat-square&logo=htmltoimage&logoColor=white"/>
+  <img src="https://img.shields.io/badge/axios-5A29E4?style=flat-square&logo=axios&logoColor=white"/>
+  <img src="https://img.shields.io/badge/tanstack-000000?style=flat-square&logo=tanstack&logoColor=white"/>
+  <img src="https://img.shields.io/badge/react intersection observer-FF4154?style=flat-square&logo=reactintersectionobserver&logoColor=white"/>
+  <img src="https://img.shields.io/badge/vconsole-1E1E28?style=flat-square&logo=vconsole&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REACT%20EASY%20CROP-00CBC6?style=flat-square">
+  <img src="https://img.shields.io/badge/firebase-DD2C00?style=flat-square&logo=firebase&logoColor=white"/>
+  <img src="https://img.shields.io/badge/react query-FF4154?style=flat-square&logo=reactquery&logoColor=white"/>
 
-## React Compiler
+</p>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🔗 Migration History
 
-## Expanding the ESLint configuration
+본 프로젝트는 원활한 협업을 위해 기존 프론트엔드 전용 레포지토리인 [nuvibe_frontend](https://github.com/j2nooh/nuvibe_frontend)를 통합하여 관리하고 있습니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **이전 날짜:** 2026.01.06
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **이전 사유:** FE-BE 간 프로젝트 관리 일원화 및 작업 효율 극대화
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **작업 내용:** 기존 FE 전용 레포지토리의 커밋 히스토리 이관 및 환경 설정 최적화
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📌 GitHub Convention
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 📝 Commit
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- 작은 단위로 커밋, 유형은 **영어 대문자** 작성
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Type       | Description              |
+| ---------- | ------------------------ |
+| `Feat`     | 새로운 기능 추가         |
+| `Fix`      | 버그 수정                |
+| `Docs`     | 문서 수정                |
+| `Style`    | 포맷팅, 세미콜론 누락 등 |
+| `Refactor` | 코드 리팩토링            |
+| `Test`     | 테스트 코드              |
+| `Chore`    | 패키지 매니저, 기타 수정 |
+| `Design`   | UI 디자인 변경           |
+| `Comment`  | 주석 추가 및 변경        |
+| `Rename`   | 파일/폴더명 변경         |
+| `Remove`   | 파일 삭제                |
+
+### 🔀 Branch (Gitflow)
+
+- `main`: 배포
+- `develop`: 개발 (main에서 분기)
+- `feature/기능명`: 기능 개발 (develop에서 분기)
+- `hotfix/수정사항`: 긴급 수정 (main에서 분기)
+
+### 🔃 Pull Request
+
+- **제목**: 커밋 유형 대문자 작성 (예: `FEAT, FIX: 로그인 기능 구현`)
+- **내용**: PR 이유, 작업 내용, 스크린샷(선택), 리뷰 요구사항
+- **규칙**: 하나의 PR에 커밋 3~10개 권장
+
+## 📌 Code Convention
+
+- 쌍따옴표(""), 세미콜론(;) 사용
+- camelCase (함수, 변수), PascalCase (클래스, 타입, 인터페이스, 생성자 등)
+- 연산자/콤마 뒤 공백, 한 줄에 한 문장
+- 경로: `src/assets/` → `@/assets/` 사용
+- 최상위 파일 수정 시 팀 공유
+
+### 파일/폴더 명명 규칙
+
+- 폴더명: `kebab-case` 소문자 (예: `user-profile`)
+- 파일명: `kebab-case` (예: `user-service.ts`)
+- `.tsx` 파일: `PascalCase` (예: `UserProfile.tsx`)
