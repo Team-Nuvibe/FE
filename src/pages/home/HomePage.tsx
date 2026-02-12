@@ -185,7 +185,11 @@ const HomePage = () => {
           {archiveListData?.data.map((board) => (
             <div
               key={board.boardId}
-              onClick={() => navigate(`/archive-board/${board.boardId}`)}
+              onClick={() =>
+                navigate(`/archive-board/${board.boardId}`, {
+                  state: { showDropVibeButton: true },
+                })
+              }
               className={`flex w-[123px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
             >
               {/* 폴더 컨테이너 */}

@@ -232,7 +232,7 @@ const ProfileSettingPage = () => {
                             <div className="mt-7">
                                 <p className="text-white font-normal">
                                     이용자는 언제든지 개인정보 열람, 수정, 삭제를 요청할 수 있으며,<br />
-                                    문의는 서비스 고객 문의 메일 support@nuvibe.com을 통해<br /> 가능합니다.
+                                    문의는 서비스 고객 문의 메일 nuvibe.official@gmail.com을 통해<br /> 가능합니다.
                                 </p>
                             </div>
                         </div>
@@ -272,7 +272,7 @@ const ProfileSettingPage = () => {
                                 아카이브 보드 알림
                             </h2>
                             <NotificationSettingItem
-                                title="Recap 알림"
+                                title="바이브 톤 알림"
                                 desc="나의 감각이 정리되었을 때 알려드려요."
                                 isOn={settings.recap}
                                 onToggle={() => toggleSetting('recap')}

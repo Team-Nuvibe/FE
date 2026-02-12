@@ -1,4 +1,5 @@
 import type {
+  UserTribeMuteResponse,
   UserTribeFavoriteResponse,
   UserTribeActivateResponse,
   TribeReadResponse,
@@ -8,6 +9,17 @@ import type {
 } from "@/types/tribeChat";
 import { axiosInstance } from "../axios";
 import type { ApiResponse } from "@/types/common";
+
+// 트라이브 챗 무음 설정
+// 특정 트라이브 챗의 푸시 알림 무음 토글
+export const toggleTribeMute = async (
+  userTribeId: number,
+): Promise<ApiResponse<UserTribeMuteResponse>> => {
+  const { data } = await axiosInstance.patch<ApiResponse<UserTribeMuteResponse>>(
+    `/api/userTribe/${userTribeId}/mute`,
+  );
+  return data;
+};
 
 // 트라이브 챗 즐겨찾기
 // 원하는 트라이브 챗을 즐겨찾기로 등록

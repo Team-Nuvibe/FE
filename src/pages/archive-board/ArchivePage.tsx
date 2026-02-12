@@ -317,7 +317,10 @@ const ArchivePage = () => {
                     key={`placeholder-${index}`}
                     className="!w-[165px]"
                   >
-                    <div className="relative h-[220px] w-[165px] overflow-hidden rounded-[10px] bg-gray-900" />
+                    <div className="relative h-[220px] w-[165px] overflow-hidden rounded-[10px] bg-gray-900">
+                      <div className="absolute inset-0 rounded-[10px] border border-dashed border-gray-700" />
+                    </div>
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent to-black mask-[linear-gradient(to_bottom,transparent,black_60%)] backdrop-blur-[1px]" />
                   </SwiperSlide>
                 ))
               : resentDrops.map((post) => (
@@ -333,13 +336,13 @@ const ArchivePage = () => {
                         referrerPolicy="no-referrer"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-                      <div className="ST1 absolute top-1 left-1 rounded-lg px-2 py-1">
-                        <span className="bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
-                          {post.tag}
+                      <div className="H3 absolute top-1 left-1 flex flex-col rounded-lg px-2 py-1">
+                        <span className="bg-[linear-gradient(90deg,#F7F7F7_35.59%,rgba(247,247,247,0.3)_105%)] bg-clip-text leading-[150%] tracking-[-0.045em] text-transparent">
+                          #{post.tag}
                         </span>
-                      </div>
-                      <div className="B2 absolute top-3 right-3 text-white/80">
-                        {post.uploadedAt}
+                        <div className="font-italic text-[10px] leading-[150%] font-light text-[#F7F7F7] italic">
+                          {post.uploadedAt}
+                        </div>
                       </div>
                     </div>
                   </SwiperSlide>
@@ -495,7 +498,7 @@ const ArchivePage = () => {
                           </p>
                           {/* 보드 내의 태그 갯수 */}
                           <p className="flex items-end text-[7px] font-normal text-gray-300">
-                            {board.tagCount} tag
+                            {board.tagCount} 태그
                           </p>
                         </div>
 

@@ -48,7 +48,7 @@ export const ChatListItem = ({
 
     return (
       <div
-        className={`relative flex h-[124px] w-full items-center bg-black px-[10px] transition-colors ${!isEnterable ? "opacity-40" : ""} `}
+        className={`relative flex h-[124px] w-full items-center bg-black px-[10px] transition-colors ${!isEnterable ? "opacity-60" : ""} `}
         onClick={() => {
           if (!isEnterable) {
             onClick?.();
@@ -70,7 +70,7 @@ export const ChatListItem = ({
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <div className="mb-1 flex items-center gap-1">
             <span
-              className={`H2 bg-gradient-to-b from-white to-[#F7F7F7]/30 bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent ${isEnterable ? "" : "text-gray-400"} `}
+              className={`H2 bg-gradient-to-r from-white to-[#F7F7F7]/30 bg-clip-text leading-[150%] tracking-[-0.5px] text-transparent ${isEnterable ? "" : "text-gray-400"} `}
             >
               {room.title}
             </span>
@@ -98,7 +98,7 @@ export const ChatListItem = ({
             </button>
           ) : (
             <div className="flex h-[28px] items-center justify-center rounded-[5px] bg-gray-700 px-[12px]">
-              <span className="B2 leading-[150%] font-medium tracking-[-0.025em] text-gray-500">
+              <span className="B2 leading-[150%] font-medium tracking-[-0.025em] text-gray-900">
                 대기 중
               </span>
             </div>
@@ -202,7 +202,7 @@ export const ChatListItem = ({
 
         <div className="flex h-full min-w-0 flex-1 flex-col justify-center">
           <div className="mb-1 flex items-center gap-1">
-            <span className="H2 bg-gradient-to-b from-white to-[#F7F7F7]/30 bg-clip-text leading-[150%] tracking-[-0.025em] text-transparent">
+            <span className="H2 bg-gradient-to-b from-white to-[#F7F7F7]/30 bg-clip-text leading-[150%] tracking-[-0.5px] text-transparent">
               {room.title}
             </span>
             {room.isPinned && <IconChatPinned className="h-[18px] w-[18px]" />}
