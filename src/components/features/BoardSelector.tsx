@@ -158,7 +158,7 @@ export const BoardSelector = ({
                   <div className="absolute top-2 left-1/2 h-[94px] w-[71px] -translate-x-1/2 rounded-[3px] border-[1px] border-dashed border-gray-700 bg-gray-800" />
 
                   {/* 폴더 오버레이 아이콘 */}
-                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full" />
+                  <Icon_folder className="pointer-events-none absolute bottom-0 left-0 z-10 h-auto w-full scale-y-[150%] rounded-[5px]" />
                   <IconPlus className="absolute top-[50px] left-1/2 z-20 h-[21px] w-[21px] -translate-x-1/2" />
                 </div>
               </div>
