@@ -20,6 +20,7 @@ import {
 import useActivateUserTribe from "@/hooks/mutation/tribe-chat/useActivateUserTribe";
 import { checkImageStatus } from "@/apis/tribe-chat/chat";
 import useSendChatMessage from "@/hooks/mutation/tribe-chat/useSendChatMessage";
+import ImgVibedropEllipse from "@/assets/images/img_vibedrop_ellipse.svg?react";
 
 import { addImageToArchiveBoard } from "@/apis/archive-board/archive";
 
@@ -493,7 +494,7 @@ export const QuickdropPage = () => {
       {step === "uploaded" && (
         <div className="flex h-full items-center justify-center overflow-hidden">
           <div className="relative flex flex-col items-center justify-center gap-4">
-            {/* 배경 조명 효과 */}
+            {/* 배경 조명 효과
             <div
               className="pointer-events-none absolute -top-10 left-1/2 h-dvh w-full -translate-x-1/2 scale-y-150"
               style={{
@@ -505,7 +506,8 @@ export const QuickdropPage = () => {
                 WebkitMaskImage:
                   "linear-gradient(to bottom, white 10%, white 45%, transparent 100%)",
               }}
-            />
+            /> */}
+            <ImgVibedropEllipse className="absolute h-dvh" />
             {imageData.board?.tagCount === 0 && (
               <p
                 className={`B2 text-white transition-opacity duration-200 ${
