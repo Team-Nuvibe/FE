@@ -2,8 +2,6 @@ import IconXbuttonGray3 from "@/assets/icons/icon_xbutton_gray3.svg?react";
 import IconChevronRightWhite from "@/assets/icons/icon_chevron_right_white.svg?react";
 import IconSearch from "@/assets/icons/icon_search.svg?react";
 import IconChevronLeft from "@/assets/icons/icon_chevron_left.svg?react";
-import IconBoardDefault from "@/assets/icons/icon_board_default.svg?react";
-import IconFolderVibedrop from "@/assets/icons/icon_folder_vibedrop.svg?react";
 import IconPlus from "@/assets/icons/icon_plus.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
 import Icon_folder from "@/assets/icons/icon_folder2.svg?react";
