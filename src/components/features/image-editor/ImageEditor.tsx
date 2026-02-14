@@ -271,7 +271,8 @@ export const ImageEditor = ({
       );
 
       // 6. Blob export
-      const exportType = file.type === "image/heic" ? "image/jpeg" : file.type;
+      // 리사이징 및 크롭된 이미지를 JPEG로 내보내기 (용량 최적화)
+      const exportType = "image/jpeg";
       outputCanvas.toBlob(
         (blob) => {
           if (blob) {
@@ -281,7 +282,7 @@ export const ImageEditor = ({
           }
         },
         exportType,
-        0.9,
+        0.8, // 품질 0.8 (용량 대비 화질 균형)
       );
     };
   };
@@ -340,7 +341,7 @@ export const ImageEditor = ({
       // 회전된 이미지를 크롭 영역만큼 그리기
       cropCtx.drawImage(canvas, -croppedAreaPixels.x, -croppedAreaPixels.y);
 
-      const exportType = file.type === "image/heic" ? "image/jpeg" : file.type;
+      const exportType = "image/jpeg";
 
       cropCanvas.toBlob((blob) => {
         if (!blob) return;

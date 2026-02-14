@@ -190,7 +190,6 @@ export const QuickdropPage = () => {
     } else {
       // 2. 나중에 입장하기 (활성화 X)
       // 이미 joinOrCreateTribe는 handleBoardComplete에서 완료되었으므로 이동만 함
-      console.log("📌 Navigating to tribe chat list (waiting)");
       navigate("/home");
     }
   };
@@ -214,8 +213,15 @@ export const QuickdropPage = () => {
     }
 
     try {
-      // 1. 파일명 추출 (원본 파일명 또는 기본값)
-      const originalFileName = file?.name || "image.jpg";
+      // 1. 파일명 추출 및 확장자 변경 (JPEG로 변환되므로 .jpg로 고정)
+      let originalFileName = file?.name || "image.jpg";
+      // 확장자를 .jpg로 변경 (기존 확장자 제거 후 추가)
+      const lastDotIndex = originalFileName.lastIndexOf(".");
+      if (lastDotIndex !== -1) {
+        originalFileName = originalFileName.substring(0, lastDotIndex) + ".jpg";
+      } else {
+        originalFileName += ".jpg";
+      }
 
       // 2. Presigned URL 발급 API 호출
       // Capitalize: 첫 글자만 대문자 (예: alone → Alone)
@@ -225,12 +231,10 @@ export const QuickdropPage = () => {
         capitalizedTagForPresigned,
         originalFileName,
       );
-      console.log("Presigned URL Response:", response.data);
       const { imageURL: presignedUrl, imageId } = response.data;
-      console.log("Extracted imageId:", imageId);
 
       if (!imageId) {
-        console.error("❌ Critical: imageId is missing from response!");
+        console.error("imageId is missing from response!");
         alert("이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
         setIsSubmitting(false);
         return;
@@ -287,13 +291,13 @@ export const QuickdropPage = () => {
           },
           {
             onSuccess: () => {
-              console.log("✅ Message sent successfully, navigating back");
+              console.log("Message sent successfully, navigating back");
               navigate(`/tribe-chat/${tribeId}`, {
                 state: { imageTag: tagToUse },
               });
             },
             onError: (error) => {
-              console.error("❌ Failed to send message:", error);
+              console.error("Failed to send message:", error);
               alert("메시지 전송에 실패했습니다.");
               navigate(`/tribe-chat/${tribeId}`);
             },
@@ -305,7 +309,7 @@ export const QuickdropPage = () => {
       // 5. 일반 흐름: 성공 시 보드 정보 저장
       // S3 업로드 성공 시 아카이브 보드에 이미지 추가 (일반 흐름일 때만 여기서 수행)
       await addImageToArchiveBoard(selectedBoard.id, imageId);
-      console.log("✅ Image added to archive board successfully");
+      console.log("Image added to archive board successfully");
 
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
       setUploadedAt(new Date());
@@ -317,7 +321,7 @@ export const QuickdropPage = () => {
         {
           onSuccess: (joinResponse) => {
             console.log(
-              "✅ Joined/Created Tribe (in BoardComplete):",
+              "Joined/Created Tribe (in BoardComplete):",
               joinResponse,
             );
             const data = joinResponse.data;
@@ -331,7 +335,7 @@ export const QuickdropPage = () => {
             setStep("uploaded");
           },
           onError: async (joinError: any) => {
-            console.error("❌ Failed to join tribe:", joinError);
+            console.error("Failed to join tribe:", joinError);
 
             // 400 에러 처리: 이미 가입된 경우
             if (
@@ -353,7 +357,7 @@ export const QuickdropPage = () => {
                 );
 
                 if (waitingTribe) {
-                  console.log("✅ Found in waiting list:", waitingTribe);
+                  console.log("Found in waiting list:", waitingTribe);
                   setUploadedTribeInfo({
                     userTribeId: waitingTribe.userTribeId,
                     tribeId: waitingTribe.tribeId,
@@ -371,7 +375,7 @@ export const QuickdropPage = () => {
                 );
 
                 if (activeTribe) {
-                  console.log("✅ Found in active list:", activeTribe);
+                  console.log("Found in active list:", activeTribe);
                   setUploadedTribeInfo({
                     userTribeId: activeTribe.userTribeId,
                     tribeId: activeTribe.tribeId,
@@ -387,7 +391,7 @@ export const QuickdropPage = () => {
                   "⚠️ Tribe not found in waiting or active lists despite 400 error.",
                 );
               } catch (listError) {
-                console.error("❌ Failed to fetch tribe lists:", listError);
+                console.error("Failed to fetch tribe lists:", listError);
               }
             }
 
@@ -487,6 +491,7 @@ export const QuickdropPage = () => {
           tag={imageData.tag}
           onNext={handleBoardComplete}
           onPrevious={() => setStep(preSelectedTag ? "edit" : "tag")}
+          isSubmitting={isSubmitting}
         />
       )}
       {step === "uploaded" && (
