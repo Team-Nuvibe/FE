@@ -213,8 +213,15 @@ export const QuickdropPage = () => {
     }
 
     try {
-      // 1. 파일명 추출 (원본 파일명 또는 기본값)
-      const originalFileName = file?.name || "image.jpg";
+      // 1. 파일명 추출 및 확장자 변경 (JPEG로 변환되므로 .jpg로 고정)
+      let originalFileName = file?.name || "image.jpg";
+      // 확장자를 .jpg로 변경 (기존 확장자 제거 후 추가)
+      const lastDotIndex = originalFileName.lastIndexOf(".");
+      if (lastDotIndex !== -1) {
+        originalFileName = originalFileName.substring(0, lastDotIndex) + ".jpg";
+      } else {
+        originalFileName += ".jpg";
+      }
 
       // 2. Presigned URL 발급 API 호출
       // Capitalize: 첫 글자만 대문자 (예: alone → Alone)
