@@ -165,7 +165,7 @@ export const QuickdropPage = () => {
     if (shouldActivate) {
       // 이미 활성화된 상태라면 바로 이동
       if (uploadedTribeInfo.joinStatus === "already_active") {
-        console.log("📌 Already active, navigating to chat room immediately");
+        console.log("Already active, navigating to chat room immediately");
         navigate(`/tribe-chat/${tribeId}`, {
           state: { imageTag: imageData.tag },
         });
@@ -175,13 +175,13 @@ export const QuickdropPage = () => {
       console.log("🔄 Activating tribe...");
       activateUserTribe(userTribeId, {
         onSuccess: () => {
-          console.log("✅ Tribe activated, navigating to chat room");
+          console.log("Tribe activated, navigating to chat room");
           navigate(`/tribe-chat/${tribeId}`, {
             state: { imageTag: imageData.tag },
           });
         },
         onError: (error) => {
-          console.error("❌ Failed to activate tribe:", error);
+          console.error("Failed to activate tribe:", error);
           alert("트라이브 챗 활성화에 실패했습니다.");
           // 활성화 실패해도 채팅방으로 이동 (혹은 머무르기? 정책 확인 필요. 일단 이동)
           navigate("/tribe-chat");

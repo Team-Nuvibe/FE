@@ -282,7 +282,7 @@ export const ImageEditor = ({
           }
         },
         exportType,
-        0.8, // 품질 0.8 (용량 대비 화질 균형)
+        0.95,
       );
     };
   };
@@ -343,41 +343,45 @@ export const ImageEditor = ({
 
       const exportType = "image/jpeg";
 
-      cropCanvas.toBlob((blob) => {
-        if (!blob) return;
+      cropCanvas.toBlob(
+        (blob) => {
+          if (!blob) return;
 
-        const newUrl = URL.createObjectURL(blob);
-        setPreviewUrl(newUrl);
+          const newUrl = URL.createObjectURL(blob);
+          setPreviewUrl(newUrl);
 
-        // 새 이미지 기준 정보 업데이트
-        const imageRatio = cropWidth / cropHeight;
-        setIsWideImage(imageRatio > 3 / 4);
+          // 새 이미지 기준 정보 업데이트
+          const imageRatio = cropWidth / cropHeight;
+          setIsWideImage(imageRatio > 3 / 4);
 
-        const TARGET_ASPECT = 3 / 4;
-        let fit = 1;
-        if (imageRatio > TARGET_ASPECT) {
-          fit = TARGET_ASPECT / imageRatio;
-        } else {
-          fit = imageRatio / TARGET_ASPECT;
-        }
-        setFitZoom(fit);
+          const TARGET_ASPECT = 3 / 4;
+          let fit = 1;
+          if (imageRatio > TARGET_ASPECT) {
+            fit = TARGET_ASPECT / imageRatio;
+          } else {
+            fit = imageRatio / TARGET_ASPECT;
+          }
+          setFitZoom(fit);
 
-        // 상태 초기화
-        setEditState((prev) => ({
-          ...prev,
-          crop: {
-            x: 0,
-            y: 0,
-            zoom: 1,
-            croppedAreaPixels: null,
-          },
-          rotation: {
-            angle: 0,
-            flipHorizontal: false,
-            flipVertical: false,
-          },
-        }));
-      }, exportType);
+          // 상태 초기화
+          setEditState((prev) => ({
+            ...prev,
+            crop: {
+              x: 0,
+              y: 0,
+              zoom: 1,
+              croppedAreaPixels: null,
+            },
+            rotation: {
+              angle: 0,
+              flipHorizontal: false,
+              flipVertical: false,
+            },
+          }));
+        },
+        exportType,
+        0.95,
+      );
     };
   };
 
