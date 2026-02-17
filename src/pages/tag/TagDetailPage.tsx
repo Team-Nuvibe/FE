@@ -96,7 +96,7 @@ export const TagDetailPage = () => {
           <div className="z-10 m-[18px] flex justify-start">
             <div
               className="flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full bg-gray-900 opacity-50"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/home")}
             >
               <IconChevronLeft className="h-[24px] text-gray-100" />
             </div>
