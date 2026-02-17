@@ -31,15 +31,19 @@ const LoginPage = () => {
 
   const { mutate: login, isPending } = useLogin();
   const { accessToken } = useAuth();
-  const fromPath = location.state?.fromPath || "/home";
   const navigate = useNavigate();
+  
+  // fromPath는 컴포넌트 마운트 시점의 location.state에서 가져와 고정
+  const [redirectPath] = useState(() => location.state?.fromPath || "/home");
 
-  // 이미 로그인 해있을 시 홈으로 이동 (로그아웃 직후에는 이동하지 않음)
+  // 이미 로그인 해있을 시 리다이렉트
+  // 로그아웃 직후에는 이동 x
   useEffect(() => {
+    console.log(redirectPath)
     if (accessToken && !location.state?.isLogout) {
-      navigate(fromPath, { replace: true });
+      navigate(redirectPath, { replace: true });
     }
-  }, [navigate, accessToken, fromPath, location.state]);
+  }, [navigate, accessToken, redirectPath, location.state?.isLogout]);
 
   // 토스트 메시지 처리
 
@@ -75,7 +79,9 @@ const LoginPage = () => {
       },
       {
         onSuccess: () => {
-          navigate(fromPath, { replace: true });
+          // 일반 로그인이므로 소셜 로그인용 localStorage 정리
+          localStorage.removeItem("oauth_redirect_path");
+          navigate(redirectPath, { replace: true });
         },
         onError: (error: unknown) => {
           const errorMessage = (error as any)?.response?.data?.message || "";
@@ -106,14 +112,20 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
+    // 원래 경로 저장 (소셜 로그인 후 돌아갈 경로)
+    localStorage.setItem("oauth_redirect_path", redirectPath);
     startSocialLogin("google");
   };
 
   const handleNaverLogin = () => {
+    // 원래 경로 저장 (소셜 로그인 후 돌아갈 경로)
+    localStorage.setItem("oauth_redirect_path", redirectPath);
     startSocialLogin("naver");
   };
 
   const handleKakaoLogin = () => {
+    // 원래 경로 저장 (소셜 로그인 후 돌아갈 경로)
+    localStorage.setItem("oauth_redirect_path", redirectPath);
     startSocialLogin("kakao");
   };
 
