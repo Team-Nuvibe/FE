@@ -88,7 +88,7 @@ const SocialSignUpCompletePage = () => {
 
     setIsSubmitting(true);
     const { name, nickname } = getValues();
-    const { setNickname } = useUserStore.getState(); // Assuming we access it this way or hook
+    const { setNickname } = useUserStore.getState();
 
     try {
       await completeSocialSignUp({
@@ -99,8 +99,17 @@ const SocialSignUpCompletePage = () => {
       // 로컬 스토어 업데이트 (닉네임 설정하여 MainLayout 리다이렉트 방지)
       setNickname(nickname);
 
-      // 성공 시 홈으로 이동
-      navigate("/home", { replace: true });
+      // 성공 시 원래 경로 또는 홈으로 이동
+      const redirectPath =
+        localStorage.getItem("oauth_redirect_path") || "/home";
+
+      navigate(redirectPath, { replace: true });
+
+      // 리다이렉트 후 localStorage 정리
+      setTimeout(() => {
+        localStorage.removeItem("oauth_redirect_path");
+      }, 100);
+
       sessionStorage.setItem("isNewUser", "true");
     } catch (error: any) {
       console.error("Social signup completion failed:", error);
