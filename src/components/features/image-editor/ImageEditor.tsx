@@ -348,7 +348,10 @@ export const ImageEditor = ({
           if (!blob) return;
 
           const newUrl = URL.createObjectURL(blob);
-          setPreviewUrl(newUrl);
+          setPreviewUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return newUrl;
+          });
 
           // 새 이미지 기준 정보 업데이트
           const imageRatio = cropWidth / cropHeight;
