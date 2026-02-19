@@ -32,7 +32,7 @@ const MainLayout = () => {
   }
 
   return (
-    <div className="relative h-full min-h-screen w-full overflow-hidden bg-black text-white">
+    <div className="relative h-full w-full overflow-hidden bg-black text-white">
       {/* 페이지 내용 */}
       <main className="scrollbar-hide h-full w-full overflow-y-auto overscroll-y-none">
         <Outlet />

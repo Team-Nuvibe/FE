@@ -236,7 +236,7 @@ const TribechatRoomPage = () => {
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#121212]">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#121212]">
       {/* 헤더 */}
       <header className="sticky top-0 left-0 z-20 flex w-full items-center justify-between border-b border-gray-900 bg-[#121212]/90 px-4 py-5 backdrop-blur-sm">
         {/* 뒤로가기 버튼 */}
