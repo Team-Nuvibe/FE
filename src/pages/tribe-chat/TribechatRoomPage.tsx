@@ -16,7 +16,6 @@ import DateDivider from "@/components/tribe-chat/DateDivider";
 import useInfiniteChatTimeline from "@/hooks/queries/tribe-chat/useInfiniteChatTimeline";
 import useReactToChatEmoji from "@/hooks/mutation/tribe-chat/useReactToChatEmoji";
 import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap";
-import DropIcon from "@/assets/logos/Subtract.svg?react";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import { useUserStore } from "@/hooks/useUserStore";
 import { DropYourVibe } from "@/components/common/DropYourVibe";
