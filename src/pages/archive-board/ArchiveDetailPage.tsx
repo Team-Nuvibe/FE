@@ -5,7 +5,6 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import EtcButton from "@/assets/icons/icon_etcbutton.svg?react";
 import SelectedImageIcon from "@/assets/icons/icon_select_image.svg?react";
-import DropIcon from "@/assets/logos/Subtract.svg?react";
 
 // Components
 import { CountBottomSheet } from "@/components/archive-board/CountBottomSheet";
@@ -18,6 +17,7 @@ import {
   type Board,
 } from "@/components/archive-board/BoardSelector";
 import { ImageDetailModal } from "@/components/archive-board/ImageDetailModal";
+import { DropYourVibe } from "@/components/common/DropYourVibe";
 
 // APIs
 import {
@@ -475,17 +475,8 @@ const ArchiveDetailPage = () => {
             }}
           />
           <div className="absolute bottom-15 left-1/2 z-50 -translate-x-1/2">
-            <button
-              onClick={handleDropVibe}
-              className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
-            >
-              <DropIcon className="h-5.25 w-5.25" />
-              <span
-                className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
-                style={{ WebkitTextFillColor: "transparent" }}
-              >
-                Drop Your Vibe
-              </span>
+            <button onClick={handleDropVibe} className="">
+              <DropYourVibe />
             </button>
           </div>
         </>

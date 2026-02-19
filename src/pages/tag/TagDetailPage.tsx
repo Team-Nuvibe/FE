@@ -158,7 +158,10 @@ export const TagDetailPage = () => {
           onChange={handleImageChange}
           className="hidden"
         />
-        <button className="" onClick={() => inputImageRef.current?.click()}>
+        <button
+          className="absolute bottom-15"
+          onClick={() => inputImageRef.current?.click()}
+        >
           <DropYourVibe />
         </button>
       </footer>
