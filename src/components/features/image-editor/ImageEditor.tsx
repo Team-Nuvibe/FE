@@ -271,7 +271,8 @@ export const ImageEditor = ({
       );
 
       // 6. Blob export
-      const exportType = file.type === "image/heic" ? "image/jpeg" : file.type;
+      // 리사이징 및 크롭된 이미지를 JPEG로 내보내기 (용량 최적화)
+      const exportType = "image/jpeg";
       outputCanvas.toBlob(
         (blob) => {
           if (blob) {
@@ -281,7 +282,7 @@ export const ImageEditor = ({
           }
         },
         exportType,
-        0.9,
+        0.95,
       );
     };
   };
@@ -340,43 +341,50 @@ export const ImageEditor = ({
       // 회전된 이미지를 크롭 영역만큼 그리기
       cropCtx.drawImage(canvas, -croppedAreaPixels.x, -croppedAreaPixels.y);
 
-      const exportType = file.type === "image/heic" ? "image/jpeg" : file.type;
+      const exportType = "image/jpeg";
 
-      cropCanvas.toBlob((blob) => {
-        if (!blob) return;
+      cropCanvas.toBlob(
+        (blob) => {
+          if (!blob) return;
 
-        const newUrl = URL.createObjectURL(blob);
-        setPreviewUrl(newUrl);
+          const newUrl = URL.createObjectURL(blob);
+          setPreviewUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return newUrl;
+          });
 
-        // 새 이미지 기준 정보 업데이트
-        const imageRatio = cropWidth / cropHeight;
-        setIsWideImage(imageRatio > 3 / 4);
+          // 새 이미지 기준 정보 업데이트
+          const imageRatio = cropWidth / cropHeight;
+          setIsWideImage(imageRatio > 3 / 4);
 
-        const TARGET_ASPECT = 3 / 4;
-        let fit = 1;
-        if (imageRatio > TARGET_ASPECT) {
-          fit = TARGET_ASPECT / imageRatio;
-        } else {
-          fit = imageRatio / TARGET_ASPECT;
-        }
-        setFitZoom(fit);
+          const TARGET_ASPECT = 3 / 4;
+          let fit = 1;
+          if (imageRatio > TARGET_ASPECT) {
+            fit = TARGET_ASPECT / imageRatio;
+          } else {
+            fit = imageRatio / TARGET_ASPECT;
+          }
+          setFitZoom(fit);
 
-        // 상태 초기화
-        setEditState((prev) => ({
-          ...prev,
-          crop: {
-            x: 0,
-            y: 0,
-            zoom: 1,
-            croppedAreaPixels: null,
-          },
-          rotation: {
-            angle: 0,
-            flipHorizontal: false,
-            flipVertical: false,
-          },
-        }));
-      }, exportType);
+          // 상태 초기화
+          setEditState((prev) => ({
+            ...prev,
+            crop: {
+              x: 0,
+              y: 0,
+              zoom: 1,
+              croppedAreaPixels: null,
+            },
+            rotation: {
+              angle: 0,
+              flipHorizontal: false,
+              flipVertical: false,
+            },
+          }));
+        },
+        exportType,
+        0.95,
+      );
     };
   };
 
