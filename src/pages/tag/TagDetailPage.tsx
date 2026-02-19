@@ -159,7 +159,7 @@ export const TagDetailPage = () => {
           className="hidden"
         />
         <button
-          className="absolute bottom-15"
+          className="absolute bottom-12.5"
           onClick={() => inputImageRef.current?.click()}
         >
           <DropYourVibe />

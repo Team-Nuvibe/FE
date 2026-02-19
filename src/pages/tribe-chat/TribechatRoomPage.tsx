@@ -19,6 +19,7 @@ import useToggleImageScrap from "@/hooks/mutation/tribe-chat/useToggleImageScrap
 import DropIcon from "@/assets/logos/Subtract.svg?react";
 import useGetActiveTribeList from "@/hooks/queries/tribe-chat/useGetActiveTribeList";
 import { useUserStore } from "@/hooks/useUserStore";
+import { DropYourVibe } from "@/components/common/DropYourVibe";
 
 const TribechatRoomPage = () => {
   const navigate = useNavigate();
@@ -273,7 +274,7 @@ const TribechatRoomPage = () => {
       </div>
 
       {/* 메시지 리스트 - 역방향 스크롤 */}
-      <div className="flex flex-1 flex-col-reverse overflow-y-auto px-4 pt-[115px] pb-[100px]">
+      <div className="flex flex-1 flex-col-reverse overflow-y-auto px-4 pt-[115px] pb-[134px]">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
             <p className="ST2 text-gray-500">로딩 중...</p>
@@ -334,18 +335,9 @@ const TribechatRoomPage = () => {
       </div>
 
       {/* 하단 Drop Vibe 버튼 */}
-      <div className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2">
-        <button
-          onClick={handleDropVibe}
-          className="mx-auto flex h-12 w-[171px] items-center justify-center gap-2 rounded-[84px] border border-gray-600 bg-black/90 px-4.5 py-3 shadow-[0_0_8px_rgba(255,255,255,0.1)] backdrop-blur-[5px] transition-all hover:border-gray-500 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)]"
-        >
-          <DropIcon className="h-5.25 w-5.25" />
-          <span
-            className="H4 bg-linear-to-r from-[#f7f7f7] from-[35.588%] to-[rgba(247,247,247,0.5)] to-100% bg-clip-text leading-[150%] tracking-[-0.4px] whitespace-nowrap"
-            style={{ WebkitTextFillColor: "transparent" }}
-          >
-            Drop Your Vibe
-          </span>
+      <div className="absolute bottom-12.5 left-1/2 z-30 -translate-x-1/2">
+        <button onClick={handleDropVibe} className="">
+          <DropYourVibe />
         </button>
       </div>
     </div>

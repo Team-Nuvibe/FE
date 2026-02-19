@@ -95,7 +95,7 @@ const ChatMessageItem = ({
               {/* 스크랩 버튼 */}
               <button
                 onClick={() => onScrap(message.id)}
-                className="shrink-0"
+                className="shrink-0 -translate-y-[22px]"
                 aria-label="스크랩"
               >
                 {message.isScrapped ? (
@@ -115,7 +115,7 @@ const ChatMessageItem = ({
           {/* 스크랩 버튼 */}
           <button
             onClick={() => onScrap(message.id)}
-            className="shrink-0"
+            className="shrink-0 -translate-y-[22px]"
             aria-label="스크랩"
           >
             {message.isScrapped ? (
