@@ -105,9 +105,13 @@ export const BoardSelector = ({
             <h2 className="H2 text-white">바이브 드랍</h2>
             <p
               className={`${
-                selectedBoard && !isSubmitting
-                  ? "ST2 cursor-pointer text-white"
-                  : "cursor-not-allowed text-[10px] font-normal text-gray-700"
+                isSubmitting
+                  ? "cursor-not-allowed text-[10px] font-normal text-gray-700"
+                  : `ST2 ${
+                      selectedBoard
+                        ? "cursor-pointer text-white"
+                        : "cursor-not-allowed text-gray-700"
+                    }`
               }`}
               onClick={() => {
                 if (selectedBoard && !isSubmitting) {
@@ -224,10 +228,14 @@ export const BoardSelector = ({
             />
             <h2 className="H2 text-white">저장할 아카이브 보드</h2>
             <p
-              className={`ST2 ${
-                selectedBoard && !isSubmitting
-                  ? "cursor-pointer text-white"
-                  : "cursor-not-allowed text-gray-700"
+              className={`${
+                isSubmitting
+                  ? "cursor-not-allowed text-[10px] font-normal text-gray-700"
+                  : `ST2 ${
+                      selectedBoard
+                        ? "cursor-pointer text-white"
+                        : "cursor-not-allowed text-gray-700"
+                    }`
               }`}
               onClick={() => {
                 if (selectedBoard && !isSubmitting) {
