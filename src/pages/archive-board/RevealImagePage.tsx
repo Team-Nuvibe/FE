@@ -409,7 +409,7 @@ const RevealImagePage: React.FC = () => {
 
     const img = new Image();
     img.crossOrigin = "Anonymous";
-    img.src = imageUrl;
+    img.src = `${imageUrl}${imageUrl.includes("?") ? "&" : "?"}t=${Date.now()}`;
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = reject;
@@ -453,12 +453,18 @@ const RevealImagePage: React.FC = () => {
       const blob = await getCompositeBlob();
       if (!blob) throw new Error("Blob creation failed");
 
-      const currentCount = parseInt(
-        localStorage.getItem("revealVibeCount") || "0",
-        10,
-      );
-      const newCount = currentCount + 1;
-      localStorage.setItem("revealVibeCount", newCount.toString());
+      let newCount = 0;
+      try {
+        const currentCount = parseInt(
+          localStorage.getItem("revealVibeCount") || "0",
+          10,
+        );
+        newCount = currentCount + 1;
+        localStorage.setItem("revealVibeCount", newCount.toString());
+      } catch (e) {
+        console.warn("LocalStorage access failed", e);
+        newCount = Date.now(); // Fallback to timestamp if storage fails
+      }
       const fileName = `RevealVibe${newCount}.png`;
 
       const file = new File([blob], fileName, { type: "image/png" });
