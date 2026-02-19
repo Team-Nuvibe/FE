@@ -70,14 +70,23 @@ const OAuthCallbackPage = () => {
         provider || "",
       );
 
-      // 신규 유저인 경우 추가 정보 입력 페이지로, 아니면 홈으로
+      // 신규 유저인 경우 추가 정보 입력 페이지로, 아니면 원래 경로 또는 홈으로
       if (isNewUser === "true") {
         navigate("/oauth/signup-complete", {
           state: { userId },
           replace: true,
         });
       } else {
-        navigate("/home", { replace: true });
+        // OAuth 로그인 전에 저장된 경로로 이동 (없으면 홈으로)
+        const redirectPath = localStorage.getItem("oauth_redirect_path") || "/home";
+        
+        // redirectPath를 확실히 확보한 상태에서 navigate 실행
+        navigate(redirectPath, { replace: true });
+        
+        // navigate 실행 후 React Router가 처리를 완료하고 상태가 안정화될 시간을 확보하기 위해 비동기로 삭제
+        setTimeout(() => {
+          localStorage.removeItem("oauth_redirect_path");
+        }, 100);
       }
     };
 
