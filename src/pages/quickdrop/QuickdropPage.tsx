@@ -70,6 +70,20 @@ export const QuickdropPage = () => {
     };
   }, [setNavbarVisible]);
 
+  // 뒤로가기 막기 (PWA 및 모바일 브라우저 대응)
+  useEffect(() => {
+    const preventGoBack = () => {
+      history.pushState(null, "", window.location.href);
+    };
+
+    history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", preventGoBack);
+
+    return () => {
+      window.removeEventListener("popstate", preventGoBack);
+    };
+  }, []);
+
   const [file, setFile] = useState<File | null>(initialFile);
   const [step, setStep] = useState<
     "pick" | "edit" | "tag" | "board" | "uploaded"
@@ -165,7 +179,7 @@ export const QuickdropPage = () => {
     if (shouldActivate) {
       // 이미 활성화된 상태라면 바로 이동
       if (uploadedTribeInfo.joinStatus === "already_active") {
-        console.log("📌 Already active, navigating to chat room immediately");
+        console.log("Already active, navigating to chat room immediately");
         navigate(`/tribe-chat/${tribeId}`, {
           state: { imageTag: imageData.tag },
         });
@@ -175,23 +189,23 @@ export const QuickdropPage = () => {
       console.log("🔄 Activating tribe...");
       activateUserTribe(userTribeId, {
         onSuccess: () => {
-          console.log("✅ Tribe activated, navigating to chat room");
+          console.log("Tribe activated, navigating to chat room");
           navigate(`/tribe-chat/${tribeId}`, {
             state: { imageTag: imageData.tag },
+            replace: true,
           });
         },
         onError: (error) => {
-          console.error("❌ Failed to activate tribe:", error);
+          console.error("Failed to activate tribe:", error);
           alert("트라이브 챗 활성화에 실패했습니다.");
           // 활성화 실패해도 채팅방으로 이동 (혹은 머무르기? 정책 확인 필요. 일단 이동)
-          navigate("/tribe-chat");
+          navigate("/tribe-chat", { replace: true });
         },
       });
     } else {
       // 2. 나중에 입장하기 (활성화 X)
       // 이미 joinOrCreateTribe는 handleBoardComplete에서 완료되었으므로 이동만 함
-      console.log("📌 Navigating to tribe chat list (waiting)");
-      navigate("/home");
+      navigate("/home", { replace: true });
     }
   };
 
@@ -214,8 +228,15 @@ export const QuickdropPage = () => {
     }
 
     try {
-      // 1. 파일명 추출 (원본 파일명 또는 기본값)
-      const originalFileName = file?.name || "image.jpg";
+      // 1. 파일명 추출 및 확장자 변경 (JPEG로 변환되므로 .jpg로 고정)
+      let originalFileName = file?.name || "image.jpg";
+      // 확장자를 .jpg로 변경 (기존 확장자 제거 후 추가)
+      const lastDotIndex = originalFileName.lastIndexOf(".");
+      if (lastDotIndex !== -1) {
+        originalFileName = originalFileName.substring(0, lastDotIndex) + ".jpg";
+      } else {
+        originalFileName += ".jpg";
+      }
 
       // 2. Presigned URL 발급 API 호출
       // Capitalize: 첫 글자만 대문자 (예: alone → Alone)
@@ -225,12 +246,10 @@ export const QuickdropPage = () => {
         capitalizedTagForPresigned,
         originalFileName,
       );
-      console.log("Presigned URL Response:", response.data);
       const { imageURL: presignedUrl, imageId } = response.data;
-      console.log("Extracted imageId:", imageId);
 
       if (!imageId) {
-        console.error("❌ Critical: imageId is missing from response!");
+        console.error("imageId is missing from response!");
         alert("이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
         setIsSubmitting(false);
         return;
@@ -287,15 +306,16 @@ export const QuickdropPage = () => {
           },
           {
             onSuccess: () => {
-              console.log("✅ Message sent successfully, navigating back");
+              console.log("Message sent successfully, navigating back");
               navigate(`/tribe-chat/${tribeId}`, {
                 state: { imageTag: tagToUse },
+                replace: true,
               });
             },
             onError: (error) => {
-              console.error("❌ Failed to send message:", error);
+              console.error("Failed to send message:", error);
               alert("메시지 전송에 실패했습니다.");
-              navigate(`/tribe-chat/${tribeId}`);
+              navigate(`/tribe-chat/${tribeId}`, { replace: true });
             },
           },
         );
@@ -305,7 +325,7 @@ export const QuickdropPage = () => {
       // 5. 일반 흐름: 성공 시 보드 정보 저장
       // S3 업로드 성공 시 아카이브 보드에 이미지 추가 (일반 흐름일 때만 여기서 수행)
       await addImageToArchiveBoard(selectedBoard.id, imageId);
-      console.log("✅ Image added to archive board successfully");
+      console.log("Image added to archive board successfully");
 
       setImageData((prev) => ({ ...prev, board: selectedBoard }));
       setUploadedAt(new Date());
@@ -317,7 +337,7 @@ export const QuickdropPage = () => {
         {
           onSuccess: (joinResponse) => {
             console.log(
-              "✅ Joined/Created Tribe (in BoardComplete):",
+              "Joined/Created Tribe (in BoardComplete):",
               joinResponse,
             );
             const data = joinResponse.data;
@@ -331,7 +351,7 @@ export const QuickdropPage = () => {
             setStep("uploaded");
           },
           onError: async (joinError: any) => {
-            console.error("❌ Failed to join tribe:", joinError);
+            console.error("Failed to join tribe:", joinError);
 
             // 400 에러 처리: 이미 가입된 경우
             if (
@@ -353,7 +373,7 @@ export const QuickdropPage = () => {
                 );
 
                 if (waitingTribe) {
-                  console.log("✅ Found in waiting list:", waitingTribe);
+                  console.log("Found in waiting list:", waitingTribe);
                   setUploadedTribeInfo({
                     userTribeId: waitingTribe.userTribeId,
                     tribeId: waitingTribe.tribeId,
@@ -371,7 +391,7 @@ export const QuickdropPage = () => {
                 );
 
                 if (activeTribe) {
-                  console.log("✅ Found in active list:", activeTribe);
+                  console.log("Found in active list:", activeTribe);
                   setUploadedTribeInfo({
                     userTribeId: activeTribe.userTribeId,
                     tribeId: activeTribe.tribeId,
@@ -387,7 +407,7 @@ export const QuickdropPage = () => {
                   "⚠️ Tribe not found in waiting or active lists despite 400 error.",
                 );
               } catch (listError) {
-                console.error("❌ Failed to fetch tribe lists:", listError);
+                console.error("Failed to fetch tribe lists:", listError);
               }
             }
 
@@ -410,10 +430,16 @@ export const QuickdropPage = () => {
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-black">
       {step === "pick" && (
         <div className="flex h-full flex-col items-center justify-center gap-6 px-10 text-center">
-          <header className="fixed top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
+          <header className="absolute top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
             <IconXbuttonGray3
               className="cursor-pointer"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (fromTribe && tribeId) {
+                  navigate(`/tribe-chat/${tribeId}`, { replace: true });
+                } else {
+                  navigate("/home", { replace: true });
+                }
+              }}
             />
             <h2 className="H2 text-white">바이브 드랍</h2>
             <div className="w-6" />
@@ -487,6 +513,7 @@ export const QuickdropPage = () => {
           tag={imageData.tag}
           onNext={handleBoardComplete}
           onPrevious={() => setStep(preSelectedTag ? "edit" : "tag")}
+          isSubmitting={isSubmitting}
         />
       )}
       {step === "uploaded" && (
