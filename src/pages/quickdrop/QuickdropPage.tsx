@@ -73,10 +73,10 @@ export const QuickdropPage = () => {
   // 뒤로가기 막기 (PWA 및 모바일 브라우저 대응)
   useEffect(() => {
     const preventGoBack = () => {
-      history.pushState(null, "", location.href);
+      history.pushState(null, "", window.location.href);
     };
 
-    history.pushState(null, "", location.href);
+    history.pushState(null, "", window.location.href);
     window.addEventListener("popstate", preventGoBack);
 
     return () => {
