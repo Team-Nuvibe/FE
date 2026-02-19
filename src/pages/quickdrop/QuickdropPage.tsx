@@ -70,6 +70,20 @@ export const QuickdropPage = () => {
     };
   }, [setNavbarVisible]);
 
+  // 뒤로가기 막기 (PWA 및 모바일 브라우저 대응)
+  useEffect(() => {
+    const preventGoBack = () => {
+      history.pushState(null, "", location.href);
+    };
+
+    history.pushState(null, "", location.href);
+    window.addEventListener("popstate", preventGoBack);
+
+    return () => {
+      window.removeEventListener("popstate", preventGoBack);
+    };
+  }, []);
+
   const [file, setFile] = useState<File | null>(initialFile);
   const [step, setStep] = useState<
     "pick" | "edit" | "tag" | "board" | "uploaded"
@@ -178,19 +192,20 @@ export const QuickdropPage = () => {
           console.log("Tribe activated, navigating to chat room");
           navigate(`/tribe-chat/${tribeId}`, {
             state: { imageTag: imageData.tag },
+            replace: true,
           });
         },
         onError: (error) => {
           console.error("Failed to activate tribe:", error);
           alert("트라이브 챗 활성화에 실패했습니다.");
           // 활성화 실패해도 채팅방으로 이동 (혹은 머무르기? 정책 확인 필요. 일단 이동)
-          navigate("/tribe-chat");
+          navigate("/tribe-chat", { replace: true });
         },
       });
     } else {
       // 2. 나중에 입장하기 (활성화 X)
       // 이미 joinOrCreateTribe는 handleBoardComplete에서 완료되었으므로 이동만 함
-      navigate("/home");
+      navigate("/home", { replace: true });
     }
   };
 
@@ -294,12 +309,13 @@ export const QuickdropPage = () => {
               console.log("Message sent successfully, navigating back");
               navigate(`/tribe-chat/${tribeId}`, {
                 state: { imageTag: tagToUse },
+                replace: true,
               });
             },
             onError: (error) => {
               console.error("Failed to send message:", error);
               alert("메시지 전송에 실패했습니다.");
-              navigate(`/tribe-chat/${tribeId}`);
+              navigate(`/tribe-chat/${tribeId}`, { replace: true });
             },
           },
         );
@@ -414,10 +430,16 @@ export const QuickdropPage = () => {
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-black">
       {step === "pick" && (
         <div className="flex h-full flex-col items-center justify-center gap-6 px-10 text-center">
-          <header className="fixed top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
+          <header className="absolute top-0 left-0 flex w-full items-center justify-between px-4 pt-2 pb-6">
             <IconXbuttonGray3
               className="cursor-pointer"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (fromTribe && tribeId) {
+                  navigate(`/tribe-chat/${tribeId}`, { replace: true });
+                } else {
+                  navigate("/home", { replace: true });
+                }
+              }}
             />
             <h2 className="H2 text-white">바이브 드랍</h2>
             <div className="w-6" />
