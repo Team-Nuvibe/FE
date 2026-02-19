@@ -32,14 +32,14 @@ const LoginPage = () => {
   const { mutate: login, isPending } = useLogin();
   const { accessToken } = useAuth();
   const navigate = useNavigate();
-  
+
   // fromPath는 컴포넌트 마운트 시점의 location.state에서 가져와 고정
   const [redirectPath] = useState(() => location.state?.fromPath || "/home");
 
   // 이미 로그인 해있을 시 리다이렉트
   // 로그아웃 직후에는 이동 x
   useEffect(() => {
-    console.log(redirectPath)
+    console.log(redirectPath);
     if (accessToken && !location.state?.isLogout) {
       navigate(redirectPath, { replace: true });
     }
@@ -131,107 +131,108 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center text-white">
-        <div className="H0 flex w-full items-center justify-center p-9 text-white">
-          Start nuvibe
-        </div>
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLoginSubmit();
-          }}
-        >
-          <div className="flex flex-col gap-3">
-            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
-              이메일
-            </div>
-            <InputBox
-              {...getInputProps("email")}
-              type="email"
-              placeholder="이메일을 입력해주세요."
-              hasError={Boolean(touched.email && errors.email)}
-            />
-            {touched.email && errors.email && (
-              <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
-                {errors.email}
-              </p>
-            )}
+      <div className="relative flex min-h-[100dvh] flex-col items-center text-white">
+        <div className="flex w-full flex-1 flex-col items-center justify-center">
+          <div className="H0 flex w-full items-center justify-center p-9 text-white">
+            Start nuvibe
           </div>
-          <div className="flex flex-col gap-3">
-            <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
-              비밀번호
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLoginSubmit();
+            }}
+          >
+            <div className="flex flex-col gap-3">
+              <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
+                이메일
+              </div>
+              <InputBox
+                {...getInputProps("email")}
+                type="email"
+                placeholder="이메일을 입력해주세요."
+                hasError={Boolean(touched.email && errors.email)}
+              />
+              {touched.email && errors.email && (
+                <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
+                  {errors.email}
+                </p>
+              )}
             </div>
-            <InputBox
-              {...getInputProps("password")}
-              type={isPasswordVisible ? "text" : "password"}
-              placeholder="비밀번호를 입력해주세요."
-              hasError={Boolean(touched.password && errors.password)}
-              rightElement={
+            <div className="flex flex-col gap-3">
+              <div className="B2 flex leading-[150%] tracking-[-0.35px] text-gray-300">
+                비밀번호
+              </div>
+              <InputBox
+                {...getInputProps("password")}
+                type={isPasswordVisible ? "text" : "password"}
+                placeholder="비밀번호를 입력해주세요."
+                hasError={Boolean(touched.password && errors.password)}
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  >
+                    {isPasswordVisible ? <EyeOnIcon /> : <EyeOffIcon />}
+                  </button>
+                }
+              />
+              {touched.password && errors.password && (
+                <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+            <div className="B2 mb-2 flex items-center justify-between pt-[50px] leading-[150%] tracking-[-0.35px] text-gray-300">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  onClick={() => setIsAutoLogin(!isAutoLogin)}
+                  className="flex items-center"
                 >
-                  {isPasswordVisible ? <EyeOnIcon /> : <EyeOffIcon />}
+                  {isAutoLogin ? <LoginCheckedIcon /> : <LoginNotCheckedIcon />}
                 </button>
-              }
-            />
-            {touched.password && errors.password && (
-              <p className="text-[12px] leading-[150%] font-normal tracking-[-0.3px] text-gray-300">
-                {errors.password}
-              </p>
-            )}
-          </div>
-          <div className="B2 mb-2 flex items-center justify-between pt-[50px] leading-[150%] tracking-[-0.35px] text-gray-300">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setIsAutoLogin(!isAutoLogin)}
-                className="flex items-center"
+                <div>자동 로그인</div>
+              </div>
+              <div
+                className="cursor-pointer hover:underline"
+                onClick={() => navigate("/reset-password")}
               >
-                {isAutoLogin ? <LoginCheckedIcon /> : <LoginNotCheckedIcon />}
-              </button>
-              <div>자동 로그인</div>
+                비밀번호를 잊어버리셨나요?
+              </div>
             </div>
-            <div
-              className="cursor-pointer hover:underline"
-              onClick={() => navigate("/reset-password")}
+            <button
+              type="submit"
+              className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
+              disabled={isDisabled || isPending}
             >
-              비밀번호를 잊어버리셨나요?
+              {isPending ? "로그인 중..." : "로그인하기"}
+            </button>
+          </form>
+          <div className="mt-9 mb-2 w-[339px] border-t border-gray-800" />
+          <div className="p-4 text-[11.64px] text-gray-500">간편로그인하기</div>
+          <div className="flex gap-2 pb-12">
+            <button onClick={handleGoogleLogin}>
+              <Google_G_logo />
+            </button>
+            <button onClick={handleNaverLogin}>
+              <Naver_logo />
+            </button>
+            <button onClick={handleKakaoLogin}>
+              <KakaoTalk_logo />
+            </button>
+          </div>
+
+          {/* 토스트 메시지 */}
+          {toastMessage && (
+            <div className="animate-fade-in-out absolute bottom-[40px] z-50 flex h-[48px] w-[344px] items-center justify-center rounded-[5px] bg-[#D0D3D7]/85 px-[16px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
+              <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black">
+                {toastMessage}
+              </span>
             </div>
-          </div>
-          <button
-            type="submit"
-            className="H4 flex h-[48px] w-[339px] items-center justify-center gap-[8px] rounded-[5px] bg-white text-black disabled:cursor-not-allowed disabled:bg-gray-800"
-            disabled={isDisabled || isPending}
-          >
-            {isPending ? "로그인 중..." : "로그인하기"}
-          </button>
-        </form>
-        <div className="mt-9 mb-2 w-[339px] border-t border-gray-800" />
-        <div className="p-4 text-[11.64px] text-gray-500">간편로그인하기</div>
-        <div className="flex gap-2 pb-12">
-          <button onClick={handleGoogleLogin}>
-            <Google_G_logo />
-          </button>
-          <button onClick={handleNaverLogin}>
-            <Naver_logo />
-          </button>
-          <button onClick={handleKakaoLogin}>
-            <KakaoTalk_logo />
-          </button>
+          )}
         </div>
-
-        {/* 토스트 메시지 */}
-        {toastMessage && (
-          <div className="animate-fade-in-out absolute bottom-[40px] z-50 flex h-[48px] w-[344px] items-center justify-center rounded-[5px] bg-[#D0D3D7]/85 px-[16px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] backdrop-blur-[30px]">
-            <span className="text-[14px] leading-[150%] font-normal tracking-[-0.025em] text-black">
-              {toastMessage}
-            </span>
-          </div>
-        )}
-
-        <footer className="absolute !bottom-12 flex w-full justify-center gap-1 pb-[env(safe-area-inset-bottom)] text-[12px]">
+        <footer className="mt-auto mb-12 flex w-full justify-center gap-1 pb-[env(safe-area-inset-bottom)] text-[12px]">
           <p className="text-gray-500">아이디가 없나요?</p>
           <NavLink
             key="/signup"
