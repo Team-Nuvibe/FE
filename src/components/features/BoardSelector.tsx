@@ -18,7 +18,6 @@ interface BoardSelectorProps {
   tag: string;
   onNext: (selectedBoard: Board) => void;
   onPrevious: () => void;
-  isSubmitting?: boolean;
 }
 
 // TODO: 인터페이스 따로 빼야 함
@@ -34,7 +33,6 @@ export const BoardSelector = ({
   tag,
   onNext,
   onPrevious,
-  isSubmitting = false,
 }: BoardSelectorProps) => {
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
   const [showingSavedBoards, setShowingSavedBoards] = useState(false);
@@ -94,32 +92,28 @@ export const BoardSelector = ({
   };
 
   return (
-    <div className="relative h-full">
+    <div className="scrollbar-hide relative h-[calc(100vh-theme(spacing.20))] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
       {!showingSavedBoards && (
         <>
           <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
             <IconChevronLeft
               className="cursor-pointer"
-              onClick={() => !isSubmitting && onPrevious()}
+              onClick={() => onPrevious()}
             />
             <h2 className="H2 text-white">바이브 드랍</h2>
             <p
-              className={`${
-                isSubmitting
-                  ? "cursor-not-allowed text-[10px] font-normal text-gray-700"
-                  : `ST2 ${
-                      selectedBoard
-                        ? "cursor-pointer text-white"
-                        : "cursor-not-allowed text-gray-700"
-                    }`
+              className={`ST2 ${
+                selectedBoard
+                  ? "cursor-pointer text-white"
+                  : "cursor-not-allowed text-gray-700"
               }`}
               onClick={() => {
-                if (selectedBoard && !isSubmitting) {
+                if (selectedBoard) {
                   onNext(selectedBoard!);
                 }
               }}
             >
-              {isSubmitting ? "업로드중.." : "완료"}
+              완료
             </p>
           </header>
           <div className="H1 relative mx-auto mb-6 h-[480px] w-[360px]">
@@ -169,7 +163,7 @@ export const BoardSelector = ({
               {boards.map((board) => (
                 <div
                   key={board.id}
-                  onClick={() => !isSubmitting && setSelectedBoard(board)}
+                  onClick={() => setSelectedBoard(board)}
                   className={`flex w-[110px] shrink-0 cursor-pointer flex-col items-center gap-2 transition-all`}
                 >
                   {/* 폴더 컨테이너 */}
@@ -224,26 +218,18 @@ export const BoardSelector = ({
           <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
             <IconXbuttonGray3
               className="cursor-pointer"
-              onClick={() => !isSubmitting && setShowingSavedBoards(false)}
+              onClick={() => setShowingSavedBoards(false)}
             />
             <h2 className="H2 text-white">저장할 아카이브 보드</h2>
             <p
-              className={`${
-                isSubmitting
-                  ? "cursor-not-allowed text-[10px] font-normal text-gray-700"
-                  : `ST2 ${
-                      selectedBoard
-                        ? "cursor-pointer text-white"
-                        : "cursor-not-allowed text-gray-700"
-                    }`
+              className={`ST2 ${
+                selectedBoard
+                  ? "cursor-pointer text-white"
+                  : "cursor-not-allowed text-gray-700"
               }`}
-              onClick={() => {
-                if (selectedBoard && !isSubmitting) {
-                  onNext(selectedBoard!);
-                }
-              }}
+              onClick={() => onNext(selectedBoard!)}
             >
-              {isSubmitting ? "업로드중.." : "완료"}
+              완료
             </p>
           </header>
           <div className="mx-4 mb-5 flex h-12 items-center rounded-[5px] bg-gray-900">
