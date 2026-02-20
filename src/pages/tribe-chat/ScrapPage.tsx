@@ -231,7 +231,7 @@ export const ScrapPage = () => {
           // Global Mode Tag Filters
           <>
             <button
-              className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${!currentTag ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+              className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${!currentTag ? `bg-gray-200` : `bg-gray-900`}`}
               onClick={() => setCurrentTag(undefined)}
             >
               <p
@@ -243,7 +243,7 @@ export const ScrapPage = () => {
             {passedTags.map((tag) => (
               <button
                 key={tag}
-                className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${currentTag === tag ? `bg-gray-200` : `border border-gray-700 bg-gray-900`}`}
+                className={`flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] px-[8px] py-[3px] transition-colors ${currentTag === tag ? `bg-gray-200` : `bg-gray-900`}`}
                 onClick={() => setCurrentTag(tag)}
               >
                 <p

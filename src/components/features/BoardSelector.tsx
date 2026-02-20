@@ -94,7 +94,7 @@ export const BoardSelector = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {!showingSavedBoards && (
         <>
           <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
