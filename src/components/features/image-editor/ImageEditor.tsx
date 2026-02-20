@@ -531,7 +531,7 @@ export const ImageEditor = ({
         <header className="flex items-center justify-between px-4 pt-2 pb-6 tracking-tight">
           <IconXbuttonGray3
             className="cursor-pointer"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/home")}
           />
           <h2 className="H2 text-white">바이브 드랍</h2>
           <p
