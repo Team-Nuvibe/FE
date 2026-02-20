@@ -19,7 +19,7 @@ export const RotationToolbar = ({
 }: RotationToolbarProps) => {
   const [activeRotationTool, setActiveRotationTool] = useState<string>("");
   return (
-    <div className="z-10 flex flex-col pb-11">
+    <div className="z-10 flex flex-col pb-8">
       <div className="relative flex h-[15px] items-center justify-center opacity-0" />
       <div className="scrollbar-hide flex items-center justify-center gap-5 overflow-x-auto pt-[21px]">
         <div className={`ST2 flex flex-col items-center gap-[10px]`}>

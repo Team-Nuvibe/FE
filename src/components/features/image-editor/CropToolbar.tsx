@@ -15,7 +15,7 @@ export const CropToolbar = ({
   onColorChange,
 }: CropToolbarProps) => {
   return (
-    <div className="z-10 flex flex-col pb-11">
+    <div className="z-10 flex flex-col pb-8">
       <div
         className={`relative flex h-[15px] items-center justify-center ${cropMode === "fixedratio" ? "invisible" : ""}`}
       >
